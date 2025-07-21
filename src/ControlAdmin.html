@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사장님 플러스 헬프센터</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .function-selected {
+            background-color: #dbeafe !important;
+            border-left: 4px solid #3b82f6 !important;
+        }
+        .admin-selected {
+            background-color: #dcfce7 !important;
+            border-left: 4px solid #22c55e !important;
+        }
+        .tab-active {
+            background-color: #3b82f6 !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- 1계층: 기능 목록 -->
+        <div class="w-80 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-800">사장님 플러스 헬프센터</h2>
+                <p class="text-sm text-gray-500 mt-1">수행할 작업을 선택하세요</p>
+                <div class="mt-2">
+                    <button id="cookie-sync-btn" class="px-3 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700">
+                        🍪 쿠키 동기화
+                    </button>
+                    <button id="token-sync-btn" class="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 ml-2">
+                        🔄 토큰 동기화
+                    </button>
+                    <span id="token-status" class="text-xs text-gray-400 ml-2 block mt-1">상태: 확인중...</span>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto">
+                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="qr-create">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="text-blue-600">🔧</div>
+                            <div>
+                                <div class="font-medium text-gray-800">가맹점 생성 및 QR 활성화</div>
+                                <div class="text-xs text-gray-500 mt-1">3개 어드민 연관</div>
+                            </div>
+                        </div>
+                        <div class="text-gray-400">→</div>
+                    </div>
+                </div>
+
+                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="qr-recovery">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="text-blue-600">⚡</div>
+                            <div>
+                                <div class="font-medium text-gray-800">가맹점 QR 복구</div>
+                                <div class="text-xs text-gray-500 mt-1">3개 어드민 연관</div>
+                            </div>
+                        </div>
+                        <div class="text-gray-400">→</div>
+                    </div>
+                </div>
+
+                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="permission">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="text-blue-600">🔒</div>
+                            <div>
+                                <div class="font-medium text-gray-800">매장 권한변경</div>
+                                <div class="text-xs text-gray-500 mt-1">3개 어드민 연관</div>
+                            </div>
+                        </div>
+                        <div class="text-gray-400">→</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2계층: 어드민 목록 -->
+        <div id="admin-panel" class="w-80 bg-white border-r border-gray-200 flex-col hidden">
+            <div class="p-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">어드민 목록</h3>
+                <p class="text-sm text-gray-500 mt-1" id="function-name">선택된 기능</p>
+            </div>
+            <div class="flex-1 overflow-y-auto" id="admin-list">
+                <!-- 어드민 목록이 여기에 동적으로 추가됩니다 -->
+            </div>
+        </div>
+
+        <!-- 3계층: 콘텐츠 영역 -->
+        <div class="flex-1 flex flex-col">
+            <div id="empty-state" class="flex items-center justify-center h-full">
+                <div class="text-center">
+                    <div class="text-6xl mb-4">🖥️</div>
+                    <h3 class="text-xl font-medium text-gray-500 mb-2">어드민을 선택하세요</h3>
+                    <p class="text-gray-400">먼저 수행할 기능을 선택한 후 어드민을 선택하세요</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 쿠키 동기화 모달 -->
+    <div id="cookie-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-2xl w-full m-4 max-h-[80vh] overflow-y-auto">
+            <h3 class="text-lg font-semibold mb-4">🍪 쿠키 관리</h3>
+            <div class="mb-4">
+                <h4 class="font-medium mb-2">현재 저장된 쿠키:</h4>
+                <div id="cookie-list" class="bg-gray-100 p-3 rounded text-sm font-mono max-h-40 overflow-y-auto">
+                    로딩중...
+                </div>
+            </div>
+            <div class="mb-4">
+                <h4 class="font-medium mb-2">쿠키 추가/수정:</h4>
+                <input id="cookie-input" type="text" 
+                       placeholder="name=value; domain=.example.com; path=/" 
+                       class="w-full p-2 border rounded text-sm">
+                <button onclick="addCookie()" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    쿠키 추가
+                </button>
+            </div>
+            <button onclick="closeCookieModal()" class="w-full p-3 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+                닫기
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 전역 변수
+        const functionData = {
+            'qr-create': {
+                name: '가맹점 생성 및 QR 활성화',
+                admins: [
+                    {
+                        name: '와칸다_신청서',
+                        url: 'https://www.google.com',
+                        desc: '가맹점 신청서 작성',
+                        isInternal: false
+                    },
+                    {
+                        name: '와칸다_활성화',
+                        url: 'https://www.naver.com',
+                        desc: '가맹점 활성화 처리',
+                        isInternal: false
+                    },
+                    {
+                        name: '오프라인_QR생성요청',
+                        url: 'https://admin.example.com/qr',
+                        desc: '오프라인 QR 생성',
+                        isInternal: true
+                    }
+                ]
+            },
+            'qr-recovery': {
+                name: '가맹점 QR 복구',
+                admins: [
+                    {
+                        name: 'QR 관리',
+                        url: 'https://admin.example.com/qr-manage',
+                        desc: 'QR 복구',
+                        isInternal: true
+                    },
+                    {
+                        name: '로그 관리',
+                        url: 'https://admin.example.com/logs',
+                        desc: '로그 확인',
+                        isInternal: true
+                    },
+                    {
+                        name: '가맹점 관리',
+                        url: 'https://www.kakao.com',
+                        desc: '상태 확인',
+                        isInternal: false
+                    }
+                ]
+            },
+            'permission': {
+                name: '매장 권한변경',
+                admins: [
+                    {
+                        name: '권한 관리',
+                        url: 'https://admin.example.com/permissions',
+                        desc: '권한 설정',
+                        isInternal: true
+                    },
+                    {
+                        name: '사용자 관리',
+                        url: 'https://admin.example.com/users',
+                        desc: '역할 관리',
+                        isInternal: true
+                    },
+                    {
+                        name: '감사 관리',
+                        url: 'https://www.youtube.com',
+                        desc: '변경 이력',
+                        isInternal: false
+                    }
+                ]
+            }
+        };
+
+        let selectedFunction = null;
+        let selectedAdmin = null;
+        let windowRefs = {};
+
+        // 쿠키 관리 함수
+        function getAllCookies() {
+            const cookies = {};
+            document.cookie.split(';').forEach(cookie => {
+                const [name, value] = cookie.trim().split('=');
+                if (name) cookies[name] = value;
+            });
+            return cookies;
+        }
+
+        function setCookie(name, value, options = {}) {
+            let cookieString = `${name}=${value}`;
+            
+            if (options.domain) cookieString += `; domain=${options.domain}`;
+            if (options.path) cookieString += `; path=${options.path}`;
+            if (options.expires) cookieString += `; expires=${options.expires}`;
+            if (options.maxAge) cookieString += `; max-age=${options.maxAge}`;
+            if (options.secure) cookieString += `; secure`;
+            if (options.sameSite) cookieString += `; samesite=${options.sameSite}`;
+            
+            document.cookie = cookieString;
+        }
+
+        function showCookieModal() {
+            const modal = document.getElementById('cookie-modal');
+            modal.classList.remove('hidden');
+            updateCookieList();
+        }
+
+        function closeCookieModal() {
+            document.getElementById('cookie-modal').classList.add('hidden');
+        }
+
+        function updateCookieList() {
+            const cookies = getAllCookies();
+            const cookieList = document.getElementById('cookie-list');
+            
+            if (Object.keys(cookies).length === 0) {
+                cookieList.textContent = '쿠키가 없습니다.';
+            } else {
+                cookieList.innerHTML = Object.entries(cookies)
+                    .map(([name, value]) => `<div>${name}=${value}</div>`)
+                    .join('');
+            }
+        }
+
+        function addCookie() {
+            const input = document.getElementById('cookie-input').value.trim();
+            if (!input) return;
+            
+            try {
+                // 간단한 쿠키 파싱
+                const parts = input.split(';').map(p => p.trim());
+                const [name, value] = parts[0].split('=');
+                
+                const options = {};
+                parts.slice(1).forEach(part => {
+                    const [key, val] = part.split('=');
+                    options[key.toLowerCase()] = val || true;
+                });
+                
+                setCookie(name, value, options);
+                updateCookieList();
+                document.getElementById('cookie-input').value = '';
+                alert('쿠키가 추가되었습니다.');
+            } catch (e) {
+                alert('올바른 쿠키 형식이 아닙니다.');
+            }
+        }
+
+        // 토큰 관리 함수
+        function getStoredTokens() {
+            const tokens = {
+                localStorage: {},
+                sessionStorage: {},
+                cookies: {}
+            };
+            
+            // localStorage 토큰
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.includes('token') || key.includes('auth') || key.includes('session'))) {
+                    tokens.localStorage[key] = localStorage.getItem(key);
+                }
+            }
+            
+            // sessionStorage 토큰
+            for (let i = 0; i < sessionStorage.length; i++) {
+                const key = sessionStorage.key(i);
+                if (key && (key.includes('token') || key.includes('auth') || key.includes('session'))) {
+                    tokens.sessionStorage[key] = sessionStorage.getItem(key);
+                }
+            }
+            
+            // 쿠키 토큰
+            const cookies = getAllCookies();
+            Object.entries(cookies).forEach(([name, value]) => {
+                if (name.includes('token') || name.includes('auth') || name.includes('session')) {
+                    tokens.cookies[name] = value;
+                }
+            });
+            
+            return tokens;
+        }
+
+        function updateTokenStatus() {
+            const tokens = getStoredTokens();
+            const statusEl = document.getElementById('token-status');
+            
+            const totalCount = 
+                Object.keys(tokens.localStorage).length + 
+                Object.keys(tokens.sessionStorage).length + 
+                Object.keys(tokens.cookies).length;
+            
+            if (totalCount > 0) {
+                statusEl.innerHTML = `
+                    <span class="text-green-600">✅ 토큰 ${totalCount}개 발견</span>
+                    <span class="text-xs text-gray-500 block">
+                        Local: ${Object.keys(tokens.localStorage).length}, 
+                        Session: ${Object.keys(tokens.sessionStorage).length}, 
+                        Cookie: ${Object.keys(tokens.cookies).length}
+                    </span>
+                `;
+            } else {
+                statusEl.innerHTML = '<span class="text-red-600">❌ 토큰 없음</span>';
+            }
+        }
+
+        function syncTokens() {
+            const tokens = getStoredTokens();
+            console.log('동기화할 토큰:', tokens);
+            
+            // 열려있는 모든 창에 토큰 전송 시도
+            Object.values(windowRefs).forEach(win => {
+                if (win && !win.closed) {
+                    try {
+                        win.postMessage({
+                            type: 'SYNC_TOKENS',
+                            tokens: tokens
+                        }, '*');
+                    } catch (e) {
+                        console.log('토큰 전송 실패:', e);
+                    }
+                }
+            });
+            
+            alert('토큰 동기화를 시도했습니다. 개발자 콘솔을 확인하세요.');
+        }
+
+        // UI 함수
+        function selectFunction(funcId, element) {
+            selectedFunction = funcId;
+            selectedAdmin = null;
+
+            document.querySelectorAll('.function-item').forEach(item => {
+                item.classList.remove('function-selected');
+            });
+            element.classList.add('function-selected');
+
+            const adminPanel = document.getElementById('admin-panel');
+            adminPanel.classList.remove('hidden');
+            adminPanel.classList.add('flex');
+
+            document.getElementById('function-name').textContent = functionData[funcId].name;
+
+            const adminList = document.getElementById('admin-list');
+            adminList.innerHTML = '';
+
+            functionData[funcId].admins.forEach((admin, index) => {
+                const adminItem = document.createElement('div');
+                adminItem.className = 'admin-item p-4 cursor-pointer border-b border-gray-100 hover:bg-green-50';
+                adminItem.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-medium text-gray-800 flex items-center space-x-2">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${index + 1}</span>
+                                <span>${admin.name}</span>
+                                ${admin.isInternal ? '<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">내부</span>' : ''}
+                            </div>
+                            <div class="text-sm text-gray-500 mt-1">${admin.desc}</div>
+                            <div class="text-xs text-gray-400 mt-1">${admin.url}</div>
+                        </div>
+                        <div class="text-gray-400">→</div>
+                    </div>
+                `;
+
+                adminItem.addEventListener('click', () => selectAdmin(admin, adminItem));
+                adminList.appendChild(adminItem);
+            });
+        }
+
+        function selectAdmin(admin, element) {
+            selectedAdmin = admin;
+
+            document.querySelectorAll('.admin-item').forEach(item => {
+                item.classList.remove('admin-selected');
+            });
+            element.classList.add('admin-selected');
+
+            openAdminPage(admin);
+        }
+
+        function openAdminPage(admin) {
+            const emptyState = document.getElementById('empty-state');
+            
+            // 새 창에서 열기
+            const windowName = `admin_${admin.name.replace(/\s/g, '_')}`;
+            const windowFeatures = 'width=1200,height=800,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes';
+            
+            const win = window.open(admin.url, windowName, windowFeatures);
+            windowRefs[windowName] = win;
+            
+            emptyState.innerHTML = `
+                <div class="text-center">
+                    <div class="text-6xl mb-4">🪟</div>
+                    <h3 class="text-xl font-medium text-gray-700 mb-2">${admin.name}</h3>
+                    <p class="text-gray-500 mb-4">새 창에서 열렸습니다</p>
+                    <div class="space-y-2">
+                        <button onclick="focusWindow('${windowName}')" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            창으로 이동
+                        </button>
+                        ${admin.isInternal ? `
+                        <div class="mt-4 p-4 bg-yellow-50 rounded-lg max-w-md mx-auto">
+                            <h4 class="font-medium text-yellow-800 mb-2">🔐 내부 어드민 로그인 팁</h4>
+                            <ul class="text-sm text-yellow-700 space-y-1 text-left">
+                                <li>• 로그인 후 401 에러가 발생하면 페이지를 새로고침하세요</li>
+                                <li>• 쿠키가 제대로 설정되지 않았을 수 있습니다</li>
+                                <li>• 상단의 "쿠키 동기화" 버튼을 사용해보세요</li>
+                                <li>• 개발자 도구 &gt; Application &gt; Cookies를 확인하세요</li>
+                            </ul>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            // 내부 어드민의 경우 로그인 감지 시도
+            if (admin.isInternal) {
+                setTimeout(() => {
+                    checkLoginStatus(win, windowName);
+                }, 3000);
+            }
+        }
+
+        function focusWindow(windowName) {
+            const win = windowRefs[windowName];
+            if (win && !win.closed) {
+                win.focus();
+            } else {
+                alert('창이 닫혔습니다. 다시 선택해주세요.');
+            }
+        }
+
+        function checkLoginStatus(win, windowName) {
+            if (!win || win.closed) return;
+            
+            try {
+                // 창의 URL 확인 시도 (동일 출처에서만 가능)
+                const currentUrl = win.location.href;
+                console.log('현재 URL:', currentUrl);
+                
+                // 로그인 성공 후 리다이렉트 감지
+                if (currentUrl.includes('dashboard') || currentUrl.includes('home')) {
+                    alert('로그인이 감지되었습니다. 토큰을 동기화하세요.');
+                    updateTokenStatus();
+                }
+            } catch (e) {
+                console.log('Cross-origin으로 URL 확인 불가');
+            }
+            
+            // 계속 모니터링
+            setTimeout(() => checkLoginStatus(win, windowName), 5000);
+        }
+
+        // 이벤트 리스너
+        document.addEventListener('DOMContentLoaded', function() {
+            // 기능 선택
+            document.querySelectorAll('.function-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const funcId = item.dataset.function;
+                    selectFunction(funcId, item);
+                });
+            });
+
+            // 쿠키 동기화 버튼
+            document.getElementById('cookie-sync-btn').addEventListener('click', showCookieModal);
+
+            // 토큰 동기화 버튼
+            document.getElementById('token-sync-btn').addEventListener('click', syncTokens);
+
+            // 초기화
+            updateTokenStatus();
+            
+            // 주기적으로 토큰 상태 업데이트
+            setInterval(updateTokenStatus, 5000);
+        });
+
+        // 메시지 수신 (다른 창에서의 토큰 동기화 요청)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'REQUEST_TOKENS') {
+                const tokens = getStoredTokens();
+                event.source.postMessage({
+                    type: 'SYNC_TOKENS',
+                    tokens: tokens
+                }, event.origin);
+            }
+        });
+    </script>
+</body>
+</html>
