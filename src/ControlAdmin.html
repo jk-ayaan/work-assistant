@@ -18,16 +18,63 @@
             background-color: #3b82f6 !important;
             color: white !important;
         }
+        .sidebar-collapsed {
+            width: 3.5rem !important;
+        }
+        .sidebar-collapsed .sidebar-text {
+            display: none;
+        }
+        .sidebar-collapsed .sidebar-icon {
+            margin: 0 auto;
+        }
+        .sidebar-transition {
+            transition: width 0.3s ease;
+        }
+        .admin-panel-collapsed {
+            width: 3.5rem !important;
+        }
+        .admin-panel-collapsed .admin-text {
+            display: none !important;
+        }
+        .admin-panel-collapsed .admin-item > div {
+            justify-content: center !important;
+        }
+        .admin-panel-collapsed .bg-blue-100 {
+            margin: 0 auto;
+        }
+        .toggle-btn {
+            position: absolute;
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .toggle-btn:hover {
+            background: #f3f4f6;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
     <div class="flex h-screen">
         <!-- 1계층: 기능 목록 -->
-        <div class="w-80 bg-white border-r border-gray-200 flex flex-col">
+        <div id="function-sidebar" class="w-80 bg-white border-r border-gray-200 flex flex-col sidebar-transition relative">
+            <button class="toggle-btn" onclick="toggleFunctionSidebar()">
+                <span id="function-toggle-icon">‹</span>
+            </button>
             <div class="p-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-800">사장님 플러스 헬프센터</h2>
-                <p class="text-sm text-gray-500 mt-1">수행할 작업을 선택하세요</p>
-                <div class="mt-2">
+                <h2 class="text-lg font-semibold text-gray-800 sidebar-text">사장님 플러스 헬프센터</h2>
+                <p class="text-sm text-gray-500 mt-1 sidebar-text">수행할 작업을 선택하세요</p>
+                <div class="mt-2 sidebar-text">
                     <button id="cookie-sync-btn" class="px-3 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700">
                         🍪 쿠키 동기화
                     </button>
@@ -41,49 +88,52 @@
                 <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="qr-create">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <div class="text-blue-600">🔧</div>
-                            <div>
+                            <div class="text-blue-600 sidebar-icon">🔧</div>
+                            <div class="sidebar-text">
                                 <div class="font-medium text-gray-800">가맹점 생성 및 QR 활성화</div>
                                 <div class="text-xs text-gray-500 mt-1">3개 어드민 연관</div>
                             </div>
                         </div>
-                        <div class="text-gray-400">→</div>
+                        <div class="text-gray-400 sidebar-text">→</div>
                     </div>
                 </div>
 
                 <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="qr-recovery">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <div class="text-blue-600">⚡</div>
-                            <div>
+                            <div class="text-blue-600 sidebar-icon">⚡</div>
+                            <div class="sidebar-text">
                                 <div class="font-medium text-gray-800">가맹점 QR 복구</div>
                                 <div class="text-xs text-gray-500 mt-1">3개 어드민 연관</div>
                             </div>
                         </div>
-                        <div class="text-gray-400">→</div>
+                        <div class="text-gray-400 sidebar-text">→</div>
                     </div>
                 </div>
 
                 <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="permission">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <div class="text-blue-600">🔒</div>
-                            <div>
+                            <div class="text-blue-600 sidebar-icon">🔒</div>
+                            <div class="sidebar-text">
                                 <div class="font-medium text-gray-800">매장 권한변경</div>
                                 <div class="text-xs text-gray-500 mt-1">3개 어드민 연관</div>
                             </div>
                         </div>
-                        <div class="text-gray-400">→</div>
+                        <div class="text-gray-400 sidebar-text">→</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- 2계층: 어드민 목록 -->
-        <div id="admin-panel" class="w-80 bg-white border-r border-gray-200 flex-col hidden">
+        <div id="admin-panel" class="w-80 bg-white border-r border-gray-200 flex-col hidden sidebar-transition relative">
+            <button class="toggle-btn" onclick="toggleAdminPanel()">
+                <span id="admin-toggle-icon">‹</span>
+            </button>
             <div class="p-4 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800">어드민 목록</h3>
-                <p class="text-sm text-gray-500 mt-1" id="function-name">선택된 기능</p>
+                <h3 class="text-lg font-semibold text-gray-800 admin-text">어드민 목록</h3>
+                <p class="text-sm text-gray-500 mt-1 admin-text" id="function-name">선택된 기능</p>
             </div>
             <div class="flex-1 overflow-y-auto" id="admin-list">
                 <!-- 어드민 목록이 여기에 동적으로 추가됩니다 -->
@@ -378,16 +428,16 @@
                 adminItem.className = 'admin-item p-4 cursor-pointer border-b border-gray-100 hover:bg-green-50';
                 adminItem.innerHTML = `
                     <div class="flex items-center justify-between">
-                        <div>
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex-shrink-0">${index + 1}</span>
+                        <div class="flex-1 ml-3 admin-text">
                             <div class="font-medium text-gray-800 flex items-center space-x-2">
-                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${index + 1}</span>
                                 <span>${admin.name}</span>
                                 ${admin.isInternal ? '<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">내부</span>' : ''}
                             </div>
                             <div class="text-sm text-gray-500 mt-1">${admin.desc}</div>
-                            <div class="text-xs text-gray-400 mt-1">${admin.url}</div>
+                            <div class="text-xs text-gray-400 mt-1 truncate">${admin.url}</div>
                         </div>
-                        <div class="text-gray-400">→</div>
+                        <div class="text-gray-400 admin-text ml-2">→</div>
                     </div>
                 `;
 
@@ -477,6 +527,37 @@
             
             // 계속 모니터링
             setTimeout(() => checkLoginStatus(win, windowName), 5000);
+        }
+
+        // 사이드바 토글 함수들
+        function toggleFunctionSidebar() {
+            const sidebar = document.getElementById('function-sidebar');
+            const adminPanel = document.getElementById('admin-panel');
+            const icon = document.getElementById('function-toggle-icon');
+            
+            sidebar.classList.toggle('sidebar-collapsed');
+            
+            if (sidebar.classList.contains('sidebar-collapsed')) {
+                icon.textContent = '›';
+                // 기능 목록이 접히면 어드민 패널도 숨김
+                adminPanel.classList.add('hidden');
+                adminPanel.classList.remove('flex');
+            } else {
+                icon.textContent = '‹';
+            }
+        }
+        
+        function toggleAdminPanel() {
+            const panel = document.getElementById('admin-panel');
+            const icon = document.getElementById('admin-toggle-icon');
+            
+            panel.classList.toggle('admin-panel-collapsed');
+            
+            if (panel.classList.contains('admin-panel-collapsed')) {
+                icon.textContent = '›';
+            } else {
+                icon.textContent = '‹';
+            }
         }
 
         // 이벤트 리스너
