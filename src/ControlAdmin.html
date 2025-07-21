@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>사장님 플러스 헬프센터</title>
+    <!-- TailwindCSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- XLSX 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         .function-selected {
             background-color: #dbeafe !important;
@@ -76,6 +79,40 @@
         .admin-panel-collapsed .bg-blue-100 {
             margin: 0 auto;
         }
+        .loading-spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-container {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px;
+        }
+        .success-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -85,7 +122,7 @@
             <button class="toggle-btn" onclick="toggleFunctionSidebar()">
                 <span id="function-toggle-icon">‹</span>
             </button>
-            
+
             <!-- 헤더 -->
             <div class="p-4 border-b border-gray-200">
                 <h2 class="text-lg font-semibold text-gray-800 sidebar-text">사장님 플러스 헬프센터</h2>
@@ -100,22 +137,16 @@
                     <span id="token-status" class="text-xs text-gray-400 ml-2 block mt-1">상태: 확인중...</span>
                 </div>
             </div>
-            
-            <!-- 어드민 기능 목록 토글 헤더 -->
-            <div class="function-toggle px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between sidebar-text" onclick="toggleFunctions()">
-                <span class="font-medium text-gray-700">어드민 기능 목록</span>
-                <span id="function-arrow" class="text-gray-500">▲</span>
-            </div>
-            
+
             <!-- 어드민 기능목록 토글 헤더 -->
             <div class="function-toggle px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between sidebar-text" onclick="toggleAdminFunctions()">
                 <span class="font-medium text-gray-700">어드민 기능목록</span>
                 <span id="admin-functions-arrow" class="text-gray-500">▼</span>
             </div>
-            
+
             <!-- 어드민 기능 목록 -->
             <div class="admin-functions" style="display: none;">
-                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="qr-create" onclick="openAdminFunction('qr-create')">
+                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="qr-create">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <div class="text-blue-600 sidebar-icon">
@@ -133,7 +164,7 @@
                     </div>
                 </div>
 
-                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="qr-recovery" onclick="openAdminFunction('qr-recovery')">
+                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="qr-recovery">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <div class="text-blue-600 sidebar-icon">
@@ -150,7 +181,7 @@
                     </div>
                 </div>
 
-                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="permission" onclick="openAdminFunction('permission')">
+                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="permission">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <div class="text-blue-600 sidebar-icon">
@@ -173,10 +204,10 @@
                 <span class="font-medium text-gray-700">데이터 생성</span>
                 <span id="data-generator-arrow" class="text-gray-500">▼</span>
             </div>
-            
+
             <!-- 데이터 생성 목록 -->
             <div class="data-generator-functions" style="display: none;">
-                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="sample-image-generator" onclick="openDirectTool('sample-image-generator')">
+                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="sample-image-generator">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <div class="text-purple-600 sidebar-icon">
@@ -192,7 +223,7 @@
                     </div>
                 </div>
 
-                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="qr-xlsx-generator" onclick="openDirectTool('qr-xlsx-generator')">
+                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="qr-xlsx-generator">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <div class="text-green-600 sidebar-icon">
@@ -208,7 +239,7 @@
                     </div>
                 </div>
 
-                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="csv-generator" onclick="openDirectTool('csv-generator')">
+                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="csv-generator">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <div class="text-blue-600 sidebar-icon">
@@ -256,7 +287,7 @@
                     </button>
                 </div>
             </div>
-            
+
             <!-- 콘텐츠 영역 -->
             <div class="flex-1 bg-white relative" id="content-container">
                 <div id="empty-state" class="flex items-center justify-center h-full">
@@ -282,8 +313,8 @@
             </div>
             <div class="mb-4">
                 <h4 class="font-medium mb-2">쿠키 추가/수정:</h4>
-                <input id="cookie-input" type="text" 
-                       placeholder="name=value; domain=.example.com; path=/" 
+                <input id="cookie-input" type="text"
+                       placeholder="name=value; domain=.example.com; path=/"
                        class="w-full p-2 border rounded text-sm">
                 <button onclick="addCookie()" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                     쿠키 추가
@@ -366,29 +397,6 @@
                         isInternal: false
                     }
                 ]
-            },
-            'data-generator': {
-                name: '데이터 생성',
-                admins: [
-                    {
-                        name: '샘플 이미지 생성기',
-                        url: 'data:text/html;charset=utf-8,' + encodeURIComponent(getDataGeneratorHTML()),
-                        desc: '다양한 포맷의 샘플 이미지 생성',
-                        isInternal: true
-                    },
-                    {
-                        name: 'QR XLSX 생성기',
-                        url: 'data:text/html;charset=utf-8,' + encodeURIComponent(getDataGeneratorHTML()),
-                        desc: 'QR 데이터 XLSX 파일 생성',
-                        isInternal: true
-                    },
-                    {
-                        name: 'CSV 생성기',
-                        url: 'data:text/html;charset=utf-8,' + encodeURIComponent(getDataGeneratorHTML()),
-                        desc: '커스텀 CSV 파일 생성',
-                        isInternal: true
-                    }
-                ]
             }
         };
 
@@ -399,181 +407,169 @@
         let activeTabId = null;
         let tabCounter = 0;
 
-        // 샘플 이미지 생성기 HTML
-        function getSampleImageGeneratorHTML() {
-            return '<div class="h-full overflow-auto bg-white">' +
-                '<div class="p-6 border-b border-gray-200">' +
-                    '<h1 class="text-2xl font-bold text-gray-800">샘플 이미지 생성기</h1>' +
-                    '<p class="text-gray-600 mt-2">다양한 포맷의 샘플 이미지를 생성할 수 있습니다.</p>' +
-                '</div>' +
-                '<div class="p-6">' +
-                    '<div class="max-w-2xl mx-auto">' +
-                        '<div class="grid grid-cols-1 md:grid-cols-2 gap-6">' +
-                            '<div class="space-y-4">' +
-                                '<div>' +
-                                    '<label class="block text-sm font-medium text-gray-700 mb-2">이미지 크기</label>' +
-                                    '<select id="sample-imageSize" class="w-full px-3 py-2 border border-gray-300 rounded-md">' +
-                                        '<option value="100x100">100x100</option>' +
-                                        '<option value="200x200">200x200</option>' +
-                                        '<option value="400x400" selected>400x400</option>' +
-                                        '<option value="800x600">800x600</option>' +
-                                        '<option value="1920x1080">1920x1080</option>' +
-                                    '</select>' +
-                                '</div>' +
-                                '<div>' +
-                                    '<label class="block text-sm font-medium text-gray-700 mb-2">배경색</label>' +
-                                    '<input type="color" id="sample-bgColor" value="#f0f0f0" class="w-full h-10 border border-gray-300 rounded-md">' +
-                                '</div>' +
-                                '<div>' +
-                                    '<label class="block text-sm font-medium text-gray-700 mb-2">텍스트</label>' +
-                                    '<input type="text" id="sample-imageText" value="Sample Image" class="w-full px-3 py-2 border border-gray-300 rounded-md">' +
-                                '</div>' +
-                                '<button onclick="generateSampleImage()" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">' +
-                                    '이미지 생성' +
-                                '</button>' +
-                            '</div>' +
-                            '<div>' +
-                                '<div class="border border-gray-300 rounded-md p-4 bg-gray-50 min-h-64 flex items-center justify-center">' +
-                                    '<canvas id="sample-canvas" class="border border-gray-200"></canvas>' +
-                                '</div>' +
-                                '<button id="sample-downloadBtn" onclick="downloadSampleImage()" class="w-full mt-4 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:opacity-50" disabled>' +
-                                    '이미지 다운로드' +
-                                '</button>' +
-                            '</div>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<script>' +
-                    'function generateSampleImage() {' +
-                        'const canvas = document.getElementById("sample-canvas");' +
-                        'const ctx = canvas.getContext("2d");' +
-                        'const size = document.getElementById("sample-imageSize").value;' +
-                        'const [width, height] = size.split("x").map(Number);' +
-                        'const bgColor = document.getElementById("sample-bgColor").value;' +
-                        'const text = document.getElementById("sample-imageText").value;' +
-                        'canvas.width = width;' +
-                        'canvas.height = height;' +
-                        'canvas.style.maxWidth = "100%";' +
-                        'canvas.style.height = "auto";' +
-                        'ctx.fillStyle = bgColor;' +
-                        'ctx.fillRect(0, 0, width, height);' +
-                        'ctx.fillStyle = "#333333";' +
-                        'ctx.font = Math.max(16, width/20) + "px Arial";' +
-                        'ctx.textAlign = "center";' +
-                        'ctx.textBaseline = "middle";' +
-                        'ctx.fillText(text, width/2, height/2);' +
-                        'ctx.font = Math.max(12, width/30) + "px Arial";' +
-                        'ctx.fillText(width + " × " + height, width/2, height/2 + Math.max(30, width/15));' +
-                        'document.getElementById("sample-downloadBtn").disabled = false;' +
-                    '}' +
-                    'function downloadSampleImage() {' +
-                        'const canvas = document.getElementById("sample-canvas");' +
-                        'const link = document.createElement("a");' +
-                        'link.download = "sample-image.png";' +
-                        'link.href = canvas.toDataURL();' +
-                        'link.click();' +
-                    '}' +
-                    'setTimeout(generateSampleImage, 100);' +
-                '</script>' +
-            '</div>';
+        // 유틸리티 함수들
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
         }
 
-        // QR XLSX 생성기 HTML
-        function getQRXlsxGeneratorHTML() {
-            return '<div class="h-full overflow-auto bg-white">' +
-                '<div class="p-6 border-b border-gray-200">' +
-                    '<h1 class="text-2xl font-bold text-gray-800">QR XLSX 생성기</h1>' +
-                    '<p class="text-gray-600 mt-2">QR 코드 정보가 포함된 XLSX 파일을 생성할 수 있습니다.</p>' +
-                '</div>' +
-                '<div class="p-6">' +
-                    '<div class="max-w-4xl mx-auto space-y-6">' +
-                        '<div class="grid grid-cols-1 md:grid-cols-2 gap-6">' +
-                            '<div>' +
-                                '<label class="block text-sm font-medium text-gray-700 mb-2">생성할 QR 개수</label>' +
-                                '<input type="number" id="qr-count" value="10" min="1" max="1000" class="w-full px-3 py-2 border border-gray-300 rounded-md">' +
-                            '</div>' +
-                            '<div>' +
-                                '<label class="block text-sm font-medium text-gray-700 mb-2">베이스 URL</label>' +
-                                '<input type="text" id="qr-baseUrl" value="https://example.com/qr/" class="w-full px-3 py-2 border border-gray-300 rounded-md">' +
-                            '</div>' +
-                        '</div>' +
-                        '<button onclick="generateQRXlsx()" class="bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700">QR XLSX 파일 생성</button>' +
-                        '<div id="qr-preview" class="mt-6 p-4 border border-gray-300 rounded-md bg-gray-50 hidden">' +
-                            '<h3 class="text-lg font-medium mb-4">생성 완료!</h3>' +
-                            '<p>XLSX 파일이 다운로드되었습니다.</p>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>' +
-                '<script>' +
-                    'function generateQRXlsx() {' +
-                        'const count = parseInt(document.getElementById("qr-count").value);' +
-                        'const baseText = document.getElementById("qr-baseUrl").value;' +
-                        'const data = [["ID", "QR_Data", "Created_At"]];' +
-                        'for (let i = 1; i <= count; i++) {' +
-                            'data.push([i, baseText + i.toString().padStart(4, "0"), new Date().toISOString()]);' +
-                        '}' +
-                        'const ws = XLSX.utils.aoa_to_sheet(data);' +
-                        'const wb = XLSX.utils.book_new();' +
-                        'XLSX.utils.book_append_sheet(wb, ws, "QR_Data");' +
-                        'XLSX.writeFile(wb, "QR_Data_" + new Date().toISOString().split("T")[0] + ".xlsx");' +
-                        'document.getElementById("qr-preview").classList.remove("hidden");' +
-                    '}' +
-                '</script>' +
-            '</div>';
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `success-toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
         }
 
-        // CSV 생성기 HTML  
-        function getCsvGeneratorHTML() {
-            return '<div class="h-full overflow-auto bg-white">' +
-                '<div class="p-6 border-b border-gray-200">' +
-                    '<h1 class="text-2xl font-bold text-gray-800">CSV 생성기</h1>' +
-                    '<p class="text-gray-600 mt-2">커스텀 CSV 파일을 생성할 수 있습니다.</p>' +
-                '</div>' +
-                '<div class="p-6">' +
-                    '<div class="max-w-4xl mx-auto space-y-6">' +
-                        '<div class="grid grid-cols-1 md:grid-cols-2 gap-6">' +
-                            '<div>' +
-                                '<label class="block text-sm font-medium text-gray-700 mb-2">데이터 행 수</label>' +
-                                '<input type="number" id="csv-rowCount" value="10" min="1" max="1000" class="w-full px-3 py-2 border border-gray-300 rounded-md">' +
-                            '</div>' +
-                            '<div>' +
-                                '<label class="block text-sm font-medium text-gray-700 mb-2">컬럼 헤더 (콤마로 구분)</label>' +
-                                '<input type="text" id="csv-headers" value="ID,Name,Email,Phone" class="w-full px-3 py-2 border border-gray-300 rounded-md">' +
-                            '</div>' +
-                        '</div>' +
-                        '<button onclick="generateCsvFile()" class="bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700">CSV 파일 생성</button>' +
-                        '<div id="csv-preview" class="mt-6 p-4 border border-gray-300 rounded-md bg-gray-50 hidden">' +
-                            '<h3 class="text-lg font-medium mb-4">생성 완료!</h3>' +
-                            '<p>CSV 파일이 다운로드되었습니다.</p>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<script>' +
-                    'function generateCsvFile() {' +
-                        'const rowCount = parseInt(document.getElementById("csv-rowCount").value);' +
-                        'const headers = document.getElementById("csv-headers").value.split(",").map(h => h.trim());' +
-                        'let csvContent = headers.join(",") + "\\n";' +
-                        'for (let i = 1; i <= rowCount; i++) {' +
-                            'const row = headers.map(header => {' +
-                                'if (header.toLowerCase().includes("id")) return i;' +
-                                'if (header.toLowerCase().includes("name")) return "Sample" + i;' +
-                                'if (header.toLowerCase().includes("email")) return "sample" + i + "@example.com";' +
-                                'if (header.toLowerCase().includes("phone")) return "010-1234-567" + (i % 10);' +
-                                'return "Data" + i;' +
-                            '});' +
-                            'csvContent += row.join(",") + "\\n";' +
-                        '}' +
-                        'const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });' +
-                        'const link = document.createElement("a");' +
-                        'const url = URL.createObjectURL(blob);' +
-                        'link.setAttribute("href", url);' +
-                        'link.setAttribute("download", "custom_data_" + new Date().toISOString().split("T")[0] + ".csv");' +
-                        'link.click();' +
-                        'document.getElementById("csv-preview").classList.remove("hidden");' +
-                    '}' +
-                '</script>' +
-            '</div>';
+        function showLoadingState(container) {
+            container.innerHTML = `
+                <div class="flex items-center justify-center h-full">
+                    <div class="text-center">
+                        <div class="loading-spinner mx-auto mb-4"></div>
+                        <p class="text-gray-500">로딩 중...</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showErrorState(container, message) {
+            container.innerHTML = `
+                <div class="flex items-center justify-center h-full">
+                    <div class="error-container max-w-md text-center">
+                        <div class="text-4xl mb-4">⚠️</div>
+                        <h3 class="text-lg font-medium text-red-700 mb-2">오류 발생</h3>
+                        <p class="text-red-600 mb-4">${message}</p>
+                        <button onclick="location.reload()" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                            다시 시도
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 샘플 이미지 생성기 함수들
+        function generateSampleImage() {
+            try {
+                const canvas = document.getElementById('sample-canvas');
+                const ctx = canvas.getContext('2d');
+                const size = document.getElementById('sample-imageSize').value;
+                const [width, height] = size.split('x').map(Number);
+                const bgColor = document.getElementById('sample-bgColor').value;
+                const text = document.getElementById('sample-imageText').value;
+
+                canvas.width = width;
+                canvas.height = height;
+                canvas.style.maxWidth = '100%';
+                canvas.style.height = 'auto';
+
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(0, 0, width, height);
+
+                ctx.fillStyle = '#333333';
+                ctx.font = Math.max(16, width/20) + 'px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(text, width/2, height/2);
+
+                ctx.font = Math.max(12, width/30) + 'px Arial';
+                ctx.fillText(width + ' × ' + height, width/2, height/2 + Math.max(30, width/15));
+
+                document.getElementById('sample-downloadBtn').disabled = false;
+            } catch (error) {
+                console.error('이미지 생성 오류:', error);
+                alert('이미지 생성 중 오류가 발생했습니다.');
+            }
+        }
+
+        function downloadSampleImage() {
+            try {
+                const canvas = document.getElementById('sample-canvas');
+                const link = document.createElement('a');
+                link.download = 'sample-image-' + new Date().toISOString().split('T')[0] + '.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            } catch (error) {
+                console.error('다운로드 오류:', error);
+                alert('다운로드 중 오류가 발생했습니다.');
+            }
+        }
+
+        // QR XLSX 생성기 함수
+        function generateQRXlsx() {
+            try {
+                const count = parseInt(document.getElementById('qr-count').value);
+                const baseText = document.getElementById('qr-baseUrl').value;
+
+                if (count <= 0 || count > 1000) {
+                    alert('QR 개수는 1~1000 범위로 입력해주세요.');
+                    return;
+                }
+
+                const data = [['ID', 'QR_Data', 'Created_At']];
+                for (let i = 1; i <= count; i++) {
+                    data.push([i, baseText + i.toString().padStart(4, '0'), new Date().toISOString()]);
+                }
+
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'QR_Data');
+                XLSX.writeFile(wb, 'QR_Data_' + new Date().toISOString().split('T')[0] + '.xlsx');
+
+                document.getElementById('qr-preview').classList.remove('hidden');
+            } catch (error) {
+                console.error('XLSX 생성 오류:', error);
+                alert('XLSX 파일 생성 중 오류가 발생했습니다.');
+            }
+        }
+
+        // CSV 생성기 함수
+        function generateCsvFile() {
+            try {
+                const rowCount = parseInt(document.getElementById('csv-rowCount').value);
+                const headers = document.getElementById('csv-headers').value.split(',').map(h => h.trim());
+
+                if (rowCount <= 0 || rowCount > 1000) {
+                    alert('행 수는 1~1000 범위로 입력해주세요.');
+                    return;
+                }
+
+                if (headers.length === 0 || headers[0] === '') {
+                    alert('적어도 하나의 헤더를 입력해주세요.');
+                    return;
+                }
+
+                let csvContent = headers.join(',') + '\n';
+
+                for (let i = 1; i <= rowCount; i++) {
+                    const row = headers.map(header => {
+                        if (header.toLowerCase().includes('id')) return i;
+                        if (header.toLowerCase().includes('name')) return 'Sample' + i;
+                        if (header.toLowerCase().includes('email')) return 'sample' + i + '@example.com';
+                        if (header.toLowerCase().includes('phone')) return '010-1234-567' + (i % 10);
+                        return 'Data' + i;
+                    });
+                    csvContent += row.join(',') + '\n';
+                }
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'custom_data_' + new Date().toISOString().split('T')[0] + '.csv');
+                link.click();
+
+                document.getElementById('csv-preview').classList.remove('hidden');
+            } catch (error) {
+                console.error('CSV 생성 오류:', error);
+                alert('CSV 파일 생성 중 오류가 발생했습니다.');
+            }
         }
 
         // 쿠키 관리 함수
@@ -581,21 +577,21 @@
             const cookies = {};
             document.cookie.split(';').forEach(cookie => {
                 const [name, value] = cookie.trim().split('=');
-                if (name) cookies[name] = value;
+                if (name) cookies[name] = value || '';
             });
             return cookies;
         }
 
         function setCookie(name, value, options = {}) {
-            let cookieString = name + '=' + value;
-            
-            if (options.domain) cookieString += '; domain=' + options.domain;
-            if (options.path) cookieString += '; path=' + options.path;
-            if (options.expires) cookieString += '; expires=' + options.expires;
-            if (options.maxAge) cookieString += '; max-age=' + options.maxAge;
+            let cookieString = `${name}=${value}`;
+
+            if (options.domain) cookieString += `; domain=${options.domain}`;
+            if (options.path) cookieString += `; path=${options.path}`;
+            if (options.expires) cookieString += `; expires=${options.expires}`;
+            if (options.maxAge) cookieString += `; max-age=${options.maxAge}`;
             if (options.secure) cookieString += '; secure';
-            if (options.sameSite) cookieString += '; samesite=' + options.sameSite;
-            
+            if (options.sameSite) cookieString += `; samesite=${options.sameSite}`;
+
             document.cookie = cookieString;
         }
 
@@ -612,37 +608,47 @@
         function updateCookieList() {
             const cookies = getAllCookies();
             const cookieList = document.getElementById('cookie-list');
-            
+
             if (Object.keys(cookies).length === 0) {
                 cookieList.textContent = '쿠키가 없습니다.';
             } else {
                 cookieList.innerHTML = Object.entries(cookies)
-                    .map(([name, value]) => '<div>' + name + '=' + value + '</div>')
+                    .map(([name, value]) => `<div class="mb-1"><strong>${name}</strong> = ${value}</div>`)
                     .join('');
             }
         }
 
         function addCookie() {
             const input = document.getElementById('cookie-input').value.trim();
-            if (!input) return;
-            
+            if (!input) {
+                alert('쿠키 정보를 입력해주세요.');
+                return;
+            }
+
             try {
-                // 간단한 쿠키 파싱
                 const parts = input.split(';').map(p => p.trim());
                 const [name, value] = parts[0].split('=');
-                
+
+                if (!name) {
+                    alert('쿠키 이름이 필요합니다.');
+                    return;
+                }
+
                 const options = {};
                 parts.slice(1).forEach(part => {
                     const [key, val] = part.split('=');
-                    options[key.toLowerCase()] = val || true;
+                    if (key) {
+                        options[key.toLowerCase()] = val || true;
+                    }
                 });
-                
-                setCookie(name, value, options);
+
+                setCookie(name, value || '', options);
                 updateCookieList();
                 document.getElementById('cookie-input').value = '';
-                alert('쿠키가 추가되었습니다.');
+                showToast('쿠키가 추가되었습니다.');
             } catch (e) {
-                alert('올바른 쿠키 형식이 아닙니다.');
+                console.error('쿠키 추가 오류:', e);
+                alert('올바른 쿠키 형식이 아닙니다. 예: name=value; domain=.example.com');
             }
         }
 
@@ -653,266 +659,373 @@
                 sessionStorage: {},
                 cookies: {}
             };
-            
-            // localStorage 토큰
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && (key.includes('token') || key.includes('auth') || key.includes('session'))) {
-                    tokens.localStorage[key] = localStorage.getItem(key);
+
+            try {
+                // localStorage 토큰
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && (key.includes('token') || key.includes('auth') || key.includes('session'))) {
+                        tokens.localStorage[key] = localStorage.getItem(key);
+                    }
                 }
+
+                // sessionStorage 토큰
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    const key = sessionStorage.key(i);
+                    if (key && (key.includes('token') || key.includes('auth') || key.includes('session'))) {
+                        tokens.sessionStorage[key] = sessionStorage.getItem(key);
+                    }
+                }
+
+                // 쿠키 토큰
+                const cookies = getAllCookies();
+                Object.entries(cookies).forEach(([name, value]) => {
+                    if (name.includes('token') || name.includes('auth') || name.includes('session')) {
+                        tokens.cookies[name] = value;
+                    }
+                });
+            } catch (error) {
+                console.error('토큰 조회 오류:', error);
             }
-            
-            // sessionStorage 토큰
-            for (let i = 0; i < sessionStorage.length; i++) {
-                const key = sessionStorage.key(i);
-                if (key && (key.includes('token') || key.includes('auth') || key.includes('session'))) {
-                    tokens.sessionStorage[key] = sessionStorage.getItem(key);
-                }
-            }
-            
-            // 쿠키 토큰
-            const cookies = getAllCookies();
-            Object.entries(cookies).forEach(([name, value]) => {
-                if (name.includes('token') || name.includes('auth') || name.includes('session')) {
-                    tokens.cookies[name] = value;
-                }
-            });
-            
+
             return tokens;
         }
 
         function updateTokenStatus() {
-            const tokens = getStoredTokens();
-            const statusEl = document.getElementById('token-status');
-            
-            const totalCount = 
-                Object.keys(tokens.localStorage).length + 
-                Object.keys(tokens.sessionStorage).length + 
-                Object.keys(tokens.cookies).length;
-            
-            if (totalCount > 0) {
-                statusEl.innerHTML = 
-                    '<span class="text-green-600">✅ 토큰 ' + totalCount + '개 발견</span>' +
-                    '<span class="text-xs text-gray-500 block">' +
-                        'Local: ' + Object.keys(tokens.localStorage).length + ', ' +
-                        'Session: ' + Object.keys(tokens.sessionStorage).length + ', ' +
-                        'Cookie: ' + Object.keys(tokens.cookies).length +
-                    '</span>';
-            } else {
-                statusEl.innerHTML = '<span class="text-red-600">❌ 토큰 없음</span>';
+            try {
+                const tokens = getStoredTokens();
+                const statusEl = document.getElementById('token-status');
+
+                const totalCount =
+                    Object.keys(tokens.localStorage).length +
+                    Object.keys(tokens.sessionStorage).length +
+                    Object.keys(tokens.cookies).length;
+
+                if (totalCount > 0) {
+                    statusEl.innerHTML =
+                        `<span class="text-green-600">✅ 토큰 ${totalCount}개 발견</span>` +
+                        `<span class="text-xs text-gray-500 block">` +
+                            `Local: ${Object.keys(tokens.localStorage).length}, ` +
+                            `Session: ${Object.keys(tokens.sessionStorage).length}, ` +
+                            `Cookie: ${Object.keys(tokens.cookies).length}` +
+                        `</span>`;
+                } else {
+                    statusEl.innerHTML = '<span class="text-red-600">❌ 토큰 없음</span>';
+                }
+            } catch (error) {
+                console.error('토큰 상태 업데이트 오류:', error);
+                document.getElementById('token-status').innerHTML = '<span class="text-red-600">❌ 오류</span>';
             }
         }
 
         function syncTokens() {
-            const tokens = getStoredTokens();
-            console.log('동기화할 토큰:', tokens);
-            
-            // 열려있는 모든 창에 토큰 전송 시도
-            Object.values(windowRefs).forEach(win => {
-                if (win && !win.closed) {
-                    try {
-                        win.postMessage({
-                            type: 'SYNC_TOKENS',
-                            tokens: tokens
-                        }, '*');
-                    } catch (e) {
-                        console.log('토큰 전송 실패:', e);
+            try {
+                const tokens = getStoredTokens();
+                console.log('동기화할 토큰:', tokens);
+
+                // 열려있는 모든 창에 토큰 전송 시도
+                Object.values(windowRefs).forEach(win => {
+                    if (win && !win.closed) {
+                        try {
+                            win.postMessage({
+                                type: 'SYNC_TOKENS',
+                                tokens: tokens
+                            }, '*');
+                        } catch (e) {
+                            console.log('토큰 전송 실패:', e);
+                        }
                     }
-                }
-            });
-            
-            alert('토큰 동기화를 시도했습니다. 개발자 콘솔을 확인하세요.');
+                });
+
+                showToast('토큰 동기화를 시도했습니다. 개발자 콘솔을 확인하세요.');
+            } catch (error) {
+                console.error('토큰 동기화 오류:', error);
+                showToast('토큰 동기화 중 오류가 발생했습니다.', 'error');
+            }
         }
 
         // UI 함수
         function selectFunction(funcId, element) {
-            selectedFunction = funcId;
-            selectedAdmin = null;
+            try {
+                // 기존 탭들 모두 정리
+                clearAllTabs();
 
-            document.querySelectorAll('.function-item').forEach(item => {
-                item.classList.remove('function-selected');
-            });
-            element.classList.add('function-selected');
+                selectedFunction = funcId;
+                selectedAdmin = null;
 
-            const adminPanel = document.getElementById('admin-panel');
-            adminPanel.classList.remove('hidden');
-            adminPanel.classList.add('flex');
+                document.querySelectorAll('.function-item').forEach(item => {
+                    item.classList.remove('function-selected');
+                });
+                element.classList.add('function-selected');
 
-            document.getElementById('function-name').textContent = functionData[funcId].name;
+                const adminPanel = document.getElementById('admin-panel');
+                adminPanel.classList.remove('hidden');
+                adminPanel.classList.add('flex');
 
-            const adminList = document.getElementById('admin-list');
-            adminList.innerHTML = '';
+                document.getElementById('function-name').textContent = functionData[funcId].name;
 
-            functionData[funcId].admins.forEach((admin, index) => {
-                const adminItem = document.createElement('div');
-                adminItem.className = 'admin-item p-4 cursor-pointer border-b border-gray-100 hover:bg-green-50';
-                adminItem.innerHTML = 
-                    '<div class="flex items-center justify-between">' +
-                        '<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex-shrink-0">' + (index + 1) + '</span>' +
-                        '<div class="flex-1 ml-3 admin-text">' +
-                            '<div class="font-medium text-gray-800 flex items-center space-x-2">' +
-                                '<span>' + admin.name + '</span>' +
-                                (admin.isInternal ? '<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">내부</span>' : '') +
-                            '</div>' +
-                            '<div class="text-sm text-gray-500 mt-1">' + admin.desc + '</div>' +
-                            '<div class="text-xs text-gray-400 mt-1 truncate">' + admin.url + '</div>' +
-                        '</div>' +
-                        '<div class="text-gray-400 admin-text ml-2">→</div>' +
-                    '</div>';
+                const adminList = document.getElementById('admin-list');
+                adminList.innerHTML = '';
 
-                adminItem.addEventListener('click', () => selectAdmin(admin, adminItem));
-                adminList.appendChild(adminItem);
-            });
+                functionData[funcId].admins.forEach((admin, index) => {
+                    const adminItem = document.createElement('div');
+                    adminItem.className = 'admin-item p-4 cursor-pointer border-b border-gray-100 hover:bg-green-50';
+                    adminItem.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex-shrink-0">${index + 1}</span>
+                            <div class="flex-1 ml-3 admin-text">
+                                <div class="font-medium text-gray-800 flex items-center space-x-2">
+                                    <span>${admin.name}</span>
+                                    ${admin.isInternal ? '<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">내부</span>' : ''}
+                                </div>
+                                <div class="text-sm text-gray-500 mt-1">${admin.desc}</div>
+                                <div class="text-xs text-gray-400 mt-1 truncate">${admin.url}</div>
+                            </div>
+                            <div class="text-gray-400 admin-text ml-2">→</div>
+                        </div>
+                    `;
+
+                    adminItem.addEventListener('click', () => selectAdmin(admin, adminItem));
+                    adminList.appendChild(adminItem);
+                });
+
+                // 빈 상태 표시
+                const contentContainer = document.getElementById('content-container');
+                contentContainer.innerHTML = `
+                    <div id="empty-state" class="flex items-center justify-center h-full">
+                        <div class="text-center">
+                            <div class="text-6xl mb-4">🖥️</div>
+                            <h3 class="text-xl font-medium text-gray-500 mb-2">어드민을 선택하세요</h3>
+                            <p class="text-gray-400">왼쪽에서 어드민을 선택하세요</p>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('기능 선택 오류:', error);
+                showToast('기능 선택 중 오류가 발생했습니다.', 'error');
+            }
         }
 
         function selectAdmin(admin, element) {
-            selectedAdmin = admin;
+            try {
+                selectedAdmin = admin;
 
-            document.querySelectorAll('.admin-item').forEach(item => {
-                item.classList.remove('admin-selected');
-            });
-            element.classList.add('admin-selected');
+                document.querySelectorAll('.admin-item').forEach(item => {
+                    item.classList.remove('admin-selected');
+                });
+                element.classList.add('admin-selected');
 
-            openAdminPage(admin);
+                openAdminPage(admin);
+            } catch (error) {
+                console.error('어드민 선택 오류:', error);
+                showToast('어드민 선택 중 오류가 발생했습니다.', 'error');
+            }
         }
 
         function openAdminPage(admin) {
-            if (admin.isInternal) {
-                // 내부 어드민은 탭으로 열기
-                createTab(admin);
-            } else {
-                // 외부 사이트는 새 창으로 열기
-                const windowName = 'admin_' + admin.name.replace(/\s/g, '_');
-                const windowFeatures = 'width=1200,height=800,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes';
-                
-                const win = window.open(admin.url, windowName, windowFeatures);
-                windowRefs[windowName] = win;
-                
-                // 빈 상태 화면 업데이트
-                const emptyState = document.getElementById('empty-state');
-                emptyState.innerHTML = 
-                    '<div class="text-center">' +
-                        '<div class="text-6xl mb-4">🪟</div>' +
-                        '<h3 class="text-xl font-medium text-gray-700 mb-2">' + admin.name + '</h3>' +
-                        '<p class="text-gray-500 mb-4">새 창에서 열렸습니다</p>' +
-                        '<div class="space-y-2">' +
-                            '<button onclick="focusWindow(&quot;' + windowName + '&quot;)" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">' +
-                                '창으로 이동' +
-                            '</button>' +
-                        '</div>' +
-                    '</div>';
+            try {
+                if (admin.isInternal) {
+                    createTab(admin);
+                } else {
+                    const windowName = 'admin_' + admin.name.replace(/\s/g, '_');
+                    const windowFeatures = 'width=1200,height=800,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes';
+
+                    const win = window.open(admin.url, windowName, windowFeatures);
+                    if (win) {
+                        windowRefs[windowName] = win;
+
+                        const emptyState = document.getElementById('empty-state');
+                        emptyState.innerHTML = `
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">🪟</div>
+                                <h3 class="text-xl font-medium text-gray-700 mb-2">${admin.name}</h3>
+                                <p class="text-gray-500 mb-4">새 창에서 열렸습니다</p>
+                                <div class="space-y-2">
+                                    <button onclick="focusWindow('${windowName}')" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                        창으로 이동
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        showToast('팝업이 차단되었습니다. 팝업 허용 후 다시 시도하세요.', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('어드민 페이지 열기 오류:', error);
+                showToast('페이지를 열 수 없습니다.', 'error');
             }
         }
 
         // 탭 관리 함수들
+        function clearAllTabs() {
+            try {
+                // 모든 탭 제거
+                tabs.forEach(tab => {
+                    const tabElement = document.getElementById(`tab-${tab.id}`);
+                    const tabContent = document.getElementById(`tab-content-${tab.id}`);
+                    if (tabElement) tabElement.remove();
+                    if (tabContent) tabContent.remove();
+                });
+
+                // 탭 배열 초기화
+                tabs = [];
+                activeTabId = null;
+
+                // 탭 리스트 비우기
+                const tabList = document.getElementById('tab-list');
+                if (tabList) {
+                    tabList.innerHTML = '';
+                }
+
+                // 탭 헤더 숨기기
+                document.getElementById('tab-header').classList.add('hidden');
+            } catch (error) {
+                console.error('탭 정리 오류:', error);
+            }
+        }
+
         function createTab(admin) {
-            const tabId = ++tabCounter;
-            const tab = {
-                id: tabId,
-                admin: admin,
-                active: false
-            };
-            tabs.push(tab);
-            
-            // 탭 헤더 추가
-            const tabElement = document.createElement('div');
-            tabElement.id = 'tab-' + tabId;
-            tabElement.className = 'flex items-center px-3 py-1 bg-gray-200 rounded cursor-pointer hover:bg-gray-300';
-            tabElement.innerHTML = 
-                '<span class="text-sm truncate max-w-[150px]">' + admin.name + '</span>' +
-                '<button class="ml-2 text-xs hover:text-red-500" onclick="closeTab(' + tabId + ')">×</button>';
-            tabElement.addEventListener('click', (e) => {
-                if (e.target.tagName !== 'BUTTON') {
-                    activateTab(tabId);
-                }
-            });
-            
-            document.getElementById('tab-list').appendChild(tabElement);
-            
-            // 탭 콘텐츠 추가
-            const tabContent = document.createElement('div');
-            tabContent.id = 'tab-content-' + tabId;
-            tabContent.className = 'absolute inset-0 bg-white hidden flex flex-col';
-            tabContent.innerHTML = 
-                '<div class="bg-gray-100 p-2 border-b flex items-center space-x-2 flex-shrink-0">' +
-                    '<button class="nav-btn px-2 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300" onclick="navigateTab(' + tabId + ', &quot;back&quot;)">←</button>' +
-                    '<button class="nav-btn px-2 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300" onclick="navigateTab(' + tabId + ', &quot;forward&quot;)">→</button>' +
-                    '<button class="nav-btn px-2 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300" onclick="navigateTab(' + tabId + ', &quot;refresh&quot;)">⟳</button>' +
-                    '<input class="address-bar flex-1 px-2 py-1 border rounded text-xs" value="' + admin.url + '" id="address-' + tabId + '" onkeypress="handleAddressKeypress(event, ' + tabId + ')">' +
-                    '<button class="nav-btn px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600" onclick="navigateTab(' + tabId + ', &quot;go&quot;)">이동</button>' +
-                    '<button class="nav-btn px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600" onclick="openInNewWindow(&quot;' + admin.url + '&quot;)">🪟</button>' +
-                '</div>' +
-                '<div class="flex-1 relative">' +
-                    '<iframe src="' + admin.url + '" ' +
-                            'class="w-full h-full border-0" ' +
-                            'id="iframe-' + tabId + '" ' +
-                            'sandbox="allow-same-origin allow-scripts allow-popups allow-forms">' +
-                    '</iframe>' +
-                '</div>';
-            
-            document.getElementById('content-container').appendChild(tabContent);
-            
-            // 탭 헤더 표시
-            document.getElementById('tab-header').classList.remove('hidden');
-            document.getElementById('empty-state').classList.add('hidden');
-            
-            // 탭 활성화
-            activateTab(tabId);
-            
-            // 401 에러 처리를 위한 리스너
-            const iframe = document.getElementById('iframe-' + tabId);
-            iframe.addEventListener('load', () => {
-                handleIframeLoad(iframe, admin);
-            });
+            try {
+                const tabId = ++tabCounter;
+                const tab = {
+                    id: tabId,
+                    admin: admin,
+                    active: false
+                };
+                tabs.push(tab);
+
+                // 탭 헤더 추가
+                const tabElement = document.createElement('div');
+                tabElement.id = `tab-${tabId}`;
+                tabElement.className = 'flex items-center px-3 py-1 bg-gray-200 rounded cursor-pointer hover:bg-gray-300';
+                tabElement.innerHTML = `
+                    <span class="text-sm truncate max-w-[150px]">${admin.name}</span>
+                    <button class="ml-2 text-xs hover:text-red-500" onclick="closeTab(${tabId})">×</button>
+                `;
+                tabElement.addEventListener('click', (e) => {
+                    if (e.target.tagName !== 'BUTTON') {
+                        activateTab(tabId);
+                    }
+                });
+
+                document.getElementById('tab-list').appendChild(tabElement);
+
+                // 탭 콘텐츠 추가
+                const tabContent = document.createElement('div');
+                tabContent.id = `tab-content-${tabId}`;
+                tabContent.className = 'absolute inset-0 bg-white hidden flex flex-col';
+                tabContent.innerHTML = `
+                    <div class="bg-gray-100 p-2 border-b flex items-center space-x-2 flex-shrink-0">
+                        <button class="nav-btn px-2 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300" onclick="navigateTab(${tabId}, 'back')">←</button>
+                        <button class="nav-btn px-2 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300" onclick="navigateTab(${tabId}, 'forward')">→</button>
+                        <button class="nav-btn px-2 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300" onclick="navigateTab(${tabId}, 'refresh')">⟳</button>
+                        <input class="address-bar flex-1 px-2 py-1 border rounded text-xs" value="${admin.url}" id="address-${tabId}" onkeypress="handleAddressKeypress(event, ${tabId})">
+                        <button class="nav-btn px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600" onclick="navigateTab(${tabId}, 'go')">이동</button>
+                        <button class="nav-btn px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600" onclick="openInNewWindow('${admin.url}')">🪟</button>
+                    </div>
+                    <div class="flex-1 relative">
+                        <iframe src="${admin.url}"
+                                class="w-full h-full border-0"
+                                id="iframe-${tabId}"
+                                sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation">
+                        </iframe>
+                    </div>
+                `;
+
+                document.getElementById('content-container').appendChild(tabContent);
+
+                // 탭 헤더 표시
+                document.getElementById('tab-header').classList.remove('hidden');
+                document.getElementById('empty-state').classList.add('hidden');
+
+                // 탭 활성화
+                activateTab(tabId);
+
+                // iframe 로드 이벤트 처리
+                const iframe = document.getElementById(`iframe-${tabId}`);
+                iframe.addEventListener('load', () => {
+                    handleIframeLoad(iframe, admin);
+                });
+
+                iframe.addEventListener('error', () => {
+                    showErrorState(iframe.parentElement, '페이지를 로드할 수 없습니다.');
+                });
+            } catch (error) {
+                console.error('탭 생성 오류:', error);
+                showToast('탭 생성 중 오류가 발생했습니다.', 'error');
+            }
         }
-        
+
         function activateTab(tabId) {
-            activeTabId = tabId;
-            
-            // 모든 탭 비활성화
-            tabs.forEach(tab => {
-                document.getElementById('tab-' + tab.id).classList.remove('tab-active');
-                document.getElementById('tab-content-' + tab.id).classList.add('hidden');
-                tab.active = false;
-            });
-            
-            // 선택된 탭 활성화
-            const selectedTab = tabs.find(t => t.id === tabId);
-            if (selectedTab) {
-                document.getElementById('tab-' + tabId).classList.add('tab-active');
-                document.getElementById('tab-content-' + tabId).classList.remove('hidden');
-                selectedTab.active = true;
-            }
-        }
-        
-        function closeTab(tabId) {
-            const index = tabs.findIndex(t => t.id === tabId);
-            if (index > -1) {
-                tabs.splice(index, 1);
-                document.getElementById('tab-' + tabId).remove();
-                document.getElementById('tab-content-' + tabId).remove();
-                
-                if (tabs.length === 0) {
-                    document.getElementById('tab-header').classList.add('hidden');
-                    document.getElementById('empty-state').classList.remove('hidden');
-                } else if (activeTabId === tabId) {
-                    activateTab(tabs[tabs.length - 1].id);
+            try {
+                activeTabId = tabId;
+
+                // 모든 탭 비활성화
+                tabs.forEach(tab => {
+                    const tabElement = document.getElementById(`tab-${tab.id}`);
+                    const tabContent = document.getElementById(`tab-content-${tab.id}`);
+                    if (tabElement) tabElement.classList.remove('tab-active');
+                    if (tabContent) tabContent.classList.add('hidden');
+                    tab.active = false;
+                });
+
+                // 선택된 탭 활성화
+                const selectedTab = tabs.find(t => t.id === tabId);
+                if (selectedTab) {
+                    const tabElement = document.getElementById(`tab-${tabId}`);
+                    const tabContent = document.getElementById(`tab-content-${tabId}`);
+                    if (tabElement) tabElement.classList.add('tab-active');
+                    if (tabContent) tabContent.classList.remove('hidden');
+                    selectedTab.active = true;
                 }
+            } catch (error) {
+                console.error('탭 활성화 오류:', error);
             }
         }
-        
+
+        function closeTab(tabId) {
+            try {
+                const index = tabs.findIndex(t => t.id === tabId);
+                if (index > -1) {
+                    tabs.splice(index, 1);
+
+                    const tabElement = document.getElementById(`tab-${tabId}`);
+                    const tabContent = document.getElementById(`tab-content-${tabId}`);
+                    if (tabElement) tabElement.remove();
+                    if (tabContent) tabContent.remove();
+
+                    if (tabs.length === 0) {
+                        document.getElementById('tab-header').classList.add('hidden');
+                        document.getElementById('empty-state').classList.remove('hidden');
+                    } else if (activeTabId === tabId && tabs.length > 0) {
+                        activateTab(tabs[tabs.length - 1].id);
+                    }
+                }
+            } catch (error) {
+                console.error('탭 닫기 오류:', error);
+            }
+        }
+
         function handleIframeLoad(iframe, admin) {
             try {
                 // 동일 출처일 때만 접근 가능
                 const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                
+
                 // 401 에러 체크
-                if (iframeDoc.title.includes('401') || iframeDoc.body.textContent.includes('Unauthorized')) {
+                if (iframeDoc.title.includes('401') ||
+                    iframeDoc.body.textContent.includes('Unauthorized') ||
+                    iframeDoc.body.textContent.includes('401')) {
+
                     console.log('401 에러 감지됨');
-                    
-                    // 팁 표시
+
+                    // 기존 경고 제거
+                    const existingTip = iframe.parentElement.querySelector('.auth-warning');
+                    if (existingTip) existingTip.remove();
+
+                    // 새 경고 표시
                     const tipDiv = document.createElement('div');
-                    tipDiv.className = 'absolute top-0 left-0 right-0 bg-yellow-50 border-b border-yellow-200 p-3';
+                    tipDiv.className = 'auth-warning absolute top-0 left-0 right-0 bg-yellow-50 border-b border-yellow-200 p-3 z-10';
                     tipDiv.innerHTML = `
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-2">
@@ -925,270 +1038,458 @@
                     iframe.parentElement.appendChild(tipDiv);
                 }
             } catch (e) {
-                // Cross-origin 제한으로 접근 불가
+                // Cross-origin 제한으로 접근 불가 (정상적인 상황)
                 console.log('iframe 콘텐츠 접근 불가 (cross-origin)');
             }
         }
-        
+
         // 네비게이션 함수들
         function navigateTab(tabId, action) {
-            const iframe = document.getElementById('iframe-' + tabId);
-            const addressBar = document.getElementById('address-' + tabId);
-            
-            switch (action) {
-                case 'back':
-                    try {
-                        iframe.contentWindow.history.back();
-                    } catch (e) {
-                        console.log('뒤로가기 실패:', e);
-                    }
-                    break;
-                case 'forward':
-                    try {
-                        iframe.contentWindow.history.forward();
-                    } catch (e) {
-                        console.log('앞으로가기 실패:', e);
-                    }
-                    break;
-                case 'refresh':
-                    iframe.src = iframe.src;
-                    break;
-                case 'go':
-                    const url = addressBar.value;
-                    if (url && url.trim()) {
-                        iframe.src = url.trim();
-                    }
-                    break;
+            try {
+                const iframe = document.getElementById(`iframe-${tabId}`);
+                const addressBar = document.getElementById(`address-${tabId}`);
+
+                if (!iframe || !addressBar) return;
+
+                switch (action) {
+                    case 'back':
+                        try {
+                            iframe.contentWindow.history.back();
+                        } catch (e) {
+                            console.log('뒤로가기 실패:', e);
+                        }
+                        break;
+                    case 'forward':
+                        try {
+                            iframe.contentWindow.history.forward();
+                        } catch (e) {
+                            console.log('앞으로가기 실패:', e);
+                        }
+                        break;
+                    case 'refresh':
+                        iframe.src = iframe.src;
+                        break;
+                    case 'go':
+                        const url = addressBar.value;
+                        if (url && url.trim()) {
+                            if (isValidUrl(url.trim())) {
+                                iframe.src = url.trim();
+                            } else {
+                                showToast('올바른 URL 형식이 아닙니다.', 'error');
+                            }
+                        }
+                        break;
+                }
+            } catch (error) {
+                console.error('네비게이션 오류:', error);
+                showToast('네비게이션 중 오류가 발생했습니다.', 'error');
             }
         }
-        
+
         function handleAddressKeypress(event, tabId) {
             if (event.key === 'Enter') {
                 navigateTab(tabId, 'go');
             }
         }
-        
+
         function openInNewWindow(url) {
-            const windowFeatures = 'width=1200,height=800,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes';
-            window.open(url, '_blank', windowFeatures);
+            try {
+                if (!isValidUrl(url)) {
+                    showToast('올바른 URL이 아닙니다.', 'error');
+                    return;
+                }
+
+                const windowFeatures = 'width=1200,height=800,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes';
+                const win = window.open(url, '_blank', windowFeatures);
+
+                if (!win) {
+                    showToast('팝업이 차단되었습니다. 팝업 허용 후 다시 시도하세요.', 'error');
+                }
+            } catch (error) {
+                console.error('새 창 열기 오류:', error);
+                showToast('새 창을 열 수 없습니다.', 'error');
+            }
         }
-        
+
         function focusWindow(windowName) {
-            const win = windowRefs[windowName];
-            if (win && !win.closed) {
-                win.focus();
-            } else {
-                alert('창이 닫혔습니다. 다시 선택해주세요.');
+            try {
+                const win = windowRefs[windowName];
+                if (win && !win.closed) {
+                    win.focus();
+                } else {
+                    showToast('창이 닫혔습니다. 다시 선택해주세요.', 'error');
+                    delete windowRefs[windowName];
+                }
+            } catch (error) {
+                console.error('창 포커스 오류:', error);
+                showToast('창에 접근할 수 없습니다.', 'error');
             }
         }
 
         // 사이드바 토글 함수들
         function toggleFunctionSidebar() {
-            const sidebar = document.getElementById('function-sidebar');
-            const adminPanel = document.getElementById('admin-panel');
-            const icon = document.getElementById('function-toggle-icon');
-            
-            sidebar.classList.toggle('sidebar-collapsed');
-            
-            if (sidebar.classList.contains('sidebar-collapsed')) {
-                icon.textContent = '›';
-                // 기능 목록이 접히면 어드민 패널도 숨김
-                adminPanel.classList.add('hidden');
-                adminPanel.classList.remove('flex');
-            } else {
-                icon.textContent = '‹';
+            try {
+                const sidebar = document.getElementById('function-sidebar');
+                const adminPanel = document.getElementById('admin-panel');
+                const icon = document.getElementById('function-toggle-icon');
+
+                sidebar.classList.toggle('sidebar-collapsed');
+
+                if (sidebar.classList.contains('sidebar-collapsed')) {
+                    icon.textContent = '›';
+                    // 기능 목록이 접히면 어드민 패널도 숨김
+                    adminPanel.classList.add('hidden');
+                    adminPanel.classList.remove('flex');
+                } else {
+                    icon.textContent = '‹';
+                }
+            } catch (error) {
+                console.error('사이드바 토글 오류:', error);
             }
         }
-        
-        function toggleFunctions() {
-            const sidebar = document.getElementById('function-sidebar');
-            const arrow = document.getElementById('function-arrow');
-            
-            sidebar.classList.toggle('functions-collapsed');
-            
-            if (sidebar.classList.contains('functions-collapsed')) {
-                arrow.textContent = '▼';
-            } else {
-                arrow.textContent = '▲';
-            }
-        }
-        
+
         function toggleDataGenerator() {
-            const dataGeneratorFunctions = document.querySelector('.data-generator-functions');
-            const arrow = document.getElementById('data-generator-arrow');
-            
-            if (dataGeneratorFunctions.style.display === 'none') {
-                dataGeneratorFunctions.style.display = 'block';
-                arrow.textContent = '▲';
-            } else {
-                dataGeneratorFunctions.style.display = 'none';
-                arrow.textContent = '▼';
+            try {
+                const dataGeneratorFunctions = document.querySelector('.data-generator-functions');
+                const arrow = document.getElementById('data-generator-arrow');
+
+                if (dataGeneratorFunctions.style.display === 'none') {
+                    dataGeneratorFunctions.style.display = 'block';
+                    arrow.textContent = '▲';
+                } else {
+                    dataGeneratorFunctions.style.display = 'none';
+                    arrow.textContent = '▼';
+                }
+            } catch (error) {
+                console.error('데이터 생성기 토글 오류:', error);
             }
         }
 
         function toggleAdminFunctions() {
-            const adminFunctions = document.querySelector('.admin-functions');
-            const arrow = document.getElementById('admin-functions-arrow');
-            
-            if (adminFunctions.style.display === 'none') {
-                adminFunctions.style.display = 'block';
-                arrow.textContent = '▲';
-            } else {
-                adminFunctions.style.display = 'none';
-                arrow.textContent = '▼';
+            try {
+                const adminFunctions = document.querySelector('.admin-functions');
+                const arrow = document.getElementById('admin-functions-arrow');
+
+                if (adminFunctions.style.display === 'none') {
+                    adminFunctions.style.display = 'block';
+                    arrow.textContent = '▲';
+                } else {
+                    adminFunctions.style.display = 'none';
+                    arrow.textContent = '▼';
+                }
+            } catch (error) {
+                console.error('어드민 기능 토글 오류:', error);
             }
         }
 
         function openAdminFunction(functionId) {
-            // 어드민 패널 숨기기
-            const adminPanel = document.getElementById('admin-panel');
-            adminPanel.classList.add('hidden');
-            
-            // 빈 상태 숨기기
-            const emptyState = document.getElementById('empty-state');
-            if (emptyState) {
-                emptyState.style.display = 'none';
-            }
-            
-            // 기존 콘텐츠 정리
-            const contentContainer = document.getElementById('content-container');
-            let webPageUrl = '';
-            let title = '';
-            
-            switch(functionId) {
-                case 'qr-create':
-                    webPageUrl = 'https://example.com/qr-create'; // 실제 URL로 교체 필요
-                    title = '가맹점 생성 및 QR 활성화';
-                    break;
-                case 'qr-recovery':
-                    webPageUrl = 'https://example.com/qr-recovery'; // 실제 URL로 교체 필요
-                    title = '가맹점 QR 복구';
-                    break;
-                case 'permission':
-                    webPageUrl = 'https://example.com/permission'; // 실제 URL로 교체 필요
-                    title = '매장 권한변경';
-                    break;
-                default:
-                    contentContainer.innerHTML = '<div class="p-8 text-center">기능을 찾을 수 없습니다.</div>';
-                    return;
-            }
-            
-            // iframe으로 웹페이지 표시
-            contentContainer.innerHTML = 
-                '<div class="w-full h-full bg-white">' +
-                    '<div class="border-b p-4 bg-gray-50">' +
-                        '<h2 class="text-lg font-semibold text-gray-800">' + title + '</h2>' +
-                    '</div>' +
-                    '<iframe src="' + webPageUrl + '" class="w-full h-full border-0" style="height: calc(100vh - 120px);"></iframe>' +
-                '</div>';
+            selectFunction(functionId, document.querySelector(`[data-function="${functionId}"]`));
         }
 
         // 직접 도구 열기 함수 (2단계 메뉴 없이 바로 도구 표시)
         function openDirectTool(toolId) {
-            // 어드민 패널 숨기기
-            const adminPanel = document.getElementById('admin-panel');
-            adminPanel.classList.add('hidden');
-            
-            // 빈 상태 숨기기
-            const emptyState = document.getElementById('empty-state');
-            if (emptyState) {
-                emptyState.style.display = 'none';
+            try {
+                // 기존 탭들 모두 정리
+                clearAllTabs();
+
+                // 어드민 패널 숨기기
+                const adminPanel = document.getElementById('admin-panel');
+                adminPanel.classList.add('hidden');
+
+                // 탭 헤더 숨기기
+                document.getElementById('tab-header').classList.add('hidden');
+
+                // 빈 상태 숨기기
+                const emptyState = document.getElementById('empty-state');
+                if (emptyState) {
+                    emptyState.style.display = 'none';
+                }
+
+                // 기존 콘텐츠 정리
+                const contentContainer = document.getElementById('content-container');
+                let toolHTML = '';
+
+                // 로딩 상태 표시
+                showLoadingState(contentContainer);
+
+                setTimeout(() => {
+                    switch(toolId) {
+                        case 'sample-image-generator':
+                            toolHTML = getSampleImageGeneratorHTML();
+                            break;
+                        case 'qr-xlsx-generator':
+                            toolHTML = getQRXlsxGeneratorHTML();
+                            break;
+                        case 'csv-generator':
+                            toolHTML = getCsvGeneratorHTML();
+                            break;
+                        default:
+                            toolHTML = '<div class="p-8 text-center text-red-500">도구를 찾을 수 없습니다.</div>';
+                    }
+
+                    // 메인 콘텐츠 영역에 도구 표시
+                    contentContainer.innerHTML = toolHTML;
+
+                    // 샘플 이미지 생성기인 경우 초기 이미지 생성
+                    if (toolId === 'sample-image-generator') {
+                        setTimeout(generateSampleImage, 100);
+                    }
+                }, 300);
+            } catch (error) {
+                console.error('직접 도구 열기 오류:', error);
+                showErrorState(document.getElementById('content-container'), '도구를 로드할 수 없습니다.');
             }
-            
-            // 기존 콘텐츠 정리
-            const contentContainer = document.getElementById('content-container');
-            let toolHTML = '';
-            
-            switch(toolId) {
-                case 'sample-image-generator':
-                    toolHTML = getSampleImageGeneratorHTML();
-                    break;
-                case 'qr-xlsx-generator':
-                    toolHTML = getQRXlsxGeneratorHTML();
-                    break;
-                case 'csv-generator':
-                    toolHTML = getCsvGeneratorHTML();
-                    break;
-                default:
-                    toolHTML = '<div class="p-8 text-center">도구를 찾을 수 없습니다.</div>';
-            }
-            
-            // 메인 콘텐츠 영역에 도구 표시
-            contentContainer.innerHTML = toolHTML;
         }
-        
+
         function toggleAdminPanel() {
-            const panel = document.getElementById('admin-panel');
-            const icon = document.getElementById('admin-toggle-icon');
-            
-            panel.classList.toggle('admin-panel-collapsed');
-            
-            if (panel.classList.contains('admin-panel-collapsed')) {
-                icon.textContent = '›';
-            } else {
-                icon.textContent = '‹';
+            try {
+                const panel = document.getElementById('admin-panel');
+                const icon = document.getElementById('admin-toggle-icon');
+
+                panel.classList.toggle('admin-panel-collapsed');
+
+                if (panel.classList.contains('admin-panel-collapsed')) {
+                    icon.textContent = '›';
+                } else {
+                    icon.textContent = '‹';
+                }
+            } catch (error) {
+                console.error('어드민 패널 토글 오류:', error);
             }
+        }
+
+        // 도구 HTML 생성 함수들
+        function getSampleImageGeneratorHTML() {
+            return `
+                <div class="h-full overflow-auto bg-white">
+                    <div class="p-6 border-b border-gray-200">
+                        <h1 class="text-2xl font-bold text-gray-800">샘플 이미지 생성기</h1>
+                        <p class="text-gray-600 mt-2">다양한 포맷의 샘플 이미지를 생성할 수 있습니다.</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="max-w-2xl mx-auto">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">이미지 크기</label>
+                                        <select id="sample-imageSize" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                            <option value="100x100">100x100</option>
+                                            <option value="200x200">200x200</option>
+                                            <option value="400x400" selected>400x400</option>
+                                            <option value="800x600">800x600</option>
+                                            <option value="1920x1080">1920x1080</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">배경색</label>
+                                        <input type="color" id="sample-bgColor" value="#f0f0f0" class="w-full h-10 border border-gray-300 rounded-md">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">텍스트</label>
+                                        <input type="text" id="sample-imageText" value="Sample Image" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    </div>
+                                    <button onclick="generateSampleImage()" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">
+                                        이미지 생성
+                                    </button>
+                                </div>
+                                <div>
+                                    <div class="border border-gray-300 rounded-md p-4 bg-gray-50 min-h-64 flex items-center justify-center">
+                                        <canvas id="sample-canvas" class="border border-gray-200"></canvas>
+                                    </div>
+                                    <button id="sample-downloadBtn" onclick="downloadSampleImage()" class="w-full mt-4 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:opacity-50" disabled>
+                                        이미지 다운로드
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getQRXlsxGeneratorHTML() {
+            return `
+                <div class="h-full overflow-auto bg-white">
+                    <div class="p-6 border-b border-gray-200">
+                        <h1 class="text-2xl font-bold text-gray-800">QR XLSX 생성기</h1>
+                        <p class="text-gray-600 mt-2">QR 코드 정보가 포함된 XLSX 파일을 생성할 수 있습니다.</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="max-w-4xl mx-auto space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">생성할 QR 개수</label>
+                                    <input type="number" id="qr-count" value="10" min="1" max="1000" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">베이스 URL</label>
+                                    <input type="text" id="qr-baseUrl" value="https://example.com/qr/" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                            </div>
+                            <button onclick="generateQRXlsx()" class="bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700">QR XLSX 파일 생성</button>
+                            <div id="qr-preview" class="mt-6 p-4 border border-gray-300 rounded-md bg-gray-50 hidden">
+                                <h3 class="text-lg font-medium mb-4">생성 완료!</h3>
+                                <p>XLSX 파일이 다운로드되었습니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getCsvGeneratorHTML() {
+            return `
+                <div class="h-full overflow-auto bg-white">
+                    <div class="p-6 border-b border-gray-200">
+                        <h1 class="text-2xl font-bold text-gray-800">CSV 생성기</h1>
+                        <p class="text-gray-600 mt-2">커스텀 CSV 파일을 생성할 수 있습니다.</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="max-w-4xl mx-auto space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">데이터 행 수</label>
+                                    <input type="number" id="csv-rowCount" value="10" min="1" max="1000" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">컬럼 헤더 (콤마로 구분)</label>
+                                    <input type="text" id="csv-headers" value="ID,Name,Email,Phone" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                            </div>
+                            <button onclick="generateCsvFile()" class="bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700">CSV 파일 생성</button>
+                            <div id="csv-preview" class="mt-6 p-4 border border-gray-300 rounded-md bg-gray-50 hidden">
+                                <h3 class="text-lg font-medium mb-4">생성 완료!</h3>
+                                <p>CSV 파일이 다운로드되었습니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         // 이벤트 리스너
         document.addEventListener('DOMContentLoaded', function() {
-            // 기능 선택
-            document.querySelectorAll('.function-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const funcId = item.dataset.function;
-                    selectFunction(funcId, item);
+            try {
+                // 어드민 기능 항목 클릭 이벤트
+                document.querySelectorAll('.admin-functions .function-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const funcId = this.dataset.function;
+                        if (funcId) {
+                            openAdminFunction(funcId);
+                        }
+                    });
                 });
-            });
 
-            // 쿠키 동기화 버튼
-            document.getElementById('cookie-sync-btn').addEventListener('click', showCookieModal);
+                // 데이터 생성 도구 항목 클릭 이벤트
+                document.querySelectorAll('.data-generator-functions .function-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const funcId = this.dataset.function;
+                        if (funcId) {
+                            openDirectTool(funcId);
+                        }
+                    });
+                });
 
-            // 토큰 동기화 버튼
-            document.getElementById('token-sync-btn').addEventListener('click', syncTokens);
-            
-            // 새 탭 버튼
-            document.getElementById('new-tab-btn').addEventListener('click', function() {
-                if (selectedAdmin) {
-                    createTab(selectedAdmin);
-                } else {
-                    alert('먼저 어드민을 선택하세요.');
+                // 쿠키 동기화 버튼
+                const cookieSyncBtn = document.getElementById('cookie-sync-btn');
+                if (cookieSyncBtn) {
+                    cookieSyncBtn.addEventListener('click', showCookieModal);
                 }
-            });
-            
-            // 새 창 버튼
-            document.getElementById('new-window-btn').addEventListener('click', function() {
-                if (selectedAdmin) {
-                    openInNewWindow(selectedAdmin.url);
-                } else {
-                    alert('먼저 어드민을 선택하세요.');
-                }
-            });
 
-            // 초기화
-            updateTokenStatus();
-            
-            // 주기적으로 토큰 상태 업데이트
-            setInterval(updateTokenStatus, 5000);
+                // 토큰 동기화 버튼
+                const tokenSyncBtn = document.getElementById('token-sync-btn');
+                if (tokenSyncBtn) {
+                    tokenSyncBtn.addEventListener('click', syncTokens);
+                }
+
+                // 새 탭 버튼
+                const newTabBtn = document.getElementById('new-tab-btn');
+                if (newTabBtn) {
+                    newTabBtn.addEventListener('click', function() {
+                        if (selectedAdmin) {
+                            createTab(selectedAdmin);
+                        } else {
+                            showToast('먼저 어드민을 선택하세요.', 'error');
+                        }
+                    });
+                }
+
+                // 새 창 버튼
+                const newWindowBtn = document.getElementById('new-window-btn');
+                if (newWindowBtn) {
+                    newWindowBtn.addEventListener('click', function() {
+                        if (selectedAdmin) {
+                            openInNewWindow(selectedAdmin.url);
+                        } else {
+                            showToast('먼저 어드민을 선택하세요.', 'error');
+                        }
+                    });
+                }
+
+                // 쿠키 입력창 엔터키 처리
+                const cookieInput = document.getElementById('cookie-input');
+                if (cookieInput) {
+                    cookieInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            addCookie();
+                        }
+                    });
+                }
+
+                // 초기화
+                updateTokenStatus();
+
+                // 주기적으로 토큰 상태 업데이트
+                setInterval(updateTokenStatus, 5000);
+
+                console.log('사장님 플러스 헬프센터가 성공적으로 로드되었습니다.');
+            } catch (error) {
+                console.error('초기화 오류:', error);
+                showToast('애플리케이션 초기화 중 오류가 발생했습니다.', 'error');
+            }
         });
 
         // 메시지 수신 (다른 창에서의 토큰 동기화 요청)
         window.addEventListener('message', function(event) {
-            if (event.data && event.data.type === 'REQUEST_TOKENS') {
-                const tokens = getStoredTokens();
-                event.source.postMessage({
-                    type: 'SYNC_TOKENS',
-                    tokens: tokens
-                }, event.origin);
+            try {
+                if (event.data && event.data.type === 'REQUEST_TOKENS') {
+                    const tokens = getStoredTokens();
+                    event.source.postMessage({
+                        type: 'SYNC_TOKENS',
+                        tokens: tokens
+                    }, event.origin);
+                }
+            } catch (error) {
+                console.error('메시지 처리 오류:', error);
             }
         });
-        
+
+        // 에러 전역 처리
+        window.addEventListener('error', function(event) {
+            console.error('전역 에러:', event.error);
+            showToast('예상치 못한 오류가 발생했습니다.', 'error');
+        });
+
         // 글로벌 함수들 (onclick에서 사용)
         window.closeTab = closeTab;
         window.focusWindow = focusWindow;
         window.navigateTab = navigateTab;
         window.handleAddressKeypress = handleAddressKeypress;
         window.openInNewWindow = openInNewWindow;
-        window.toggleFunctions = toggleFunctions;
+        window.toggleDataGenerator = toggleDataGenerator;
+        window.toggleAdminFunctions = toggleAdminFunctions;
+        window.toggleFunctionSidebar = toggleFunctionSidebar;
+        window.toggleAdminPanel = toggleAdminPanel;
+        window.openAdminFunction = openAdminFunction;
+        window.openDirectTool = openDirectTool;
+        window.showCookieModal = showCookieModal;
+        window.closeCookieModal = closeCookieModal;
+        window.addCookie = addCookie;
+        window.syncTokens = syncTokens;
+        window.generateSampleImage = generateSampleImage;
+        window.downloadSampleImage = downloadSampleImage;
+        window.generateQRXlsx = generateQRXlsx;
+        window.generateCsvFile = generateCsvFile;
     </script>
 </body>
 </html>
