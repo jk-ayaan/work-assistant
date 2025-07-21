@@ -457,18 +457,32 @@
         // 샘플 이미지 생성기 함수들
         function generateSampleImage() {
             try {
-                const canvas = document.getElementById('sample-canvas');
-                const ctx = canvas.getContext('2d');
                 const size = document.getElementById('sample-imageSize').value;
                 const [width, height] = size.split('x').map(Number);
                 const bgColor = document.getElementById('sample-bgColor').value;
                 const text = document.getElementById('sample-imageText').value;
+                const count = parseInt(document.getElementById('sample-imageCount').value) || 1;
+
+                // 포맷 체크
+                const formats = [];
+                document.querySelectorAll('input[name="imageFormat"]:checked').forEach(el => {
+                    formats.push(el.value);
+                });
+
+                if (formats.length === 0) {
+                    alert('최소 하나의 이미지 포맷을 선택해주세요.');
+                    return;
+                }
+
+                const canvas = document.getElementById('sample-canvas');
+                const ctx = canvas.getContext('2d');
 
                 canvas.width = width;
                 canvas.height = height;
                 canvas.style.maxWidth = '100%';
                 canvas.style.height = 'auto';
 
+                // 첫 번째 이미지 미리보기
                 ctx.fillStyle = bgColor;
                 ctx.fillRect(0, 0, width, height);
 
@@ -476,10 +490,19 @@
                 ctx.font = Math.max(16, width/20) + 'px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(text, width/2, height/2);
+                ctx.fillText(text, width/2, height/2 - Math.max(20, width/20));
+
+                // 숫자 표시
+                ctx.font = Math.max(40, width/10) + 'px Arial';
+                ctx.fillText('1', width/2, height/2 + Math.max(20, width/20));
 
                 ctx.font = Math.max(12, width/30) + 'px Arial';
-                ctx.fillText(width + ' × ' + height, width/2, height/2 + Math.max(30, width/15));
+                ctx.fillText(width + ' × ' + height, width/2, height - Math.max(20, width/30));
+
+                // 전역 변수에 설정 저장
+                window.sampleImageSettings = {
+                    width, height, bgColor, text, count, formats
+                };
 
                 document.getElementById('sample-downloadBtn').disabled = false;
             } catch (error) {
@@ -490,11 +513,56 @@
 
         function downloadSampleImage() {
             try {
-                const canvas = document.getElementById('sample-canvas');
-                const link = document.createElement('a');
-                link.download = 'sample-image-' + new Date().toISOString().split('T')[0] + '.png';
-                link.href = canvas.toDataURL();
-                link.click();
+                const settings = window.sampleImageSettings;
+                if (!settings) {
+                    alert('먼저 이미지를 생성해주세요.');
+                    return;
+                }
+
+                const { width, height, bgColor, text, count, formats } = settings;
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                canvas.width = width;
+                canvas.height = height;
+
+                for (let i = 1; i <= count; i++) {
+                    // 캔버스 초기화
+                    ctx.fillStyle = bgColor;
+                    ctx.fillRect(0, 0, width, height);
+
+                    ctx.fillStyle = '#333333';
+                    ctx.font = Math.max(16, width/20) + 'px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(text, width/2, height/2 - Math.max(20, width/20));
+
+                    // 숫자 표시
+                    ctx.font = Math.max(40, width/10) + 'px Arial';
+                    ctx.fillText(i.toString(), width/2, height/2 + Math.max(20, width/20));
+
+                    ctx.font = Math.max(12, width/30) + 'px Arial';
+                    ctx.fillText(width + ' × ' + height, width/2, height - Math.max(20, width/30));
+
+                    // 각 포맷으로 다운로드
+                    formats.forEach(format => {
+                        const link = document.createElement('a');
+                        const ext = format.toLowerCase();
+                        link.download = `sample-image-${i}.${ext}`;
+
+                        if (ext === 'jpg' || ext === 'jpeg') {
+                            link.href = canvas.toDataURL('image/jpeg', 0.9);
+                        } else if (ext === 'webp') {
+                            link.href = canvas.toDataURL('image/webp', 0.9);
+                        } else {
+                            link.href = canvas.toDataURL('image/png');
+                        }
+
+                        link.click();
+                    });
+                }
+
+                showToast(`${count}개 이미지 × ${formats.length}개 포맷 = 총 ${count * formats.length}개 파일 다운로드 완료`);
             } catch (error) {
                 console.error('다운로드 오류:', error);
                 alert('다운로드 중 오류가 발생했습니다.');
@@ -505,16 +573,21 @@
         function generateQRXlsx() {
             try {
                 const count = parseInt(document.getElementById('qr-count').value);
-                const baseText = document.getElementById('qr-baseUrl').value;
+                const cid = document.getElementById('qr-cid').value;
+                const tid = document.getElementById('qr-tid').value;
+                const region = document.getElementById('qr-region').value;
+                const van = document.getElementById('qr-van').value;
+                const phone = document.getElementById('qr-phone').value;
+                const memo = document.getElementById('qr-memo').value;
 
                 if (count <= 0 || count > 1000) {
-                    alert('QR 개수는 1~1000 범위로 입력해주세요.');
+                    alert('행 수는 1~1000 범위로 입력해주세요.');
                     return;
                 }
 
-                const data = [['ID', 'QR_Data', 'Created_At']];
+                const data = [['cid', 'tid', '지역코드', 'van', '휴대폰번호', '비고']];
                 for (let i = 1; i <= count; i++) {
-                    data.push([i, baseText + i.toString().padStart(4, '0'), new Date().toISOString()]);
+                    data.push([cid, tid, region, van, phone, memo]);
                 }
 
                 const ws = XLSX.utils.aoa_to_sheet(data);
@@ -529,47 +602,154 @@
             }
         }
 
+        // CSV 열 토글 함수
+        function toggleCsvColumn(columnNumber) {
+            const options = document.getElementById(`col${columnNumber}-options`);
+            const checkbox = document.getElementById(`col${columnNumber}-enable`);
+
+            if (checkbox && options) {
+                if (checkbox.checked) {
+                    options.classList.remove('hidden');
+                } else {
+                    options.classList.add('hidden');
+                }
+            }
+        }
+
         // CSV 생성기 함수
+        function generateRandomString() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < 10; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        let csvData = [];
+
         function generateCsvFile() {
             try {
                 const rowCount = parseInt(document.getElementById('csv-rowCount').value);
-                const headers = document.getElementById('csv-headers').value.split(',').map(h => h.trim());
 
                 if (rowCount <= 0 || rowCount > 1000) {
                     alert('행 수는 1~1000 범위로 입력해주세요.');
                     return;
                 }
 
-                if (headers.length === 0 || headers[0] === '') {
-                    alert('적어도 하나의 헤더를 입력해주세요.');
-                    return;
+                // 열 설정 확인
+                const col2Enabled = document.getElementById('col2-enable').checked;
+                const col3Enabled = document.getElementById('col3-enable').checked;
+
+                // 데이터 생성
+                csvData = [];
+                const headers = ['1열'];
+                if (col2Enabled) headers.push('2열');
+                if (col3Enabled) headers.push('3열');
+                csvData.push(headers);
+
+                for (let i = 0; i < rowCount; i++) {
+                    const row = [];
+
+                    // 1열
+                    const col1Type = document.querySelector('input[name="col1Type"]:checked').value;
+                    if (col1Type === 'random') {
+                        const col1Text = document.getElementById('col1-text').value || 'Data';
+                        row.push(col1Text);
+                    } else {
+                        row.push(generateRandomString());
+                    }
+
+                    // 2열
+                    if (col2Enabled) {
+                        const col2Type = document.querySelector('input[name="col2Type"]:checked').value;
+                        if (col2Type === 'random') {
+                            const col2Text = document.getElementById('col2-text').value || 'Data';
+                            row.push(col2Text);
+                        } else {
+                            row.push(generateRandomString());
+                        }
+                    }
+
+                    // 3열
+                    if (col3Enabled) {
+                        const col3Type = document.querySelector('input[name="col3Type"]:checked').value;
+                        if (col3Type === 'random') {
+                            const col3Text = document.getElementById('col3-text').value || 'Data';
+                            row.push(col3Text);
+                        } else {
+                            row.push(generateRandomString());
+                        }
+                    }
+
+                    csvData.push(row);
                 }
 
-                let csvContent = headers.join(',') + '\n';
+                // 미리보기 표시
+                displayCsvPreview();
 
-                for (let i = 1; i <= rowCount; i++) {
-                    const row = headers.map(header => {
-                        if (header.toLowerCase().includes('id')) return i;
-                        if (header.toLowerCase().includes('name')) return 'Sample' + i;
-                        if (header.toLowerCase().includes('email')) return 'sample' + i + '@example.com';
-                        if (header.toLowerCase().includes('phone')) return '010-1234-567' + (i % 10);
-                        return 'Data' + i;
-                    });
-                    csvContent += row.join(',') + '\n';
-                }
-
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                const url = URL.createObjectURL(blob);
-                link.setAttribute('href', url);
-                link.setAttribute('download', 'custom_data_' + new Date().toISOString().split('T')[0] + '.csv');
-                link.click();
-
-                document.getElementById('csv-preview').classList.remove('hidden');
             } catch (error) {
                 console.error('CSV 생성 오류:', error);
                 alert('CSV 파일 생성 중 오류가 발생했습니다.');
             }
+        }
+
+        function displayCsvPreview() {
+            const previewDiv = document.getElementById('csv-preview');
+            const tbody = document.getElementById('csv-preview-body');
+
+            if (!tbody) {
+                previewDiv.classList.remove('hidden');
+                return;
+            }
+
+            tbody.innerHTML = '';
+
+            // 처음 10개 행만 표시
+            const previewRows = Math.min(10, csvData.length - 1);
+            for (let i = 1; i <= previewRows; i++) {
+                const tr = document.createElement('tr');
+                csvData[i].forEach(cell => {
+                    const td = document.createElement('td');
+                    td.className = 'border border-gray-300 px-4 py-2';
+                    td.textContent = cell;
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            }
+
+            if (csvData.length > 11) {
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = csvData[0].length;
+                td.className = 'border border-gray-300 px-4 py-2 text-center text-gray-500';
+                td.textContent = `... 외 ${csvData.length - 11}개 행`;
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+            }
+
+            previewDiv.classList.remove('hidden');
+        }
+
+        function downloadCsv() {
+            if (csvData.length === 0) {
+                alert('먼저 CSV를 생성해주세요.');
+                return;
+            }
+
+            let csvContent = '';
+            csvData.forEach(row => {
+                csvContent += row.join(',') + '\n';
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'custom_data_' + new Date().toISOString().split('T')[0] + '.csv');
+            link.click();
+
+            showToast('CSV 파일이 다운로드되었습니다.');
         }
 
         // 쿠키 관리 함수
@@ -1288,8 +1468,33 @@
                                         <label class="block text-sm font-medium text-gray-700 mb-2">텍스트</label>
                                         <input type="text" id="sample-imageText" value="Sample Image" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                                     </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">생성할 이미지 개수</label>
+                                        <input type="number" id="sample-imageCount" value="5" min="1" max="100" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">이미지 포맷</label>
+                                        <div class="space-y-2">
+                                            <label class="flex items-center">
+                                                <input type="checkbox" name="imageFormat" value="PNG" checked class="mr-2">
+                                                <span>PNG</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" name="imageFormat" value="JPG" checked class="mr-2">
+                                                <span>JPG</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" name="imageFormat" value="JPEG" checked class="mr-2">
+                                                <span>JPEG</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" name="imageFormat" value="WEBP" checked class="mr-2">
+                                                <span>WEBP</span>
+                                            </label>
+                                        </div>
+                                    </div>
                                     <button onclick="generateSampleImage()" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">
-                                        이미지 생성
+                                        이미지 생성하기
                                     </button>
                                 </div>
                                 <div>
@@ -1346,20 +1551,109 @@
                     </div>
                     <div class="p-6">
                         <div class="max-w-4xl mx-auto space-y-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">데이터 행 수</label>
-                                    <input type="number" id="csv-rowCount" value="10" min="1" max="1000" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">생성할 행 수</label>
+                                <input type="number" id="csv-rowCount" value="10" min="1" max="1000" class="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md">
+                            </div>
+
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-medium text-gray-800">열 설정</h3>
+
+                                <!-- 1열 (필수) -->
+                                <div class="p-4 border border-gray-200 rounded-md">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="font-medium">1열 (필수)</span>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="col1Type" value="random" checked class="mr-2">
+                                                <span>텍스트 입력</span>
+                                            </label>
+                                            <input type="text" id="col1-text" placeholder="텍스트를 입력하세요" class="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                        </div>
+                                        <div>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="col1Type" value="custom" class="mr-2">
+                                                <span>난수발생</span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">컬럼 헤더 (콤마로 구분)</label>
-                                    <input type="text" id="csv-headers" value="ID,Name,Email,Phone" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+
+                                <!-- 2열 (선택) -->
+                                <div class="p-4 border border-gray-200 rounded-md">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="font-medium">2열 포함</span>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="col2-enable" checked class="mr-2" onchange="toggleCsvColumn(2)">
+                                            <span>사용</span>
+                                        </label>
+                                    </div>
+                                    <div class="space-y-3" id="col2-options">
+                                        <div>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="col2Type" value="random" checked class="mr-2">
+                                                <span>텍스트 입력</span>
+                                            </label>
+                                            <input type="text" id="col2-text" placeholder="텍스트를 입력하세요" class="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                        </div>
+                                        <div>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="col2Type" value="custom" class="mr-2">
+                                                <span>난수발생</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 3열 (선택) -->
+                                <div class="p-4 border border-gray-200 rounded-md">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="font-medium">3열 포함</span>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="col3-enable" class="mr-2" onchange="toggleCsvColumn(3)">
+                                            <span>사용</span>
+                                        </label>
+                                    </div>
+                                    <div class="space-y-3 hidden" id="col3-options">
+                                        <div>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="col3Type" value="random" checked class="mr-2">
+                                                <span>텍스트 입력</span>
+                                            </label>
+                                            <input type="text" id="col3-text" placeholder="텍스트를 입력하세요" class="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md">
+                                        </div>
+                                        <div>
+                                            <label class="flex items-center">
+                                                <input type="radio" name="col3Type" value="custom" class="mr-2">
+                                                <span>난수발생</span>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <button onclick="generateCsvFile()" class="bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700">CSV 파일 생성</button>
+
+                            <button onclick="generateCsvFile()" class="bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700">미리보기</button>
+
                             <div id="csv-preview" class="mt-6 p-4 border border-gray-300 rounded-md bg-gray-50 hidden">
-                                <h3 class="text-lg font-medium mb-4">생성 완료!</h3>
-                                <p>CSV 파일이 다운로드되었습니다.</p>
+                                <h3 class="text-lg font-medium mb-4">CSV 미리보기</h3>
+                                <div id="csv-preview-content" class="overflow-auto max-h-64">
+                                    <table class="min-w-full border-collapse">
+                                        <thead>
+                                            <tr class="bg-gray-200">
+                                                <th class="border border-gray-300 px-4 py-2">1열</th>
+                                                <th class="border border-gray-300 px-4 py-2">2열</th>
+                                                <th class="border border-gray-300 px-4 py-2">3열</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="csv-preview-body">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <button onclick="downloadCsv()" class="mt-4 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                                    CSV 다운로드
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1490,6 +1784,8 @@
         window.downloadSampleImage = downloadSampleImage;
         window.generateQRXlsx = generateQRXlsx;
         window.generateCsvFile = generateCsvFile;
+        window.downloadCsv = downloadCsv;
+        window.toggleCsvColumn = toggleCsvColumn;
     </script>
 </body>
 </html>
