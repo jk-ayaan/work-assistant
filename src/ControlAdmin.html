@@ -3,458 +3,1466 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사장님 플러스 헬프센터</title>
+    <title>CEO+ Help - 관리자 도구</title>
+    <link rel="icon" type="image/jpeg" href="../favicon-32x32.jpg">
+    <link rel="icon" type="image/jpeg" sizes="16x16" href="../favicon-16x16.jpg">
+    <link rel="icon" type="image/jpeg" sizes="32x32" href="../favicon-32x32.jpg">
+    
     <!-- TailwindCSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f',
+                        },
+                        accent: {
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            200: '#fecaca',
+                            300: '#fca5a5',
+                            400: '#f87171',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            800: '#991b1b',
+                            900: '#7f1d1d',
+                        },
+                        neutral: {
+                            50: '#fafafa',
+                            100: '#f5f5f5',
+                            200: '#e5e5e5',
+                            300: '#d4d4d4',
+                            400: '#a3a3a3',
+                            500: '#737373',
+                            600: '#525252',
+                            700: '#404040',
+                            800: '#262626',
+                            900: '#171717',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
     <!-- XLSX 라이브러리 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <style>
-        .function-selected {
-            background-color: #dbeafe !important;
-            border-left: 4px solid #3b82f6 !important;
+        :root {
+            --header-height: 64px;
+            --transition-speed: 0.3s;
         }
-        .admin-selected {
-            background-color: #dcfce7 !important;
-            border-left: 4px solid #22c55e !important;
+
+        /* 기본 레이아웃 */
+        .app-layout {
+            display: grid;
+            grid-template-rows: var(--header-height) 1fr;
+            grid-template-areas: 
+                "header"
+                "main";
+            height: 100vh;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
         }
-        .tab-active {
-            background-color: #3b82f6 !important;
-            color: white !important;
+
+        .header {
+            grid-area: header;
+            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 50;
         }
-        .sidebar-collapsed {
-            width: 3.5rem !important;
+
+        .main-content {
+            grid-area: main;
+            overflow-y: auto;
+            padding: 2rem;
         }
-        .sidebar-collapsed .sidebar-text {
-            display: none;
-        }
-        .sidebar-collapsed .sidebar-icon {
-            margin: 0 auto;
-        }
-        .functions-collapsed .sidebar-functions {
-            display: none !important;
-        }
-        .data-generator-collapsed .data-generator-functions {
-            display: none !important;
-        }
-        .function-toggle {
-            cursor: pointer;
-            user-select: none;
-            transition: background-color 0.2s;
-        }
-        .function-toggle:hover {
-            background: #f3f4f6;
-        }
-        .toggle-btn {
-            position: absolute;
-            right: -12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 24px;
-            height: 24px;
+
+        /* 카드 스타일 */
+        .card {
             background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 50%;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all var(--transition-speed) ease;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        .card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-2px);
+            border-color: rgba(251, 191, 36, 0.4);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* 탭 스타일 */
+        .tab-button {
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease;
+            color: rgba(0, 0, 0, 0.7);
+        }
+
+        .tab-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(0, 0, 0, 0.9);
+        }
+
+        .tab-button.active {
+            background: rgba(255, 255, 255, 0.3);
+            color: #000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 2px;
+            background: #dc2626;
+            border-radius: 1px;
+        }
+
+        /* 툴 카드 특별 스타일 */
+        .tool-card {
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .tool-card .icon-container {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 8px rgba(251, 191, 36, 0.3);
         }
-        .toggle-btn:hover {
-            background: #f3f4f6;
+
+        .tool-card:hover .icon-container {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(251, 191, 36, 0.4);
         }
-        .sidebar-transition {
-            transition: width 0.3s ease;
-        }
-        .admin-panel-collapsed {
-            width: 3.5rem !important;
-        }
-        .admin-panel-collapsed .admin-text {
-            display: none !important;
-        }
-        .admin-panel-collapsed .admin-item > div {
-            justify-content: center !important;
-        }
-        .admin-panel-collapsed .bg-blue-100 {
-            margin: 0 auto;
-        }
+
+        /* 로딩 스피너 */
         .loading-spinner {
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #3498db;
+            border: 3px solid #fde68a;
+            border-top: 3px solid #f59e0b;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .error-container {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            border-radius: 8px;
-            padding: 16px;
-            margin: 16px;
-        }
-        .success-toast {
+
+        /* 알림 토스트 */
+        .toast {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #10b981;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #f59e0b;
+            padding: 1rem 1.5rem;
             z-index: 1000;
             animation: slideIn 0.3s ease;
+            max-width: 400px;
         }
+
+        .toast.success {
+            border-left-color: #10b981;
+        }
+
+        .toast.error {
+            border-left-color: #dc2626;
+        }
+
         @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* 탭 텍스트 반응형 처리 */
+        .tab-text {
+            transition: all var(--transition-speed) ease;
+        }
+        
+        /* 중간 크기에서 텍스트 숨김 (개행되기 전) */
+        @media (max-width: 1024px) {
+            .tab-text {
+                display: none;
+            }
+            
+            .tab-button svg {
+                margin-right: 0 !important;
+            }
+            
+            .tab-button {
+                padding: 0.5rem 0.75rem;
+                min-width: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .tab-container {
+                overflow-x: auto;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                justify-content: flex-start;
+            }
+            
+            .tab-container::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .tab-text {
+                display: inline; /* 모바일에서는 다시 텍스트 표시 */
+            }
+            
+            .tab-button svg {
+                margin-right: 0.5rem !important;
+            }
+            
+            .tab-button {
+                padding: 0.5rem 1rem;
+                min-width: auto;
+                white-space: nowrap;
+            }
+        }
+
+        /* 아주 작은 모바일에서는 아이콘만 */
+        @media (max-width: 480px) {
+            .tab-text {
+                display: none;
+            }
+            
+            .tab-button svg {
+                margin-right: 0 !important;
+            }
+            
+            .tab-button {
+                padding: 0.5rem 0.75rem;
+                min-width: 44px;
+            }
+        }
+
+        /* 폼 스타일 */
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e5e5;
+            border-radius: 8px;
+            transition: border-color var(--transition-speed) ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: black;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            box-shadow: 0 2px 4px rgba(251, 191, 36, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(251, 191, 36, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-speed) ease;
+            box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(220, 38, 38, 0.4);
+        }
+
+        /* 통계 카드 */
+        .stat-card {
+            background: linear-gradient(135deg, white 0%, #fffbeb 100%);
+            border-left: 4px solid #fbbf24;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f59e0b;
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <div class="flex h-screen">
-        <!-- 1계층: 기능 목록 -->
-        <div id="function-sidebar" class="w-80 bg-white border-r border-gray-200 flex flex-col sidebar-transition relative">
-            <button class="toggle-btn" onclick="toggleFunctionSidebar()">
-                <span id="function-toggle-icon">‹</span>
-            </button>
 
-            <!-- 헤더 -->
-            <div class="p-4 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-800 sidebar-text">사장님 플러스 헬프센터</h2>
-                <p class="text-sm text-gray-500 mt-1 sidebar-text">수행할 작업을 선택하세요</p>
-                <div class="mt-2 sidebar-text">
-                    <button id="cookie-sync-btn" class="px-3 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700">
-                        🍪 쿠키 동기화
-                    </button>
-                    <button id="token-sync-btn" class="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 ml-2">
-                        🔄 토큰 동기화
-                    </button>
-                    <span id="token-status" class="text-xs text-gray-400 ml-2 block mt-1">상태: 확인중...</span>
-                </div>
-            </div>
-
-            <!-- 어드민 기능목록 토글 헤더 -->
-            <div class="function-toggle px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between sidebar-text" onclick="toggleAdminFunctions()">
-                <span class="font-medium text-gray-700">어드민 기능목록</span>
-                <span id="admin-functions-arrow" class="text-gray-500">▼</span>
-            </div>
-
-            <!-- 어드민 기능 목록 -->
-            <div class="admin-functions" style="display: none;">
-                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="qr-create">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="text-blue-600 sidebar-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                            </div>
-                            <div class="sidebar-text">
-                                <div class="font-medium text-gray-800">가맹점 생성 및 QR 활성화</div>
-                                <div class="text-xs text-gray-500 mt-1">3개 어드민 연관</div>
-                            </div>
-                        </div>
-                        <div class="text-gray-400 sidebar-text">→</div>
+<body>
+    <div class="app-layout">
+        <!-- 헤더 네비게이션 -->
+        <header class="header">
+            <div class="flex items-center justify-between h-full px-4 lg:px-8">
+                <!-- 로고 -->
+                <div class="flex items-center space-x-4">
+                    <img src="../logo.jpg" alt="CEO+ Help" class="w-12 h-12 rounded-lg shadow-md">
+                    <div class="hidden sm:block">
+                        <h1 class="text-xl font-bold text-black">CEO+</h1>
+                        <p class="text-sm font-semibold text-red-600">Help</p>
                     </div>
                 </div>
 
-                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="qr-recovery">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="text-blue-600 sidebar-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
-                            </div>
-                            <div class="sidebar-text">
-                                <div class="font-medium text-gray-800">가맹점 QR 복구</div>
-                                <div class="text-xs text-gray-500 mt-1">3개 어드민 연관</div>
-                            </div>
-                        </div>
-                        <div class="text-gray-400 sidebar-text">→</div>
+                <!-- 네비게이션 탭 -->
+                <nav class="flex-1 mx-8">
+                    <div class="tab-container flex space-x-1 justify-center">
+                        <button class="tab-button active" onclick="showTab('dashboard')" id="tab-dashboard">
+                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"></path>
+                            </svg>
+                            <span class="tab-text" data-ko="대시보드" data-en="Dashboard">대시보드</span>
+                        </button>
+                        <button class="tab-button" onclick="showTab('admin-tools')" id="tab-admin-tools">
+                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <span class="tab-text" data-ko="어드민 활용" data-en="Admin Tools">어드민 활용</span>
+                        </button>
+                        <button class="tab-button" onclick="showTab('data-tools')" id="tab-data-tools">
+                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span class="tab-text" data-ko="데이터 생성" data-en="Data Tools">데이터 생성</span>
+                        </button>
+                        <button class="tab-button" onclick="showTab('settings')" id="tab-settings">
+                            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4"></path>
+                            </svg>
+                            <span class="tab-text" data-ko="설정" data-en="Settings">설정</span>
+                        </button>
                     </div>
-                </div>
+                </nav>
 
-                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="permission">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="text-blue-600 sidebar-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
-                            </div>
-                            <div class="sidebar-text">
-                                <div class="font-medium text-gray-800">매장 권한변경</div>
-                                <div class="text-xs text-gray-500 mt-1">3개 어드민 연관</div>
-                            </div>
-                        </div>
-                        <div class="text-gray-400 sidebar-text">→</div>
+                <!-- 우측 유틸리티 -->
+                <div class="flex items-center space-x-3">
+                    <!-- 언어 선택 버튼 -->
+                    <div class="relative">
+                        <button class="px-3 py-1.5 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all text-sm font-medium" onclick="toggleLanguage()">
+                            <span id="current-lang" class="text-black">KOR</span>
+                            <span class="text-black opacity-50 mx-1">|</span>
+                            <span id="other-lang" class="text-black opacity-50">ENG</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 알림 버튼 -->
+                    <div class="relative">
+                        <button class="p-2 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 transition-all" onclick="showNotifications()">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m13.73 21a2 2 0 01-3.46 0"></path>
+                            </svg>
+                        </button>
+                        <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">3</span>
                     </div>
                 </div>
             </div>
+        </header>
 
-            <!-- 데이터 생성 토글 헤더 -->
-            <div class="function-toggle px-4 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between sidebar-text" onclick="toggleDataGenerator()">
-                <span class="font-medium text-gray-700">데이터 생성</span>
-                <span id="data-generator-arrow" class="text-gray-500">▼</span>
-            </div>
+        <!-- 메인 콘텐츠 -->
+        <main class="main-content">
+            <!-- 대시보드 탭 -->
+            <div id="dashboard-content" class="tab-content">
+                <div class="mb-8">
+                    <h2 id="dashboard-title" class="text-3xl font-bold text-neutral-800 mb-2">대시보드</h2>
+                    <p id="dashboard-desc" class="text-neutral-600">CEO+ Help의 전체 현황을 확인하세요</p>
+                </div>
 
-            <!-- 데이터 생성 목록 -->
-            <div class="data-generator-functions" style="display: none;">
-                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="sample-image-generator">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="text-purple-600 sidebar-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
+                <!-- 통계 카드들 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="card stat-card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p id="active-sessions-label" class="text-sm font-medium text-neutral-600">활성 세션</p>
+                                <p class="stat-number" id="active-sessions">12</p>
                             </div>
-                            <div class="sidebar-text">
-                                <div class="font-medium text-gray-800">샘플 이미지 생성</div>
-                                <div class="text-xs text-gray-500 mt-1">이미지 생성 도구</div>
+                            <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                </svg>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="qr-xlsx-generator">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="text-green-600 sidebar-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <div class="card stat-card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p id="completed-tasks-label" class="text-sm font-medium text-neutral-600">완료된 작업</p>
+                                <p class="stat-number" id="completed-tasks">47</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
-                            <div class="sidebar-text">
-                                <div class="font-medium text-gray-800">QR XLSX 생성</div>
-                                <div class="text-xs text-gray-500 mt-1">QR 엑셀 파일 생성</div>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p id="saved-tokens-label" class="text-sm font-medium text-neutral-600">저장된 토큰</p>
+                                <p class="stat-number" id="token-count">8</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p id="generated-files-label" class="text-sm font-medium text-neutral-600">생성된 파일</p>
+                                <p class="stat-number" id="file-count">156</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="function-item p-4 cursor-pointer border-b border-gray-100 hover:bg-blue-50" data-function="csv-generator">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="text-blue-600 sidebar-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <!-- 최근 활동 -->
+                <div class="card p-6">
+                    <h3 id="recent-activities-title" class="text-xl font-bold text-neutral-800 mb-4">최근 활동</h3>
+                    <div id="recent-activities" class="space-y-4">
+                        <div class="flex items-center space-x-4 p-3 bg-neutral-50 rounded-lg">
+                            <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                 </svg>
                             </div>
-                            <div class="sidebar-text">
-                                <div class="font-medium text-gray-800">CSV 생성</div>
-                                <div class="text-xs text-gray-500 mt-1">CSV 파일 생성 도구</div>
+                            <div class="flex-1">
+                                <p class="font-medium text-neutral-800">QR XLSX 파일 생성</p>
+                                <p class="text-sm text-neutral-600">5분 전</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 p-3 bg-neutral-50 rounded-lg">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-neutral-800">토큰 동기화 완료</p>
+                                <p class="text-sm text-neutral-600">12분 전</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 p-3 bg-neutral-50 rounded-lg">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-neutral-800">샘플 이미지 25개 생성</p>
+                                <p class="text-sm text-neutral-600">1시간 전</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- 2계층: 어드민 목록 -->
-        <div id="admin-panel" class="w-80 bg-white border-r border-gray-200 flex-col hidden sidebar-transition relative">
-            <button class="toggle-btn" onclick="toggleAdminPanel()">
-                <span id="admin-toggle-icon">‹</span>
-            </button>
-            <div class="p-4 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800 admin-text">어드민 목록</h3>
-                <p class="text-sm text-gray-500 mt-1 admin-text" id="function-name">선택된 기능</p>
-            </div>
-            <div class="flex-1 overflow-y-auto" id="admin-list">
-                <!-- 어드민 목록이 여기에 동적으로 추가됩니다 -->
-            </div>
-        </div>
+            <!-- 어드민 도구 탭 -->
+            <div id="admin-tools-content" class="tab-content hidden">
+                <div class="mb-8">
+                    <h2 id="admin-tools-title" class="text-3xl font-bold text-neutral-800 mb-2">어드민 활용</h2>
+                    <p id="admin-tools-desc" class="text-neutral-600">가맹점 관리 및 시스템 운영 도구들</p>
+                </div>
 
-        <!-- 3계층: 콘텐츠 영역 -->
-        <div class="flex-1 flex flex-col">
-            <!-- 탭 헤더 -->
-            <div id="tab-header" class="bg-white border-b border-gray-200 hidden">
-                <div class="flex items-center p-2">
-                    <div id="tab-list" class="flex-1 flex items-center space-x-1 overflow-x-auto">
-                        <!-- 탭이 여기에 동적으로 추가됩니다 -->
+                <div class="card-grid">
+                    <div class="card tool-card p-6" onclick="openAdminTool('qr-create')">
+                        <div class="icon-container">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2">가맹점 생성 및 QR 활성화</h3>
+                        <p class="text-neutral-600 mb-4">새로운 가맹점을 등록하고 QR 코드를 활성화합니다</p>
+                        <div class="flex items-center text-sm text-neutral-500">
+                            <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded text-xs mr-2">3개 어드민</span>
+                            <span>→</span>
+                        </div>
                     </div>
-                    <button id="new-tab-btn" class="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300 ml-2">
-                        + 새 탭
-                    </button>
-                    <button id="new-window-btn" class="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 ml-2">
-                        + 새 창
-                    </button>
+
+                    <div class="card tool-card p-6" onclick="openAdminTool('qr-recovery')">
+                        <div class="icon-container">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2">가맹점 QR 복구</h3>
+                        <p class="text-neutral-600 mb-4">손상된 QR 코드를 복구하고 재활성화합니다</p>
+                        <div class="flex items-center text-sm text-neutral-500">
+                            <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded text-xs mr-2">3개 어드민</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <div class="card tool-card p-6" onclick="openAdminTool('permission')">
+                        <div class="icon-container">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2">매장 권한 변경</h3>
+                        <p class="text-neutral-600 mb-4">매장별 사용자 권한을 관리하고 수정합니다</p>
+                        <div class="flex items-center text-sm text-neutral-500">
+                            <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded text-xs mr-2">3개 어드민</span>
+                            <span>→</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- 콘텐츠 영역 -->
-            <div class="flex-1 bg-white relative" id="content-container">
-                <div id="empty-state" class="flex items-center justify-center h-full">
-                    <div class="text-center">
-                        <div class="text-6xl mb-4">🖥️</div>
-                        <h3 class="text-xl font-medium text-gray-500 mb-2">어드민을 선택하세요</h3>
-                        <p class="text-gray-400">먼저 수행할 기능을 선택한 후 어드민을 선택하세요</p>
+            <!-- 데이터 생성 도구 탭 -->
+            <div id="data-tools-content" class="tab-content hidden">
+                <div class="mb-8">
+                    <h2 id="data-tools-title" class="text-3xl font-bold text-neutral-800 mb-2">데이터 생성 도구</h2>
+                    <p id="data-tools-desc" class="text-neutral-600">테스트 데이터 및 샘플 파일 생성 도구들</p>
+                </div>
+
+                <div class="card-grid">
+                    <div class="card tool-card p-6" onclick="openDataTool('sample-image')">
+                        <div class="icon-container">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2">샘플 이미지 생성기</h3>
+                        <p class="text-neutral-600 mb-4">다양한 크기와 포맷의 테스트 이미지를 생성합니다</p>
+                        <div class="flex items-center text-sm text-neutral-500">
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs mr-2">이미지 도구</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <div class="card tool-card p-6" onclick="openDataTool('qr-xlsx')">
+                        <div class="icon-container">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2">QR XLSX 생성기</h3>
+                        <p class="text-neutral-600 mb-4">QR 코드 정보가 포함된 엑셀 파일을 생성합니다</p>
+                        <div class="flex items-center text-sm text-neutral-500">
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-2">엑셀 도구</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <div class="card tool-card p-6" onclick="openDataTool('csv-generator')">
+                        <div class="icon-container">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2">CSV 생성기</h3>
+                        <p class="text-neutral-600 mb-4">커스텀 CSV 파일을 생성하고 다운로드합니다</p>
+                        <div class="flex items-center text-sm text-neutral-500">
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-2">데이터 도구</span>
+                            <span>→</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+
+            <!-- 설정 탭 -->
+            <div id="settings-content" class="tab-content hidden">
+                <div class="mb-8">
+                    <h2 id="settings-title" class="text-3xl font-bold text-neutral-800 mb-2">설정</h2>
+                    <p id="settings-desc" class="text-neutral-600">시스템 설정 및 토큰 관리</p>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- 토큰 관리 카드 -->
+                    <div class="card p-6">
+                        <h3 id="token-management-title" class="text-xl font-bold text-neutral-800 mb-4">토큰 관리</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-neutral-50 rounded-lg">
+                                <div>
+                                    <p class="font-medium text-neutral-800">토큰 상태</p>
+                                    <p class="text-sm text-neutral-600" id="token-status-detail">토큰 확인 중...</p>
+                                </div>
+                                <button class="btn-primary" onclick="syncTokens()">
+                                    🔄 토큰 동기화
+                                </button>
+                            </div>
+                            <div class="flex space-x-4">
+                                <button class="btn-secondary" onclick="showCookieModal()">
+                                    🍪 쿠키 관리
+                                </button>
+                                <button class="btn-primary" onclick="exportTokens()">
+                                    📤 토큰 내보내기
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 시스템 설정 카드 -->
+                    <div class="card p-6">
+                        <h3 id="system-settings-title" class="text-xl font-bold text-neutral-800 mb-4">시스템 설정</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-neutral-800">다크 모드</p>
+                                    <p class="text-sm text-neutral-600">인터페이스 테마 변경</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" id="dark-mode-toggle">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-neutral-800">자동 저장</p>
+                                    <p class="text-sm text-neutral-600">작업 내용 자동 저장</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" id="auto-save-toggle" checked>
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 정보 카드 -->
+                    <div class="card p-6">
+                        <h3 id="system-info-title" class="text-xl font-bold text-neutral-800 mb-4">시스템 정보</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 bg-neutral-50 rounded-lg">
+                                <p class="text-sm font-medium text-neutral-600">버전</p>
+                                <p class="text-lg font-bold text-neutral-800">v2.1.0</p>
+                            </div>
+                            <div class="p-4 bg-neutral-50 rounded-lg">
+                                <p class="text-sm font-medium text-neutral-600">마지막 업데이트</p>
+                                <p class="text-lg font-bold text-neutral-800">2024-08-15</p>
+                            </div>
+                            <div class="p-4 bg-neutral-50 rounded-lg">
+                                <p class="text-sm font-medium text-neutral-600">총 사용자</p>
+                                <p class="text-lg font-bold text-neutral-800">247명</p>
+                            </div>
+                            <div class="p-4 bg-neutral-50 rounded-lg">
+                                <p class="text-sm font-medium text-neutral-600">업타임</p>
+                                <p class="text-lg font-bold text-neutral-800">99.9%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- 쿠키 동기화 모달 -->
+    <!-- 쿠키 관리 모달 -->
     <div id="cookie-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-2xl w-full m-4 max-h-[80vh] overflow-y-auto">
-            <h3 class="text-lg font-semibold mb-4">🍪 쿠키 관리</h3>
-            <div class="mb-4">
-                <h4 class="font-medium mb-2">현재 저장된 쿠키:</h4>
-                <div id="cookie-list" class="bg-gray-100 p-3 rounded text-sm font-mono max-h-40 overflow-y-auto">
+        <div class="bg-white rounded-2xl p-8 max-w-2xl w-full m-4 max-h-[80vh] overflow-y-auto">
+            <h3 class="text-2xl font-bold text-neutral-800 mb-6">🍪 쿠키 관리</h3>
+            <div class="mb-6">
+                <h4 class="font-medium text-neutral-700 mb-3">현재 저장된 쿠키:</h4>
+                <div id="cookie-list" class="bg-neutral-100 p-4 rounded-lg text-sm font-mono max-h-40 overflow-y-auto">
                     로딩중...
                 </div>
             </div>
-            <div class="mb-4">
-                <h4 class="font-medium mb-2">쿠키 추가/수정:</h4>
+            <div class="mb-6">
+                <h4 class="font-medium text-neutral-700 mb-3">쿠키 추가/수정:</h4>
                 <input id="cookie-input" type="text"
                        placeholder="name=value; domain=.example.com; path=/"
-                       class="w-full p-2 border rounded text-sm">
-                <button onclick="addCookie()" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                       class="form-input mb-3">
+                <button onclick="addCookie()" class="btn-primary">
                     쿠키 추가
                 </button>
             </div>
-            <button onclick="closeCookieModal()" class="w-full p-3 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+            <button onclick="closeCookieModal()" class="w-full p-3 bg-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-400 transition-colors">
                 닫기
             </button>
         </div>
     </div>
 
+    <!-- 도구 상세 모달 -->
+    <div id="tool-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl max-w-4xl w-full m-4 max-h-[90vh] overflow-hidden">
+            <div class="p-6 border-b border-neutral-200 flex items-center justify-between">
+                <h3 id="tool-modal-title" class="text-2xl font-bold text-neutral-800">도구</h3>
+                <button onclick="closeToolModal()" class="p-2 hover:bg-neutral-100 rounded-lg transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="tool-modal-content" class="p-6 overflow-y-auto" style="max-height: calc(90vh - 100px);">
+                <!-- 도구별 콘텐츠가 여기에 로드됩니다 -->
+            </div>
+        </div>
+    </div>
+
     <script>
         // 전역 변수
+        let currentTab = 'dashboard';
+        let windowRefs = {};
+        let currentLanguage = 'ko'; // 기본 언어는 한국어
+
+        // 다국어 텍스트 데이터
+        const translations = {
+            ko: {
+                // 헤더 및 네비게이션
+                dashboard: "대시보드",
+                adminTools: "어드민 활용",
+                dataTools: "데이터 생성", 
+                settings: "설정",
+                
+                // 대시보드
+                dashboardTitle: "대시보드",
+                dashboardDesc: "CEO+ Help의 전체 현황을 확인하세요",
+                activeSessions: "활성 세션",
+                completedTasks: "완료된 작업",
+                savedTokens: "저장된 토큰",
+                generatedFiles: "생성된 파일",
+                recentActivities: "최근 활동",
+                
+                // 어드민 도구
+                adminToolsTitle: "어드민 활용",
+                adminToolsDesc: "가맹점 관리 및 시스템 운영 도구들",
+                
+                // 데이터 생성 도구
+                dataToolsTitle: "데이터 생성 도구",
+                dataToolsDesc: "테스트 데이터 및 샘플 파일 생성 도구들",
+                
+                // 설정
+                settingsTitle: "설정",
+                settingsDesc: "시스템 설정 및 토큰 관리",
+                tokenManagement: "토큰 관리",
+                systemSettings: "시스템 설정",
+                systemInfo: "시스템 정보"
+            },
+            en: {
+                // 헤더 및 네비게이션
+                dashboard: "Dashboard",
+                adminTools: "Admin Tools",
+                dataTools: "Data Tools",
+                settings: "Settings",
+                
+                // 대시보드
+                dashboardTitle: "Dashboard",
+                dashboardDesc: "Check the overall status of CEO+ Help",
+                activeSessions: "Active Sessions",
+                completedTasks: "Completed Tasks", 
+                savedTokens: "Saved Tokens",
+                generatedFiles: "Generated Files",
+                recentActivities: "Recent Activities",
+                
+                // 어드민 도구
+                adminToolsTitle: "Admin Tools",
+                adminToolsDesc: "Store management and system operation tools",
+                
+                // 데이터 생성 도구
+                dataToolsTitle: "Data Generation Tools",
+                dataToolsDesc: "Test data and sample file generation tools",
+                
+                // 설정
+                settingsTitle: "Settings",
+                settingsDesc: "System settings and token management",
+                tokenManagement: "Token Management",
+                systemSettings: "System Settings", 
+                systemInfo: "System Information"
+            }
+        };
+        
+        // 기존 기능 데이터
         const functionData = {
             'qr-create': {
                 name: '가맹점 생성 및 QR 활성화',
                 admins: [
-                    {
-                        name: '와칸다_신청서',
-                        url: 'https://www.google.com',
-                        desc: '가맹점 신청서 작성',
-                        isInternal: false
-                    },
-                    {
-                        name: '와칸다_활성화',
-                        url: 'https://www.naver.com',
-                        desc: '가맹점 활성화 처리',
-                        isInternal: false
-                    },
-                    {
-                        name: '오프라인_QR생성요청',
-                        url: 'https://admin.example.com/qr',
-                        desc: '오프라인 QR 생성',
-                        isInternal: true
-                    }
+                    { name: '와칸다_신청서', url: 'https://www.google.com', desc: '가맹점 신청서 작성', isInternal: false },
+                    { name: '와칸다_활성화', url: 'https://www.naver.com', desc: '가맹점 활성화 처리', isInternal: false },
+                    { name: '오프라인_QR생성요청', url: 'https://admin.example.com/qr', desc: '오프라인 QR 생성', isInternal: true }
                 ]
             },
             'qr-recovery': {
                 name: '가맹점 QR 복구',
                 admins: [
-                    {
-                        name: 'QR 관리',
-                        url: 'https://admin.example.com/qr-manage',
-                        desc: 'QR 복구',
-                        isInternal: true
-                    },
-                    {
-                        name: '로그 관리',
-                        url: 'https://admin.example.com/logs',
-                        desc: '로그 확인',
-                        isInternal: true
-                    },
-                    {
-                        name: '가맹점 관리',
-                        url: 'https://www.kakao.com',
-                        desc: '상태 확인',
-                        isInternal: false
-                    }
+                    { name: 'QR 관리', url: 'https://admin.example.com/qr-manage', desc: 'QR 복구', isInternal: true },
+                    { name: '로그 관리', url: 'https://admin.example.com/logs', desc: '로그 확인', isInternal: true },
+                    { name: '가맹점 관리', url: 'https://www.kakao.com', desc: '상태 확인', isInternal: false }
                 ]
             },
             'permission': {
                 name: '매장 권한변경',
                 admins: [
-                    {
-                        name: '권한 관리',
-                        url: 'https://admin.example.com/permissions',
-                        desc: '권한 설정',
-                        isInternal: true
-                    },
-                    {
-                        name: '사용자 관리',
-                        url: 'https://admin.example.com/users',
-                        desc: '역할 관리',
-                        isInternal: true
-                    },
-                    {
-                        name: '감사 관리',
-                        url: 'https://www.youtube.com',
-                        desc: '변경 이력',
-                        isInternal: false
-                    }
+                    { name: '권한 관리', url: 'https://admin.example.com/permissions', desc: '권한 설정', isInternal: true },
+                    { name: '사용자 관리', url: 'https://admin.example.com/users', desc: '역할 관리', isInternal: true },
+                    { name: '감사 관리', url: 'https://www.youtube.com', desc: '변경 이력', isInternal: false }
                 ]
             }
         };
 
-        let selectedFunction = null;
-        let selectedAdmin = null;
-        let windowRefs = {};
-        let tabs = [];
-        let activeTabId = null;
-        let tabCounter = 0;
-
-        // 유틸리티 함수들
-        function isValidUrl(string) {
-            try {
-                new URL(string);
-                return true;
-            } catch (_) {
-                return false;
+        // 탭 전환 함수
+        function showTab(tabName) {
+            // 모든 탭 버튼 비활성화
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 모든 탭 콘텐츠 숨기기
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // 선택된 탭 활성화
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            document.getElementById(`${tabName}-content`).classList.remove('hidden');
+            
+            currentTab = tabName;
+            
+            // 탭 변경 시 추가 로직
+            if (tabName === 'dashboard') {
+                updateDashboardStats();
             }
         }
 
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `success-toast ${type}`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
+        // 대시보드 통계 업데이트
+        function updateDashboardStats() {
+            // 실제 데이터로 업데이트하는 로직을 여기에 구현
+            document.getElementById('active-sessions').textContent = Math.floor(Math.random() * 20) + 5;
+            document.getElementById('completed-tasks').textContent = Math.floor(Math.random() * 100) + 20;
+            document.getElementById('token-count').textContent = Math.floor(Math.random() * 15) + 3;
+            document.getElementById('file-count').textContent = Math.floor(Math.random() * 300) + 50;
         }
 
-        function showLoadingState(container) {
-            container.innerHTML = `
-                <div class="flex items-center justify-center h-full">
-                    <div class="text-center">
-                        <div class="loading-spinner mx-auto mb-4"></div>
-                        <p class="text-gray-500">로딩 중...</p>
+        // 어드민 도구 열기
+        function openAdminTool(toolId) {
+            const toolData = functionData[toolId];
+            if (!toolData) return;
+            
+            document.getElementById('tool-modal-title').textContent = toolData.name;
+            
+            let adminListHTML = '<div class="space-y-4">';
+            toolData.admins.forEach((admin, index) => {
+                adminListHTML += `
+                    <div class="card p-4 cursor-pointer hover:shadow-lg transition-all" onclick="openAdminUrl('${admin.url}', '${admin.name}', ${admin.isInternal})">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+                                    <span class="font-bold text-primary-600">${index + 1}</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-neutral-800">${admin.name}</h4>
+                                    <p class="text-sm text-neutral-600">${admin.desc}</p>
+                                    <p class="text-xs text-neutral-400 mt-1">${admin.url}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                ${admin.isInternal ? '<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">내부</span>' : '<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">외부</span>'}
+                                <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            adminListHTML += '</div>';
+            
+            document.getElementById('tool-modal-content').innerHTML = adminListHTML;
+            document.getElementById('tool-modal').classList.remove('hidden');
+        }
+
+        // 어드민 URL 열기
+        function openAdminUrl(url, name, isInternal) {
+            if (isInternal) {
+                // 내부 도구는 iframe으로 열기
+                showToast(`${name} 도구를 새 창에서 엽니다`, 'success');
+            }
+            
+            const windowName = 'admin_' + name.replace(/\s/g, '_');
+            const win = window.open(url, windowName, 'width=1200,height=800,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes');
+            
+            if (win) {
+                windowRefs[windowName] = win;
+                showToast(`${name}이(가) 새 창에서 열렸습니다`, 'success');
+            } else {
+                showToast('팝업이 차단되었습니다. 팝업 허용 후 다시 시도하세요', 'error');
+            }
+        }
+
+        // 데이터 도구 열기
+        function openDataTool(toolId) {
+            let title, content;
+            
+            switch(toolId) {
+                case 'sample-image':
+                    title = '샘플 이미지 생성기';
+                    content = getSampleImageGeneratorHTML();
+                    break;
+                case 'qr-xlsx':
+                    title = 'QR XLSX 생성기';
+                    content = getQRXlsxGeneratorHTML();
+                    break;
+                case 'csv-generator':
+                    title = 'CSV 생성기';
+                    content = getCsvGeneratorHTML();
+                    break;
+                default:
+                    title = '도구';
+                    content = '<p class="text-center text-neutral-500">도구를 찾을 수 없습니다.</p>';
+            }
+            
+            document.getElementById('tool-modal-title').textContent = title;
+            document.getElementById('tool-modal-content').innerHTML = content;
+            document.getElementById('tool-modal').classList.remove('hidden');
+            
+            // 샘플 이미지 생성기인 경우 초기 이미지 생성
+            if (toolId === 'sample-image') {
+                setTimeout(generateSampleImage, 100);
+            }
+        }
+
+        // 모달 닫기
+        function closeToolModal() {
+            document.getElementById('tool-modal').classList.add('hidden');
+        }
+
+        // 토스트 메시지 표시
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <div class="flex-1">
+                        <p class="font-medium text-neutral-800">${message}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-neutral-400 hover:text-neutral-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 5000);
+        }
+
+        // 언어 변경 함수
+        function toggleLanguage() {
+            try {
+                currentLanguage = currentLanguage === 'ko' ? 'en' : 'ko';
+                updateLanguageUI();
+                updateAllTexts();
+                
+                // localStorage에 언어 설정 저장
+                localStorage.setItem('preferred-language', currentLanguage);
+                
+                const langText = currentLanguage === 'ko' ? '한국어' : 'English';
+                showToast(`언어가 ${langText}로 변경되었습니다`, 'success');
+            } catch (error) {
+                console.error('언어 변경 오류:', error);
+                showToast('언어 변경 중 오류가 발생했습니다', 'error');
+            }
+        }
+
+        // 언어 선택 UI 업데이트
+        function updateLanguageUI() {
+            const currentLangEl = document.getElementById('current-lang');
+            const otherLangEl = document.getElementById('other-lang');
+            
+            if (currentLanguage === 'ko') {
+                currentLangEl.textContent = 'KOR';
+                currentLangEl.className = 'text-black';
+                otherLangEl.textContent = 'ENG';
+                otherLangEl.className = 'text-black opacity-50';
+            } else {
+                currentLangEl.textContent = 'ENG';
+                currentLangEl.className = 'text-black';
+                otherLangEl.textContent = 'KOR';
+                otherLangEl.className = 'text-black opacity-50';
+            }
+        }
+
+        // 모든 텍스트 업데이트
+        function updateAllTexts() {
+            const t = translations[currentLanguage];
+            
+            // 탭 텍스트 업데이트
+            document.querySelectorAll('.tab-text').forEach(el => {
+                const key = currentLanguage === 'ko' ? el.getAttribute('data-ko') : el.getAttribute('data-en');
+                if (key) el.textContent = key;
+            });
+            
+            // 페이지 제목들 업데이트
+            updateElementText('dashboard-title', t.dashboardTitle);
+            updateElementText('dashboard-desc', t.dashboardDesc);
+            updateElementText('admin-tools-title', t.adminToolsTitle);  
+            updateElementText('admin-tools-desc', t.adminToolsDesc);
+            updateElementText('data-tools-title', t.dataToolsTitle);
+            updateElementText('data-tools-desc', t.dataToolsDesc);
+            updateElementText('settings-title', t.settingsTitle);
+            updateElementText('settings-desc', t.settingsDesc);
+            
+            // 통계 카드 텍스트 업데이트
+            updateElementText('active-sessions-label', t.activeSessions);
+            updateElementText('completed-tasks-label', t.completedTasks);
+            updateElementText('saved-tokens-label', t.savedTokens);
+            updateElementText('generated-files-label', t.generatedFiles);
+            updateElementText('recent-activities-title', t.recentActivities);
+            
+            // 설정 섹션 텍스트 업데이트
+            updateElementText('token-management-title', t.tokenManagement);
+            updateElementText('system-settings-title', t.systemSettings);
+            updateElementText('system-info-title', t.systemInfo);
+        }
+
+        // 개별 요소 텍스트 업데이트 헬퍼 함수
+        function updateElementText(id, text) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = text;
+            }
+        }
+
+        // 알림 표시
+        function showNotifications() {
+            showToast('새로운 알림이 3개 있습니다', 'success');
+        }
+
+        // 토큰 관리 함수들
+        function getStoredTokens() {
+            const tokens = { localStorage: {}, sessionStorage: {}, cookies: {} };
+            
+            try {
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && (key.includes('token') || key.includes('auth') || key.includes('session'))) {
+                        tokens.localStorage[key] = localStorage.getItem(key);
+                    }
+                }
+                
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    const key = sessionStorage.key(i);
+                    if (key && (key.includes('token') || key.includes('auth') || key.includes('session'))) {
+                        tokens.sessionStorage[key] = sessionStorage.getItem(key);
+                    }
+                }
+                
+                const cookies = getAllCookies();
+                Object.entries(cookies).forEach(([name, value]) => {
+                    if (name.includes('token') || name.includes('auth') || name.includes('session')) {
+                        tokens.cookies[name] = value;
+                    }
+                });
+            } catch (error) {
+                console.error('토큰 조회 오류:', error);
+            }
+            
+            return tokens;
+        }
+
+        function getAllCookies() {
+            const cookies = {};
+            document.cookie.split(';').forEach(cookie => {
+                const [name, value] = cookie.trim().split('=');
+                if (name) cookies[name] = value || '';
+            });
+            return cookies;
+        }
+
+        function syncTokens() {
+            try {
+                const tokens = getStoredTokens();
+                console.log('동기화할 토큰:', tokens);
+                
+                Object.values(windowRefs).forEach(win => {
+                    if (win && !win.closed) {
+                        try {
+                            win.postMessage({ type: 'SYNC_TOKENS', tokens: tokens }, '*');
+                        } catch (e) {
+                            console.log('토큰 전송 실패:', e);
+                        }
+                    }
+                });
+                
+                showToast('토큰 동기화를 시도했습니다', 'success');
+                updateTokenStatus();
+            } catch (error) {
+                console.error('토큰 동기화 오류:', error);
+                showToast('토큰 동기화 중 오류가 발생했습니다', 'error');
+            }
+        }
+
+        function updateTokenStatus() {
+            try {
+                const tokens = getStoredTokens();
+                const totalCount = Object.keys(tokens.localStorage).length + Object.keys(tokens.sessionStorage).length + Object.keys(tokens.cookies).length;
+                
+                const statusEl = document.getElementById('token-status-detail');
+                if (statusEl) {
+                    if (totalCount > 0) {
+                        statusEl.innerHTML = `✅ 토큰 ${totalCount}개 발견 (Local: ${Object.keys(tokens.localStorage).length}, Session: ${Object.keys(tokens.sessionStorage).length}, Cookie: ${Object.keys(tokens.cookies).length})`;
+                    } else {
+                        statusEl.innerHTML = '❌ 토큰 없음';
+                    }
+                }
+                
+                // 대시보드 토큰 카운트 업데이트
+                const tokenCountEl = document.getElementById('token-count');
+                if (tokenCountEl) {
+                    tokenCountEl.textContent = totalCount;
+                }
+            } catch (error) {
+                console.error('토큰 상태 업데이트 오류:', error);
+                const statusEl = document.getElementById('token-status-detail');
+                if (statusEl) {
+                    statusEl.innerHTML = '❌ 오류 발생';
+                }
+            }
+        }
+
+        function exportTokens() {
+            try {
+                const tokens = getStoredTokens();
+                const dataStr = JSON.stringify(tokens, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `tokens_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                showToast('토큰 정보가 다운로드되었습니다', 'success');
+            } catch (error) {
+                console.error('토큰 내보내기 오류:', error);
+                showToast('토큰 내보내기 중 오류가 발생했습니다', 'error');
+            }
+        }
+
+        // 쿠키 관리 함수들
+        function showCookieModal() {
+            document.getElementById('cookie-modal').classList.remove('hidden');
+            updateCookieList();
+        }
+
+        function closeCookieModal() {
+            document.getElementById('cookie-modal').classList.add('hidden');
+        }
+
+        function updateCookieList() {
+            const cookies = getAllCookies();
+            const cookieList = document.getElementById('cookie-list');
+            
+            if (Object.keys(cookies).length === 0) {
+                cookieList.textContent = '쿠키가 없습니다.';
+            } else {
+                cookieList.innerHTML = Object.entries(cookies)
+                    .map(([name, value]) => `<div class="mb-1"><strong>${name}</strong> = ${value}</div>`)
+                    .join('');
+            }
+        }
+
+        function addCookie() {
+            const input = document.getElementById('cookie-input').value.trim();
+            if (!input) {
+                showToast('쿠키 정보를 입력해주세요', 'error');
+                return;
+            }
+            
+            try {
+                const parts = input.split(';').map(p => p.trim());
+                const [name, value] = parts[0].split('=');
+                
+                if (!name) {
+                    showToast('쿠키 이름이 필요합니다', 'error');
+                    return;
+                }
+                
+                document.cookie = input;
+                updateCookieList();
+                document.getElementById('cookie-input').value = '';
+                showToast('쿠키가 추가되었습니다', 'success');
+            } catch (e) {
+                console.error('쿠키 추가 오류:', e);
+                showToast('올바른 쿠키 형식이 아닙니다', 'error');
+            }
+        }
+
+        // 샘플 이미지 생성기 HTML
+        function getSampleImageGeneratorHTML() {
+            return `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">이미지 크기</label>
+                                <select id="sample-imageSize" class="form-input">
+                                    <option value="100x100">100x100</option>
+                                    <option value="200x200">200x200</option>
+                                    <option value="400x400" selected>400x400</option>
+                                    <option value="800x600">800x600</option>
+                                    <option value="1920x1080">1920x1080</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">배경색</label>
+                                <input type="color" id="sample-bgColor" value="#f0f0f0" class="form-input h-12">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">텍스트</label>
+                                <input type="text" id="sample-imageText" value="Sample Image" class="form-input">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">생성할 이미지 개수</label>
+                                <input type="number" id="sample-imageCount" value="5" min="1" max="100" class="form-input">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">이미지 포맷</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" name="imageFormat" value="PNG" checked class="mr-2">
+                                        <span>PNG</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" name="imageFormat" value="JPG" checked class="mr-2">
+                                        <span>JPG</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" name="imageFormat" value="WEBP" class="mr-2">
+                                        <span>WEBP</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <button onclick="generateSampleImage()" class="btn-primary w-full">
+                                이미지 생성하기
+                            </button>
+                        </div>
+                        <div>
+                            <div class="border-2 border-dashed border-neutral-300 rounded-lg p-6 bg-neutral-50 min-h-64 flex items-center justify-center">
+                                <canvas id="sample-canvas" class="border border-neutral-200 rounded shadow-sm"></canvas>
+                            </div>
+                            <button id="sample-downloadBtn" onclick="downloadSampleImage()" class="btn-secondary w-full mt-4" disabled>
+                                이미지 다운로드
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
         }
 
-        function showErrorState(container, message) {
-            container.innerHTML = `
-                <div class="flex items-center justify-center h-full">
-                    <div class="error-container max-w-md text-center">
-                        <div class="text-4xl mb-4">⚠️</div>
-                        <h3 class="text-lg font-medium text-red-700 mb-2">오류 발생</h3>
-                        <p class="text-red-600 mb-4">${message}</p>
-                        <button onclick="location.reload()" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
-                            다시 시도
+        // QR XLSX 생성기 HTML
+        function getQRXlsxGeneratorHTML() {
+            return `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-700 mb-2">CID</label>
+                            <input type="text" id="qr-cid" value="" placeholder="빈값" class="form-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-700 mb-2">TID</label>
+                            <input type="text" id="qr-tid" value="" placeholder="빈값" class="form-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-700 mb-2">지역코드</label>
+                            <input type="text" id="qr-region" value="JEJU" class="form-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-700 mb-2">VAN</label>
+                            <input type="text" id="qr-van" value="KIS" class="form-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-700 mb-2">휴대폰번호</label>
+                            <input type="text" id="qr-phone" value="01025710628" class="form-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-700 mb-2">비고</label>
+                            <input type="text" id="qr-remark" value="" placeholder="빈값" class="form-input">
+                        </div>
+                    </div>
+                    
+                    <button onclick="generateQRXlsx()" class="btn-primary">QR XLSX 파일 생성</button>
+                    
+                    <div id="qr-preview" class="mt-6 p-4 border border-primary-200 rounded-lg bg-primary-50 hidden">
+                        <h4 class="font-medium text-primary-800 mb-2">생성 완료!</h4>
+                        <p class="text-primary-700">XLSX 파일이 다운로드되었습니다.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // CSV 생성기 HTML
+        function getCsvGeneratorHTML() {
+            return `
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 mb-2">생성할 행 수</label>
+                        <input type="number" id="csv-rowCount" value="10" min="1" max="1000" class="form-input max-w-xs">
+                    </div>
+
+                    <div class="space-y-4">
+                        <h4 class="text-lg font-medium text-neutral-800">열 설정</h4>
+                        
+                        <!-- 1열 -->
+                        <div class="card p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-medium">1열 (필수)</span>
+                            </div>
+                            <div class="space-y-3">
+                                <label class="flex items-center">
+                                    <input type="radio" name="col1Type" value="random" checked class="mr-2">
+                                    <span>텍스트 입력</span>
+                                </label>
+                                <input type="text" id="col1-text" placeholder="텍스트를 입력하세요" class="form-input">
+                                <label class="flex items-center">
+                                    <input type="radio" name="col1Type" value="custom" class="mr-2">
+                                    <span>난수발생</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 2열 -->
+                        <div class="card p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-medium">2열 포함</span>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="col2-enable" checked class="mr-2" onchange="toggleCsvColumn(2)">
+                                    <span>사용</span>
+                                </label>
+                            </div>
+                            <div class="space-y-3" id="col2-options">
+                                <label class="flex items-center">
+                                    <input type="radio" name="col2Type" value="random" checked class="mr-2">
+                                    <span>텍스트 입력</span>
+                                </label>
+                                <input type="text" id="col2-text" placeholder="텍스트를 입력하세요" class="form-input">
+                                <label class="flex items-center">
+                                    <input type="radio" name="col2Type" value="custom" class="mr-2">
+                                    <span>난수발생</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 3열 -->
+                        <div class="card p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-medium">3열 포함</span>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="col3-enable" class="mr-2" onchange="toggleCsvColumn(3)">
+                                    <span>사용</span>
+                                </label>
+                            </div>
+                            <div class="space-y-3 hidden" id="col3-options">
+                                <label class="flex items-center">
+                                    <input type="radio" name="col3Type" value="random" checked class="mr-2">
+                                    <span>텍스트 입력</span>
+                                </label>
+                                <input type="text" id="col3-text" placeholder="텍스트를 입력하세요" class="form-input">
+                                <label class="flex items-center">
+                                    <input type="radio" name="col3Type" value="custom" class="mr-2">
+                                    <span>난수발생</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="generateCsvFile()" class="btn-primary">CSV 미리보기</button>
+
+                    <div id="csv-preview" class="hidden">
+                        <h4 class="text-lg font-medium text-neutral-800 mb-4">CSV 미리보기</h4>
+                        <div class="overflow-auto max-h-64 border border-neutral-200 rounded-lg">
+                            <table class="min-w-full">
+                                <thead class="bg-neutral-100">
+                                    <tr>
+                                        <th class="border border-neutral-300 px-4 py-2">1열</th>
+                                        <th class="border border-neutral-300 px-4 py-2">2열</th>
+                                        <th class="border border-neutral-300 px-4 py-2">3열</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="csv-preview-body">
+                                </tbody>
+                            </table>
+                        </div>
+                        <button onclick="downloadCsv()" class="btn-secondary mt-4">
+                            CSV 다운로드
                         </button>
                     </div>
                 </div>
             `;
         }
 
-        // 샘플 이미지 생성기 함수들
+        // 샘플 이미지 생성 함수들 (기존 함수들 이어서 사용)
         function generateSampleImage() {
             try {
                 const size = document.getElementById('sample-imageSize').value;
@@ -463,14 +1471,13 @@
                 const text = document.getElementById('sample-imageText').value;
                 const count = parseInt(document.getElementById('sample-imageCount').value) || 1;
 
-                // 포맷 체크
                 const formats = [];
                 document.querySelectorAll('input[name="imageFormat"]:checked').forEach(el => {
                     formats.push(el.value);
                 });
 
                 if (formats.length === 0) {
-                    alert('최소 하나의 이미지 포맷을 선택해주세요.');
+                    showToast('최소 하나의 이미지 포맷을 선택해주세요', 'error');
                     return;
                 }
 
@@ -482,7 +1489,6 @@
                 canvas.style.maxWidth = '100%';
                 canvas.style.height = 'auto';
 
-                // 첫 번째 이미지 미리보기
                 ctx.fillStyle = bgColor;
                 ctx.fillRect(0, 0, width, height);
 
@@ -492,22 +1498,19 @@
                 ctx.textBaseline = 'middle';
                 ctx.fillText(text, width/2, height/2 - Math.max(20, width/20));
 
-                // 숫자 표시
                 ctx.font = Math.max(40, width/10) + 'px Arial';
                 ctx.fillText('1', width/2, height/2 + Math.max(20, width/20));
 
                 ctx.font = Math.max(12, width/30) + 'px Arial';
                 ctx.fillText(width + ' × ' + height, width/2, height - Math.max(20, width/30));
 
-                // 전역 변수에 설정 저장
-                window.sampleImageSettings = {
-                    width, height, bgColor, text, count, formats
-                };
-
+                window.sampleImageSettings = { width, height, bgColor, text, count, formats };
                 document.getElementById('sample-downloadBtn').disabled = false;
+                
+                showToast('이미지 생성 완료', 'success');
             } catch (error) {
                 console.error('이미지 생성 오류:', error);
-                alert('이미지 생성 중 오류가 발생했습니다.');
+                showToast('이미지 생성 중 오류가 발생했습니다', 'error');
             }
         }
 
@@ -515,7 +1518,7 @@
             try {
                 const settings = window.sampleImageSettings;
                 if (!settings) {
-                    alert('먼저 이미지를 생성해주세요.');
+                    showToast('먼저 이미지를 생성해주세요', 'error');
                     return;
                 }
 
@@ -527,7 +1530,6 @@
                 canvas.height = height;
 
                 for (let i = 1; i <= count; i++) {
-                    // 캔버스 초기화
                     ctx.fillStyle = bgColor;
                     ctx.fillRect(0, 0, width, height);
 
@@ -537,18 +1539,17 @@
                     ctx.textBaseline = 'middle';
                     ctx.fillText(text, width/2, height/2 - Math.max(20, width/20));
 
-                    // 숫자 표시
                     ctx.font = Math.max(40, width/10) + 'px Arial';
                     ctx.fillText(i.toString(), width/2, height/2 + Math.max(20, width/20));
 
                     ctx.font = Math.max(12, width/30) + 'px Arial';
                     ctx.fillText(width + ' × ' + height, width/2, height - Math.max(20, width/30));
 
-                    // 각 포맷으로 다운로드
                     formats.forEach(format => {
                         const link = document.createElement('a');
                         const ext = format.toLowerCase();
-                        link.download = `sample-image-${i}.${ext}`;
+                        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                        link.download = `sample-image_${timestamp}_${i}.${ext}`;
 
                         if (ext === 'jpg' || ext === 'jpeg') {
                             link.href = canvas.toDataURL('image/jpeg', 0.9);
@@ -562,47 +1563,44 @@
                     });
                 }
 
-                showToast(`${count}개 이미지 × ${formats.length}개 포맷 = 총 ${count * formats.length}개 파일 다운로드 완료`);
+                showToast(`${count}개 이미지 × ${formats.length}개 포맷 = 총 ${count * formats.length}개 파일 다운로드 완료`, 'success');
             } catch (error) {
                 console.error('다운로드 오류:', error);
-                alert('다운로드 중 오류가 발생했습니다.');
+                showToast('다운로드 중 오류가 발생했습니다', 'error');
             }
         }
 
-        // QR XLSX 생성기 함수
+        // QR XLSX 생성 함수
         function generateQRXlsx() {
             try {
-                const count = parseInt(document.getElementById('qr-count').value);
-                const cid = document.getElementById('qr-cid').value;
-                const tid = document.getElementById('qr-tid').value;
-                const region = document.getElementById('qr-region').value;
-                const van = document.getElementById('qr-van').value;
-                const phone = document.getElementById('qr-phone').value;
-                const memo = document.getElementById('qr-memo').value;
+                const cid = document.getElementById('qr-cid').value || '';
+                const tid = document.getElementById('qr-tid').value || '';
+                const region = document.getElementById('qr-region').value || 'JEJU';
+                const van = document.getElementById('qr-van').value || 'KIS';
+                const phone = document.getElementById('qr-phone').value || '01025710628';
+                const remark = document.getElementById('qr-remark').value || '';
 
-                if (count <= 0 || count > 1000) {
-                    alert('행 수는 1~1000 범위로 입력해주세요.');
-                    return;
-                }
-
-                const data = [['cid', 'tid', '지역코드', 'van', '휴대폰번호', '비고']];
-                for (let i = 1; i <= count; i++) {
-                    data.push([cid, tid, region, van, phone, memo]);
-                }
+                const data = [
+                    ['cid', 'tid', '지역코드', 'van', '휴대폰번호', '비고'],
+                    [cid, tid, region, van, phone, remark]
+                ];
 
                 const ws = XLSX.utils.aoa_to_sheet(data);
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, 'QR_Data');
-                XLSX.writeFile(wb, 'QR_Data_' + new Date().toISOString().split('T')[0] + '.xlsx');
+                const timestamp = new Date().toISOString().split('T')[0];
+                const cidPart = cid ? `_${cid}` : '';
+                XLSX.writeFile(wb, `QR_Data${cidPart}_${timestamp}.xlsx`);
 
                 document.getElementById('qr-preview').classList.remove('hidden');
+                showToast('QR XLSX 파일이 생성되었습니다', 'success');
             } catch (error) {
                 console.error('XLSX 생성 오류:', error);
-                alert('XLSX 파일 생성 중 오류가 발생했습니다.');
+                showToast('XLSX 파일 생성 중 오류가 발생했습니다', 'error');
             }
         }
 
-        // CSV 열 토글 함수
+        // CSV 생성 함수들
         function toggleCsvColumn(columnNumber) {
             const options = document.getElementById(`col${columnNumber}-options`);
             const checkbox = document.getElementById(`col${columnNumber}-enable`);
@@ -616,7 +1614,6 @@
             }
         }
 
-        // CSV 생성기 함수
         function generateRandomString() {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             let result = '';
@@ -633,20 +1630,14 @@
                 const rowCount = parseInt(document.getElementById('csv-rowCount').value);
 
                 if (rowCount <= 0 || rowCount > 1000) {
-                    alert('행 수는 1~1000 범위로 입력해주세요.');
+                    showToast('행 수는 1~1000 범위로 입력해주세요', 'error');
                     return;
                 }
 
-                // 열 설정 확인
                 const col2Enabled = document.getElementById('col2-enable').checked;
                 const col3Enabled = document.getElementById('col3-enable').checked;
 
-                // 데이터 생성
                 csvData = [];
-                const headers = ['1열'];
-                if (col2Enabled) headers.push('2열');
-                if (col3Enabled) headers.push('3열');
-                csvData.push(headers);
 
                 for (let i = 0; i < rowCount; i++) {
                     const row = [];
@@ -685,12 +1676,11 @@
                     csvData.push(row);
                 }
 
-                // 미리보기 표시
                 displayCsvPreview();
-
+                showToast('CSV 미리보기가 생성되었습니다', 'success');
             } catch (error) {
                 console.error('CSV 생성 오류:', error);
-                alert('CSV 파일 생성 중 오류가 발생했습니다.');
+                showToast('CSV 파일 생성 중 오류가 발생했습니다', 'error');
             }
         }
 
@@ -705,25 +1695,24 @@
 
             tbody.innerHTML = '';
 
-            // 처음 10개 행만 표시
-            const previewRows = Math.min(10, csvData.length - 1);
-            for (let i = 1; i <= previewRows; i++) {
+            const previewRows = Math.min(10, csvData.length);
+            for (let i = 0; i < previewRows; i++) {
                 const tr = document.createElement('tr');
                 csvData[i].forEach(cell => {
                     const td = document.createElement('td');
-                    td.className = 'border border-gray-300 px-4 py-2';
+                    td.className = 'border border-neutral-300 px-4 py-2';
                     td.textContent = cell;
                     tr.appendChild(td);
                 });
                 tbody.appendChild(tr);
             }
 
-            if (csvData.length > 11) {
+            if (csvData.length > 10) {
                 const tr = document.createElement('tr');
                 const td = document.createElement('td');
                 td.colSpan = csvData[0].length;
-                td.className = 'border border-gray-300 px-4 py-2 text-center text-gray-500';
-                td.textContent = `... 외 ${csvData.length - 11}개 행`;
+                td.className = 'border border-neutral-300 px-4 py-2 text-center text-neutral-500';
+                td.textContent = `... 외 ${csvData.length - 10}개 행`;
                 tr.appendChild(td);
                 tbody.appendChild(tr);
             }
@@ -733,7 +1722,7 @@
 
         function downloadCsv() {
             if (csvData.length === 0) {
-                alert('먼저 CSV를 생성해주세요.');
+                showToast('먼저 CSV를 생성해주세요', 'error');
                 return;
             }
 
@@ -746,1004 +1735,42 @@
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', 'custom_data_' + new Date().toISOString().split('T')[0] + '.csv');
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            const rowCount = csvData.length;
+            link.setAttribute('download', `custom_data_${rowCount}rows_${timestamp}.csv`);
             link.click();
 
-            showToast('CSV 파일이 다운로드되었습니다.');
+            showToast('CSV 파일이 다운로드되었습니다', 'success');
         }
 
-        // 쿠키 관리 함수
-        function getAllCookies() {
-            const cookies = {};
-            document.cookie.split(';').forEach(cookie => {
-                const [name, value] = cookie.trim().split('=');
-                if (name) cookies[name] = value || '';
-            });
-            return cookies;
-        }
-
-        function setCookie(name, value, options = {}) {
-            let cookieString = `${name}=${value}`;
-
-            if (options.domain) cookieString += `; domain=${options.domain}`;
-            if (options.path) cookieString += `; path=${options.path}`;
-            if (options.expires) cookieString += `; expires=${options.expires}`;
-            if (options.maxAge) cookieString += `; max-age=${options.maxAge}`;
-            if (options.secure) cookieString += '; secure';
-            if (options.sameSite) cookieString += `; samesite=${options.sameSite}`;
-
-            document.cookie = cookieString;
-        }
-
-        function showCookieModal() {
-            const modal = document.getElementById('cookie-modal');
-            modal.classList.remove('hidden');
-            updateCookieList();
-        }
-
-        function closeCookieModal() {
-            document.getElementById('cookie-modal').classList.add('hidden');
-        }
-
-        function updateCookieList() {
-            const cookies = getAllCookies();
-            const cookieList = document.getElementById('cookie-list');
-
-            if (Object.keys(cookies).length === 0) {
-                cookieList.textContent = '쿠키가 없습니다.';
-            } else {
-                cookieList.innerHTML = Object.entries(cookies)
-                    .map(([name, value]) => `<div class="mb-1"><strong>${name}</strong> = ${value}</div>`)
-                    .join('');
-            }
-        }
-
-        function addCookie() {
-            const input = document.getElementById('cookie-input').value.trim();
-            if (!input) {
-                alert('쿠키 정보를 입력해주세요.');
-                return;
-            }
-
-            try {
-                const parts = input.split(';').map(p => p.trim());
-                const [name, value] = parts[0].split('=');
-
-                if (!name) {
-                    alert('쿠키 이름이 필요합니다.');
-                    return;
-                }
-
-                const options = {};
-                parts.slice(1).forEach(part => {
-                    const [key, val] = part.split('=');
-                    if (key) {
-                        options[key.toLowerCase()] = val || true;
-                    }
-                });
-
-                setCookie(name, value || '', options);
-                updateCookieList();
-                document.getElementById('cookie-input').value = '';
-                showToast('쿠키가 추가되었습니다.');
-            } catch (e) {
-                console.error('쿠키 추가 오류:', e);
-                alert('올바른 쿠키 형식이 아닙니다. 예: name=value; domain=.example.com');
-            }
-        }
-
-        // 토큰 관리 함수
-        function getStoredTokens() {
-            const tokens = {
-                localStorage: {},
-                sessionStorage: {},
-                cookies: {}
-            };
-
-            try {
-                // localStorage 토큰
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key && (key.includes('token') || key.includes('auth') || key.includes('session'))) {
-                        tokens.localStorage[key] = localStorage.getItem(key);
-                    }
-                }
-
-                // sessionStorage 토큰
-                for (let i = 0; i < sessionStorage.length; i++) {
-                    const key = sessionStorage.key(i);
-                    if (key && (key.includes('token') || key.includes('auth') || key.includes('session'))) {
-                        tokens.sessionStorage[key] = sessionStorage.getItem(key);
-                    }
-                }
-
-                // 쿠키 토큰
-                const cookies = getAllCookies();
-                Object.entries(cookies).forEach(([name, value]) => {
-                    if (name.includes('token') || name.includes('auth') || name.includes('session')) {
-                        tokens.cookies[name] = value;
-                    }
-                });
-            } catch (error) {
-                console.error('토큰 조회 오류:', error);
-            }
-
-            return tokens;
-        }
-
-        function updateTokenStatus() {
-            try {
-                const tokens = getStoredTokens();
-                const statusEl = document.getElementById('token-status');
-
-                const totalCount =
-                    Object.keys(tokens.localStorage).length +
-                    Object.keys(tokens.sessionStorage).length +
-                    Object.keys(tokens.cookies).length;
-
-                if (totalCount > 0) {
-                    statusEl.innerHTML =
-                        `<span class="text-green-600">✅ 토큰 ${totalCount}개 발견</span>` +
-                        `<span class="text-xs text-gray-500 block">` +
-                            `Local: ${Object.keys(tokens.localStorage).length}, ` +
-                            `Session: ${Object.keys(tokens.sessionStorage).length}, ` +
-                            `Cookie: ${Object.keys(tokens.cookies).length}` +
-                        `</span>`;
-                } else {
-                    statusEl.innerHTML = '<span class="text-red-600">❌ 토큰 없음</span>';
-                }
-            } catch (error) {
-                console.error('토큰 상태 업데이트 오류:', error);
-                document.getElementById('token-status').innerHTML = '<span class="text-red-600">❌ 오류</span>';
-            }
-        }
-
-        function syncTokens() {
-            try {
-                const tokens = getStoredTokens();
-                console.log('동기화할 토큰:', tokens);
-
-                // 열려있는 모든 창에 토큰 전송 시도
-                Object.values(windowRefs).forEach(win => {
-                    if (win && !win.closed) {
-                        try {
-                            win.postMessage({
-                                type: 'SYNC_TOKENS',
-                                tokens: tokens
-                            }, '*');
-                        } catch (e) {
-                            console.log('토큰 전송 실패:', e);
-                        }
-                    }
-                });
-
-                showToast('토큰 동기화를 시도했습니다. 개발자 콘솔을 확인하세요.');
-            } catch (error) {
-                console.error('토큰 동기화 오류:', error);
-                showToast('토큰 동기화 중 오류가 발생했습니다.', 'error');
-            }
-        }
-
-        // UI 함수
-        function selectFunction(funcId, element) {
-            try {
-                // 기존 탭들 모두 정리
-                clearAllTabs();
-
-                selectedFunction = funcId;
-                selectedAdmin = null;
-
-                document.querySelectorAll('.function-item').forEach(item => {
-                    item.classList.remove('function-selected');
-                });
-                element.classList.add('function-selected');
-
-                const adminPanel = document.getElementById('admin-panel');
-                adminPanel.classList.remove('hidden');
-                adminPanel.classList.add('flex');
-
-                document.getElementById('function-name').textContent = functionData[funcId].name;
-
-                const adminList = document.getElementById('admin-list');
-                adminList.innerHTML = '';
-
-                functionData[funcId].admins.forEach((admin, index) => {
-                    const adminItem = document.createElement('div');
-                    adminItem.className = 'admin-item p-4 cursor-pointer border-b border-gray-100 hover:bg-green-50';
-                    adminItem.innerHTML = `
-                        <div class="flex items-center justify-between">
-                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex-shrink-0">${index + 1}</span>
-                            <div class="flex-1 ml-3 admin-text">
-                                <div class="font-medium text-gray-800 flex items-center space-x-2">
-                                    <span>${admin.name}</span>
-                                    ${admin.isInternal ? '<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">내부</span>' : ''}
-                                </div>
-                                <div class="text-sm text-gray-500 mt-1">${admin.desc}</div>
-                                <div class="text-xs text-gray-400 mt-1 truncate">${admin.url}</div>
-                            </div>
-                            <div class="text-gray-400 admin-text ml-2">→</div>
-                        </div>
-                    `;
-
-                    adminItem.addEventListener('click', () => selectAdmin(admin, adminItem));
-                    adminList.appendChild(adminItem);
-                });
-
-                // 빈 상태 표시
-                const contentContainer = document.getElementById('content-container');
-                contentContainer.innerHTML = `
-                    <div id="empty-state" class="flex items-center justify-center h-full">
-                        <div class="text-center">
-                            <div class="text-6xl mb-4">🖥️</div>
-                            <h3 class="text-xl font-medium text-gray-500 mb-2">어드민을 선택하세요</h3>
-                            <p class="text-gray-400">왼쪽에서 어드민을 선택하세요</p>
-                        </div>
-                    </div>
-                `;
-            } catch (error) {
-                console.error('기능 선택 오류:', error);
-                showToast('기능 선택 중 오류가 발생했습니다.', 'error');
-            }
-        }
-
-        function selectAdmin(admin, element) {
-            try {
-                selectedAdmin = admin;
-
-                document.querySelectorAll('.admin-item').forEach(item => {
-                    item.classList.remove('admin-selected');
-                });
-                element.classList.add('admin-selected');
-
-                openAdminPage(admin);
-            } catch (error) {
-                console.error('어드민 선택 오류:', error);
-                showToast('어드민 선택 중 오류가 발생했습니다.', 'error');
-            }
-        }
-
-        function openAdminPage(admin) {
-            try {
-                if (admin.isInternal) {
-                    createTab(admin);
-                } else {
-                    const windowName = 'admin_' + admin.name.replace(/\s/g, '_');
-                    const windowFeatures = 'width=1200,height=800,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes';
-
-                    const win = window.open(admin.url, windowName, windowFeatures);
-                    if (win) {
-                        windowRefs[windowName] = win;
-
-                        const emptyState = document.getElementById('empty-state');
-                        emptyState.innerHTML = `
-                            <div class="text-center">
-                                <div class="text-6xl mb-4">🪟</div>
-                                <h3 class="text-xl font-medium text-gray-700 mb-2">${admin.name}</h3>
-                                <p class="text-gray-500 mb-4">새 창에서 열렸습니다</p>
-                                <div class="space-y-2">
-                                    <button onclick="focusWindow('${windowName}')" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                                        창으로 이동
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        showToast('팝업이 차단되었습니다. 팝업 허용 후 다시 시도하세요.', 'error');
-                    }
-                }
-            } catch (error) {
-                console.error('어드민 페이지 열기 오류:', error);
-                showToast('페이지를 열 수 없습니다.', 'error');
-            }
-        }
-
-        // 탭 관리 함수들
-        function clearAllTabs() {
-            try {
-                // 모든 탭 제거
-                tabs.forEach(tab => {
-                    const tabElement = document.getElementById(`tab-${tab.id}`);
-                    const tabContent = document.getElementById(`tab-content-${tab.id}`);
-                    if (tabElement) tabElement.remove();
-                    if (tabContent) tabContent.remove();
-                });
-
-                // 탭 배열 초기화
-                tabs = [];
-                activeTabId = null;
-
-                // 탭 리스트 비우기
-                const tabList = document.getElementById('tab-list');
-                if (tabList) {
-                    tabList.innerHTML = '';
-                }
-
-                // 탭 헤더 숨기기
-                document.getElementById('tab-header').classList.add('hidden');
-            } catch (error) {
-                console.error('탭 정리 오류:', error);
-            }
-        }
-
-        function createTab(admin) {
-            try {
-                const tabId = ++tabCounter;
-                const tab = {
-                    id: tabId,
-                    admin: admin,
-                    active: false
-                };
-                tabs.push(tab);
-
-                // 탭 헤더 추가
-                const tabElement = document.createElement('div');
-                tabElement.id = `tab-${tabId}`;
-                tabElement.className = 'flex items-center px-3 py-1 bg-gray-200 rounded cursor-pointer hover:bg-gray-300';
-                tabElement.innerHTML = `
-                    <span class="text-sm truncate max-w-[150px]">${admin.name}</span>
-                    <button class="ml-2 text-xs hover:text-red-500" onclick="closeTab(${tabId})">×</button>
-                `;
-                tabElement.addEventListener('click', (e) => {
-                    if (e.target.tagName !== 'BUTTON') {
-                        activateTab(tabId);
-                    }
-                });
-
-                document.getElementById('tab-list').appendChild(tabElement);
-
-                // 탭 콘텐츠 추가
-                const tabContent = document.createElement('div');
-                tabContent.id = `tab-content-${tabId}`;
-                tabContent.className = 'absolute inset-0 bg-white hidden flex flex-col';
-                tabContent.innerHTML = `
-                    <div class="bg-gray-100 p-2 border-b flex items-center space-x-2 flex-shrink-0">
-                        <button class="nav-btn px-2 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300" onclick="navigateTab(${tabId}, 'back')">←</button>
-                        <button class="nav-btn px-2 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300" onclick="navigateTab(${tabId}, 'forward')">→</button>
-                        <button class="nav-btn px-2 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300" onclick="navigateTab(${tabId}, 'refresh')">⟳</button>
-                        <input class="address-bar flex-1 px-2 py-1 border rounded text-xs" value="${admin.url}" id="address-${tabId}" onkeypress="handleAddressKeypress(event, ${tabId})">
-                        <button class="nav-btn px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600" onclick="navigateTab(${tabId}, 'go')">이동</button>
-                        <button class="nav-btn px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600" onclick="openInNewWindow('${admin.url}')">🪟</button>
-                    </div>
-                    <div class="flex-1 relative">
-                        <iframe src="${admin.url}"
-                                class="w-full h-full border-0"
-                                id="iframe-${tabId}"
-                                sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation">
-                        </iframe>
-                    </div>
-                `;
-
-                document.getElementById('content-container').appendChild(tabContent);
-
-                // 탭 헤더 표시
-                document.getElementById('tab-header').classList.remove('hidden');
-                document.getElementById('empty-state').classList.add('hidden');
-
-                // 탭 활성화
-                activateTab(tabId);
-
-                // iframe 로드 이벤트 처리
-                const iframe = document.getElementById(`iframe-${tabId}`);
-                iframe.addEventListener('load', () => {
-                    handleIframeLoad(iframe, admin);
-                });
-
-                iframe.addEventListener('error', () => {
-                    showErrorState(iframe.parentElement, '페이지를 로드할 수 없습니다.');
-                });
-            } catch (error) {
-                console.error('탭 생성 오류:', error);
-                showToast('탭 생성 중 오류가 발생했습니다.', 'error');
-            }
-        }
-
-        function activateTab(tabId) {
-            try {
-                activeTabId = tabId;
-
-                // 모든 탭 비활성화
-                tabs.forEach(tab => {
-                    const tabElement = document.getElementById(`tab-${tab.id}`);
-                    const tabContent = document.getElementById(`tab-content-${tab.id}`);
-                    if (tabElement) tabElement.classList.remove('tab-active');
-                    if (tabContent) tabContent.classList.add('hidden');
-                    tab.active = false;
-                });
-
-                // 선택된 탭 활성화
-                const selectedTab = tabs.find(t => t.id === tabId);
-                if (selectedTab) {
-                    const tabElement = document.getElementById(`tab-${tabId}`);
-                    const tabContent = document.getElementById(`tab-content-${tabId}`);
-                    if (tabElement) tabElement.classList.add('tab-active');
-                    if (tabContent) tabContent.classList.remove('hidden');
-                    selectedTab.active = true;
-                }
-            } catch (error) {
-                console.error('탭 활성화 오류:', error);
-            }
-        }
-
-        function closeTab(tabId) {
-            try {
-                const index = tabs.findIndex(t => t.id === tabId);
-                if (index > -1) {
-                    tabs.splice(index, 1);
-
-                    const tabElement = document.getElementById(`tab-${tabId}`);
-                    const tabContent = document.getElementById(`tab-content-${tabId}`);
-                    if (tabElement) tabElement.remove();
-                    if (tabContent) tabContent.remove();
-
-                    if (tabs.length === 0) {
-                        document.getElementById('tab-header').classList.add('hidden');
-                        document.getElementById('empty-state').classList.remove('hidden');
-                    } else if (activeTabId === tabId && tabs.length > 0) {
-                        activateTab(tabs[tabs.length - 1].id);
-                    }
-                }
-            } catch (error) {
-                console.error('탭 닫기 오류:', error);
-            }
-        }
-
-        function handleIframeLoad(iframe, admin) {
-            try {
-                // 동일 출처일 때만 접근 가능
-                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-
-                // 401 에러 체크
-                if (iframeDoc.title.includes('401') ||
-                    iframeDoc.body.textContent.includes('Unauthorized') ||
-                    iframeDoc.body.textContent.includes('401')) {
-
-                    console.log('401 에러 감지됨');
-
-                    // 기존 경고 제거
-                    const existingTip = iframe.parentElement.querySelector('.auth-warning');
-                    if (existingTip) existingTip.remove();
-
-                    // 새 경고 표시
-                    const tipDiv = document.createElement('div');
-                    tipDiv.className = 'auth-warning absolute top-0 left-0 right-0 bg-yellow-50 border-b border-yellow-200 p-3 z-10';
-                    tipDiv.innerHTML = `
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-yellow-600">⚠️</span>
-                                <span class="text-sm text-yellow-800">401 에러가 발생했습니다. 쿠키 동기화를 시도하거나 페이지를 새로고침하세요.</span>
-                            </div>
-                            <button onclick="this.parentElement.parentElement.remove()" class="text-yellow-600 hover:text-yellow-800">×</button>
-                        </div>
-                    `;
-                    iframe.parentElement.appendChild(tipDiv);
-                }
-            } catch (e) {
-                // Cross-origin 제한으로 접근 불가 (정상적인 상황)
-                console.log('iframe 콘텐츠 접근 불가 (cross-origin)');
-            }
-        }
-
-        // 네비게이션 함수들
-        function navigateTab(tabId, action) {
-            try {
-                const iframe = document.getElementById(`iframe-${tabId}`);
-                const addressBar = document.getElementById(`address-${tabId}`);
-
-                if (!iframe || !addressBar) return;
-
-                switch (action) {
-                    case 'back':
-                        try {
-                            iframe.contentWindow.history.back();
-                        } catch (e) {
-                            console.log('뒤로가기 실패:', e);
-                        }
-                        break;
-                    case 'forward':
-                        try {
-                            iframe.contentWindow.history.forward();
-                        } catch (e) {
-                            console.log('앞으로가기 실패:', e);
-                        }
-                        break;
-                    case 'refresh':
-                        iframe.src = iframe.src;
-                        break;
-                    case 'go':
-                        const url = addressBar.value;
-                        if (url && url.trim()) {
-                            if (isValidUrl(url.trim())) {
-                                iframe.src = url.trim();
-                            } else {
-                                showToast('올바른 URL 형식이 아닙니다.', 'error');
-                            }
-                        }
-                        break;
-                }
-            } catch (error) {
-                console.error('네비게이션 오류:', error);
-                showToast('네비게이션 중 오류가 발생했습니다.', 'error');
-            }
-        }
-
-        function handleAddressKeypress(event, tabId) {
-            if (event.key === 'Enter') {
-                navigateTab(tabId, 'go');
-            }
-        }
-
-        function openInNewWindow(url) {
-            try {
-                if (!isValidUrl(url)) {
-                    showToast('올바른 URL이 아닙니다.', 'error');
-                    return;
-                }
-
-                const windowFeatures = 'width=1200,height=800,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes';
-                const win = window.open(url, '_blank', windowFeatures);
-
-                if (!win) {
-                    showToast('팝업이 차단되었습니다. 팝업 허용 후 다시 시도하세요.', 'error');
-                }
-            } catch (error) {
-                console.error('새 창 열기 오류:', error);
-                showToast('새 창을 열 수 없습니다.', 'error');
-            }
-        }
-
-        function focusWindow(windowName) {
-            try {
-                const win = windowRefs[windowName];
-                if (win && !win.closed) {
-                    win.focus();
-                } else {
-                    showToast('창이 닫혔습니다. 다시 선택해주세요.', 'error');
-                    delete windowRefs[windowName];
-                }
-            } catch (error) {
-                console.error('창 포커스 오류:', error);
-                showToast('창에 접근할 수 없습니다.', 'error');
-            }
-        }
-
-        // 사이드바 토글 함수들
-        function toggleFunctionSidebar() {
-            try {
-                const sidebar = document.getElementById('function-sidebar');
-                const adminPanel = document.getElementById('admin-panel');
-                const icon = document.getElementById('function-toggle-icon');
-
-                sidebar.classList.toggle('sidebar-collapsed');
-
-                if (sidebar.classList.contains('sidebar-collapsed')) {
-                    icon.textContent = '›';
-                    // 기능 목록이 접히면 어드민 패널도 숨김
-                    adminPanel.classList.add('hidden');
-                    adminPanel.classList.remove('flex');
-                } else {
-                    icon.textContent = '‹';
-                }
-            } catch (error) {
-                console.error('사이드바 토글 오류:', error);
-            }
-        }
-
-        function toggleDataGenerator() {
-            try {
-                const dataGeneratorFunctions = document.querySelector('.data-generator-functions');
-                const arrow = document.getElementById('data-generator-arrow');
-
-                if (dataGeneratorFunctions.style.display === 'none') {
-                    dataGeneratorFunctions.style.display = 'block';
-                    arrow.textContent = '▲';
-                } else {
-                    dataGeneratorFunctions.style.display = 'none';
-                    arrow.textContent = '▼';
-                }
-            } catch (error) {
-                console.error('데이터 생성기 토글 오류:', error);
-            }
-        }
-
-        function toggleAdminFunctions() {
-            try {
-                const adminFunctions = document.querySelector('.admin-functions');
-                const arrow = document.getElementById('admin-functions-arrow');
-
-                if (adminFunctions.style.display === 'none') {
-                    adminFunctions.style.display = 'block';
-                    arrow.textContent = '▲';
-                } else {
-                    adminFunctions.style.display = 'none';
-                    arrow.textContent = '▼';
-                }
-            } catch (error) {
-                console.error('어드민 기능 토글 오류:', error);
-            }
-        }
-
-        function openAdminFunction(functionId) {
-            selectFunction(functionId, document.querySelector(`[data-function="${functionId}"]`));
-        }
-
-        // 직접 도구 열기 함수 (2단계 메뉴 없이 바로 도구 표시)
-        function openDirectTool(toolId) {
-            try {
-                // 기존 탭들 모두 정리
-                clearAllTabs();
-
-                // 어드민 패널 숨기기
-                const adminPanel = document.getElementById('admin-panel');
-                adminPanel.classList.add('hidden');
-
-                // 탭 헤더 숨기기
-                document.getElementById('tab-header').classList.add('hidden');
-
-                // 빈 상태 숨기기
-                const emptyState = document.getElementById('empty-state');
-                if (emptyState) {
-                    emptyState.style.display = 'none';
-                }
-
-                // 기존 콘텐츠 정리
-                const contentContainer = document.getElementById('content-container');
-                let toolHTML = '';
-
-                // 로딩 상태 표시
-                showLoadingState(contentContainer);
-
-                setTimeout(() => {
-                    switch(toolId) {
-                        case 'sample-image-generator':
-                            toolHTML = getSampleImageGeneratorHTML();
-                            break;
-                        case 'qr-xlsx-generator':
-                            toolHTML = getQRXlsxGeneratorHTML();
-                            break;
-                        case 'csv-generator':
-                            toolHTML = getCsvGeneratorHTML();
-                            break;
-                        default:
-                            toolHTML = '<div class="p-8 text-center text-red-500">도구를 찾을 수 없습니다.</div>';
-                    }
-
-                    // 메인 콘텐츠 영역에 도구 표시
-                    contentContainer.innerHTML = toolHTML;
-
-                    // 샘플 이미지 생성기인 경우 초기 이미지 생성
-                    if (toolId === 'sample-image-generator') {
-                        setTimeout(generateSampleImage, 100);
-                    }
-                }, 300);
-            } catch (error) {
-                console.error('직접 도구 열기 오류:', error);
-                showErrorState(document.getElementById('content-container'), '도구를 로드할 수 없습니다.');
-            }
-        }
-
-        function toggleAdminPanel() {
-            try {
-                const panel = document.getElementById('admin-panel');
-                const icon = document.getElementById('admin-toggle-icon');
-
-                panel.classList.toggle('admin-panel-collapsed');
-
-                if (panel.classList.contains('admin-panel-collapsed')) {
-                    icon.textContent = '›';
-                } else {
-                    icon.textContent = '‹';
-                }
-            } catch (error) {
-                console.error('어드민 패널 토글 오류:', error);
-            }
-        }
-
-        // 도구 HTML 생성 함수들
-        function getSampleImageGeneratorHTML() {
-            return `
-                <div class="h-full overflow-auto bg-white">
-                    <div class="p-6 border-b border-gray-200">
-                        <h1 class="text-2xl font-bold text-gray-800">샘플 이미지 생성기</h1>
-                        <p class="text-gray-600 mt-2">다양한 포맷의 샘플 이미지를 생성할 수 있습니다.</p>
-                    </div>
-                    <div class="p-6">
-                        <div class="max-w-2xl mx-auto">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">이미지 크기</label>
-                                        <select id="sample-imageSize" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                                            <option value="100x100">100x100</option>
-                                            <option value="200x200">200x200</option>
-                                            <option value="400x400" selected>400x400</option>
-                                            <option value="800x600">800x600</option>
-                                            <option value="1920x1080">1920x1080</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">배경색</label>
-                                        <input type="color" id="sample-bgColor" value="#f0f0f0" class="w-full h-10 border border-gray-300 rounded-md">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">텍스트</label>
-                                        <input type="text" id="sample-imageText" value="Sample Image" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">생성할 이미지 개수</label>
-                                        <input type="number" id="sample-imageCount" value="5" min="1" max="100" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">이미지 포맷</label>
-                                        <div class="space-y-2">
-                                            <label class="flex items-center">
-                                                <input type="checkbox" name="imageFormat" value="PNG" checked class="mr-2">
-                                                <span>PNG</span>
-                                            </label>
-                                            <label class="flex items-center">
-                                                <input type="checkbox" name="imageFormat" value="JPG" checked class="mr-2">
-                                                <span>JPG</span>
-                                            </label>
-                                            <label class="flex items-center">
-                                                <input type="checkbox" name="imageFormat" value="JPEG" checked class="mr-2">
-                                                <span>JPEG</span>
-                                            </label>
-                                            <label class="flex items-center">
-                                                <input type="checkbox" name="imageFormat" value="WEBP" checked class="mr-2">
-                                                <span>WEBP</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <button onclick="generateSampleImage()" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">
-                                        이미지 생성하기
-                                    </button>
-                                </div>
-                                <div>
-                                    <div class="border border-gray-300 rounded-md p-4 bg-gray-50 min-h-64 flex items-center justify-center">
-                                        <canvas id="sample-canvas" class="border border-gray-200"></canvas>
-                                    </div>
-                                    <button id="sample-downloadBtn" onclick="downloadSampleImage()" class="w-full mt-4 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:opacity-50" disabled>
-                                        이미지 다운로드
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function getQRXlsxGeneratorHTML() {
-            return `
-                <div class="h-full overflow-auto bg-white">
-                    <div class="p-6 border-b border-gray-200">
-                        <h1 class="text-2xl font-bold text-gray-800">QR XLSX 생성기</h1>
-                        <p class="text-gray-600 mt-2">QR 코드 정보가 포함된 XLSX 파일을 생성할 수 있습니다.</p>
-                    </div>
-                    <div class="p-6">
-                        <div class="max-w-4xl mx-auto space-y-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">생성할 QR 개수</label>
-                                    <input type="number" id="qr-count" value="10" min="1" max="1000" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">베이스 URL</label>
-                                    <input type="text" id="qr-baseUrl" value="https://example.com/qr/" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-                                </div>
-                            </div>
-                            <button onclick="generateQRXlsx()" class="bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700">QR XLSX 파일 생성</button>
-                            <div id="qr-preview" class="mt-6 p-4 border border-gray-300 rounded-md bg-gray-50 hidden">
-                                <h3 class="text-lg font-medium mb-4">생성 완료!</h3>
-                                <p>XLSX 파일이 다운로드되었습니다.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function getCsvGeneratorHTML() {
-            return `
-                <div class="h-full overflow-auto bg-white">
-                    <div class="p-6 border-b border-gray-200">
-                        <h1 class="text-2xl font-bold text-gray-800">CSV 생성기</h1>
-                        <p class="text-gray-600 mt-2">커스텀 CSV 파일을 생성할 수 있습니다.</p>
-                    </div>
-                    <div class="p-6">
-                        <div class="max-w-4xl mx-auto space-y-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">생성할 행 수</label>
-                                <input type="number" id="csv-rowCount" value="10" min="1" max="1000" class="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md">
-                            </div>
-
-                            <div class="space-y-4">
-                                <h3 class="text-lg font-medium text-gray-800">열 설정</h3>
-
-                                <!-- 1열 (필수) -->
-                                <div class="p-4 border border-gray-200 rounded-md">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <span class="font-medium">1열 (필수)</span>
-                                    </div>
-                                    <div class="space-y-3">
-                                        <div>
-                                            <label class="flex items-center">
-                                                <input type="radio" name="col1Type" value="random" checked class="mr-2">
-                                                <span>텍스트 입력</span>
-                                            </label>
-                                            <input type="text" id="col1-text" placeholder="텍스트를 입력하세요" class="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md">
-                                        </div>
-                                        <div>
-                                            <label class="flex items-center">
-                                                <input type="radio" name="col1Type" value="custom" class="mr-2">
-                                                <span>난수발생</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 2열 (선택) -->
-                                <div class="p-4 border border-gray-200 rounded-md">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <span class="font-medium">2열 포함</span>
-                                        <label class="flex items-center">
-                                            <input type="checkbox" id="col2-enable" checked class="mr-2" onchange="toggleCsvColumn(2)">
-                                            <span>사용</span>
-                                        </label>
-                                    </div>
-                                    <div class="space-y-3" id="col2-options">
-                                        <div>
-                                            <label class="flex items-center">
-                                                <input type="radio" name="col2Type" value="random" checked class="mr-2">
-                                                <span>텍스트 입력</span>
-                                            </label>
-                                            <input type="text" id="col2-text" placeholder="텍스트를 입력하세요" class="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md">
-                                        </div>
-                                        <div>
-                                            <label class="flex items-center">
-                                                <input type="radio" name="col2Type" value="custom" class="mr-2">
-                                                <span>난수발생</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 3열 (선택) -->
-                                <div class="p-4 border border-gray-200 rounded-md">
-                                    <div class="flex items-center justify-between mb-3">
-                                        <span class="font-medium">3열 포함</span>
-                                        <label class="flex items-center">
-                                            <input type="checkbox" id="col3-enable" class="mr-2" onchange="toggleCsvColumn(3)">
-                                            <span>사용</span>
-                                        </label>
-                                    </div>
-                                    <div class="space-y-3 hidden" id="col3-options">
-                                        <div>
-                                            <label class="flex items-center">
-                                                <input type="radio" name="col3Type" value="random" checked class="mr-2">
-                                                <span>텍스트 입력</span>
-                                            </label>
-                                            <input type="text" id="col3-text" placeholder="텍스트를 입력하세요" class="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md">
-                                        </div>
-                                        <div>
-                                            <label class="flex items-center">
-                                                <input type="radio" name="col3Type" value="custom" class="mr-2">
-                                                <span>난수발생</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button onclick="generateCsvFile()" class="bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700">미리보기</button>
-
-                            <div id="csv-preview" class="mt-6 p-4 border border-gray-300 rounded-md bg-gray-50 hidden">
-                                <h3 class="text-lg font-medium mb-4">CSV 미리보기</h3>
-                                <div id="csv-preview-content" class="overflow-auto max-h-64">
-                                    <table class="min-w-full border-collapse">
-                                        <thead>
-                                            <tr class="bg-gray-200">
-                                                <th class="border border-gray-300 px-4 py-2">1열</th>
-                                                <th class="border border-gray-300 px-4 py-2">2열</th>
-                                                <th class="border border-gray-300 px-4 py-2">3열</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="csv-preview-body">
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <button onclick="downloadCsv()" class="mt-4 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
-                                    CSV 다운로드
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // 이벤트 리스너
+        // 초기화
         document.addEventListener('DOMContentLoaded', function() {
-            try {
-                // 어드민 기능 항목 클릭 이벤트
-                document.querySelectorAll('.admin-functions .function-item').forEach(item => {
-                    item.addEventListener('click', function() {
-                        const funcId = this.dataset.function;
-                        if (funcId) {
-                            openAdminFunction(funcId);
-                        }
-                    });
-                });
-
-                // 데이터 생성 도구 항목 클릭 이벤트
-                document.querySelectorAll('.data-generator-functions .function-item').forEach(item => {
-                    item.addEventListener('click', function() {
-                        const funcId = this.dataset.function;
-                        if (funcId) {
-                            openDirectTool(funcId);
-                        }
-                    });
-                });
-
-                // 쿠키 동기화 버튼
-                const cookieSyncBtn = document.getElementById('cookie-sync-btn');
-                if (cookieSyncBtn) {
-                    cookieSyncBtn.addEventListener('click', showCookieModal);
-                }
-
-                // 토큰 동기화 버튼
-                const tokenSyncBtn = document.getElementById('token-sync-btn');
-                if (tokenSyncBtn) {
-                    tokenSyncBtn.addEventListener('click', syncTokens);
-                }
-
-                // 새 탭 버튼
-                const newTabBtn = document.getElementById('new-tab-btn');
-                if (newTabBtn) {
-                    newTabBtn.addEventListener('click', function() {
-                        if (selectedAdmin) {
-                            createTab(selectedAdmin);
-                        } else {
-                            showToast('먼저 어드민을 선택하세요.', 'error');
-                        }
-                    });
-                }
-
-                // 새 창 버튼
-                const newWindowBtn = document.getElementById('new-window-btn');
-                if (newWindowBtn) {
-                    newWindowBtn.addEventListener('click', function() {
-                        if (selectedAdmin) {
-                            openInNewWindow(selectedAdmin.url);
-                        } else {
-                            showToast('먼저 어드민을 선택하세요.', 'error');
-                        }
-                    });
-                }
-
-                // 쿠키 입력창 엔터키 처리
-                const cookieInput = document.getElementById('cookie-input');
-                if (cookieInput) {
-                    cookieInput.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            addCookie();
-                        }
-                    });
-                }
-
-                // 초기화
-                updateTokenStatus();
-
-                // 주기적으로 토큰 상태 업데이트
-                setInterval(updateTokenStatus, 5000);
-
-                console.log('사장님 플러스 헬프센터가 성공적으로 로드되었습니다.');
-            } catch (error) {
-                console.error('초기화 오류:', error);
-                showToast('애플리케이션 초기화 중 오류가 발생했습니다.', 'error');
+            // 저장된 언어 설정 불러오기
+            const savedLanguage = localStorage.getItem('preferred-language');
+            if (savedLanguage && (savedLanguage === 'ko' || savedLanguage === 'en')) {
+                currentLanguage = savedLanguage;
             }
+            
+            // 초기 UI 설정
+            updateLanguageUI();
+            updateAllTexts();
+            updateTokenStatus();
+            updateDashboardStats();
+            
+            // 주기적으로 토큰 상태 업데이트
+            setInterval(updateTokenStatus, 30000);
+            
+            // 주기적으로 대시보드 통계 업데이트
+            setInterval(() => {
+                if (currentTab === 'dashboard') {
+                    updateDashboardStats();
+                }
+            }, 60000);
+            
+            console.log('CEO+ Help v2.1 - 다국어 지원 완료');
         });
 
-        // 메시지 수신 (다른 창에서의 토큰 동기화 요청)
+        // 메시지 수신 처리
         window.addEventListener('message', function(event) {
             try {
                 if (event.data && event.data.type === 'REQUEST_TOKENS') {
@@ -1761,31 +1788,16 @@
         // 에러 전역 처리
         window.addEventListener('error', function(event) {
             console.error('전역 에러:', event.error);
-            showToast('예상치 못한 오류가 발생했습니다.', 'error');
+            showToast('예상치 못한 오류가 발생했습니다', 'error');
         });
+    </script>
 
-        // 글로벌 함수들 (onclick에서 사용)
-        window.closeTab = closeTab;
-        window.focusWindow = focusWindow;
-        window.navigateTab = navigateTab;
-        window.handleAddressKeypress = handleAddressKeypress;
-        window.openInNewWindow = openInNewWindow;
-        window.toggleDataGenerator = toggleDataGenerator;
-        window.toggleAdminFunctions = toggleAdminFunctions;
-        window.toggleFunctionSidebar = toggleFunctionSidebar;
-        window.toggleAdminPanel = toggleAdminPanel;
-        window.openAdminFunction = openAdminFunction;
-        window.openDirectTool = openDirectTool;
-        window.showCookieModal = showCookieModal;
-        window.closeCookieModal = closeCookieModal;
-        window.addCookie = addCookie;
-        window.syncTokens = syncTokens;
-        window.generateSampleImage = generateSampleImage;
-        window.downloadSampleImage = downloadSampleImage;
-        window.generateQRXlsx = generateQRXlsx;
-        window.generateCsvFile = generateCsvFile;
-        window.downloadCsv = downloadCsv;
-        window.toggleCsvColumn = toggleCsvColumn;
+    <!-- 임시 파일 정리 스크립트 -->
+    <script>
+        // 개발용 임시 파일 정리
+        const tempScript = document.createElement('script');
+        tempScript.text = 'console.log("CEO+ Help v2.0 - 완전 개편 완료");';
+        document.head.appendChild(tempScript);
     </script>
 </body>
 </html>
