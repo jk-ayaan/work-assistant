@@ -771,6 +771,8 @@
         let currentTab = 'dashboard';
         let windowRefs = {};
         let currentLanguage = 'ko'; // 기본 언어는 한국어
+        let notificationHistory = []; // 알림 히스토리
+        let maxNotifications = 50; // 최대 알림 보관 개수
 
         // 다국어 텍스트 데이터
         const translations = {
@@ -803,7 +805,28 @@
                 settingsDesc: "시스템 설정 및 토큰 관리",
                 tokenManagement: "토큰 관리",
                 systemSettings: "시스템 설정",
-                systemInfo: "시스템 정보"
+                systemInfo: "시스템 정보",
+                
+                // 알림 및 활동
+                notifications: "알림",
+                noNotifications: "새로운 알림이 없습니다",
+                clearNotifications: "모든 알림 지우기",
+                requestStarted: "요청 시작됨",
+                requestCompleted: "요청 완료됨",
+                requestFailed: "요청 실패",
+                
+                // 요청 타입
+                adminToolRequest: "어드민 도구 실행",
+                dataGenerationRequest: "데이터 생성",
+                tokenSyncRequest: "토큰 동기화",
+                cookieManagementRequest: "쿠키 관리",
+                languageChangeRequest: "언어 변경",
+                
+                // 시간 표시
+                justNow: "방금 전",
+                minutesAgo: "분 전",
+                hoursAgo: "시간 전",
+                daysAgo: "일 전"
             },
             en: {
                 // 헤더 및 네비게이션
@@ -834,7 +857,28 @@
                 settingsDesc: "System settings and token management",
                 tokenManagement: "Token Management",
                 systemSettings: "System Settings", 
-                systemInfo: "System Information"
+                systemInfo: "System Information",
+                
+                // 알림 및 활동
+                notifications: "Notifications",
+                noNotifications: "No new notifications",
+                clearNotifications: "Clear all notifications",
+                requestStarted: "Request started",
+                requestCompleted: "Request completed",
+                requestFailed: "Request failed",
+                
+                // 요청 타입
+                adminToolRequest: "Admin tool execution",
+                dataGenerationRequest: "Data generation",
+                tokenSyncRequest: "Token synchronization",
+                cookieManagementRequest: "Cookie management",
+                languageChangeRequest: "Language change",
+                
+                // 시간 표시
+                justNow: "Just now",
+                minutesAgo: "min ago",
+                hoursAgo: "hr ago",
+                daysAgo: "day ago"
             }
         };
         
@@ -894,9 +938,59 @@
         function updateDashboardStats() {
             // 실제 데이터로 업데이트하는 로직을 여기에 구현
             document.getElementById('active-sessions').textContent = Math.floor(Math.random() * 20) + 5;
-            document.getElementById('completed-tasks').textContent = Math.floor(Math.random() * 100) + 20;
+            
+            // 완료된 작업 수는 성공한 알림 개수 반영
+            const completedTasks = notificationHistory.filter(n => n.status === 'completed').length;
+            document.getElementById('completed-tasks').textContent = completedTasks + Math.floor(Math.random() * 20) + 20;
+            
             document.getElementById('token-count').textContent = Math.floor(Math.random() * 15) + 3;
-            document.getElementById('file-count').textContent = Math.floor(Math.random() * 300) + 50;
+            
+            // 생성된 파일 수는 데이터 생성 완료 알림 개수 반영  
+            const generatedFiles = notificationHistory.filter(n => n.type === 'data-generation' && n.status === 'completed').length;
+            document.getElementById('file-count').textContent = generatedFiles + Math.floor(Math.random() * 100) + 50;
+        }
+
+        // 최근 활동 업데이트 (알림 히스토리 기반)
+        function updateRecentActivities() {
+            const container = document.getElementById('recent-activities');
+            if (!container) return;
+            
+            const recentNotifications = notificationHistory.slice(0, 3); // 최근 3개만
+            
+            if (recentNotifications.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-neutral-500 py-8">
+                        <svg class="w-12 h-12 mx-auto mb-3 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <p class="text-sm">${currentLanguage === 'ko' ? '최근 활동이 없습니다' : 'No recent activities'}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let activitiesHTML = '';
+            recentNotifications.forEach(notification => {
+                const timeAgo = getTimeAgo(notification.timestamp);
+                const statusColor = getStatusColor(notification.status).replace('bg-', '').replace('-100', '-500');
+                const typeIcon = getTypeIcon(notification.type);
+                
+                activitiesHTML += `
+                    <div class="flex items-center space-x-4 p-3 bg-neutral-50 rounded-lg">
+                        <div class="w-8 h-8 bg-${statusColor} rounded-full flex items-center justify-center">
+                            ${typeIcon}
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-medium text-neutral-800">
+                                ${getActionDisplayName(notification.type, notification.action)}
+                            </p>
+                            <p class="text-sm text-neutral-600">${timeAgo}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = activitiesHTML;
         }
 
         // 어드민 도구 열기
@@ -939,19 +1033,33 @@
 
         // 어드민 URL 열기
         function openAdminUrl(url, name, isInternal) {
-            if (isInternal) {
-                // 내부 도구는 iframe으로 열기
-                showToast(`${name} 도구를 새 창에서 엽니다`, 'success');
-            }
-            
-            const windowName = 'admin_' + name.replace(/\s/g, '_');
-            const win = window.open(url, windowName, 'width=1200,height=800,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes');
-            
-            if (win) {
-                windowRefs[windowName] = win;
-                showToast(`${name}이(가) 새 창에서 열렸습니다`, 'success');
-            } else {
-                showToast('팝업이 차단되었습니다. 팝업 허용 후 다시 시도하세요', 'error');
+            try {
+                // 알림 추가 - 시작
+                addNotification('admin-tool', name, 'started', `URL: ${url}`);
+                
+                if (isInternal) {
+                    // 내부 도구는 iframe으로 열기
+                    showToast(`${name} 도구를 새 창에서 엽니다`, 'success');
+                }
+                
+                const windowName = 'admin_' + name.replace(/\s/g, '_');
+                const win = window.open(url, windowName, 'width=1200,height=800,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes');
+                
+                if (win) {
+                    windowRefs[windowName] = win;
+                    
+                    // 알림 추가 - 완료
+                    addNotification('admin-tool', name, 'completed', `새 창에서 열림`);
+                    showToast(`${name}이(가) 새 창에서 열렸습니다`, 'success');
+                } else {
+                    // 알림 추가 - 실패
+                    addNotification('admin-tool', name, 'failed', '팝업 차단됨');
+                    showToast('팝업이 차단되었습니다. 팝업 허용 후 다시 시도하세요', 'error');
+                }
+            } catch (error) {
+                console.error('어드민 도구 실행 오류:', error);
+                addNotification('admin-tool', name, 'failed', error.message);
+                showToast('도구 실행 중 오류가 발생했습니다', 'error');
             }
         }
 
@@ -1021,17 +1129,27 @@
         // 언어 변경 함수
         function toggleLanguage() {
             try {
-                currentLanguage = currentLanguage === 'ko' ? 'en' : 'ko';
+                const previousLang = currentLanguage;
+                const newLang = currentLanguage === 'ko' ? 'en' : 'ko';
+                
+                // 알림 추가 - 시작
+                addNotification('language-change', `${previousLang.toUpperCase()} → ${newLang.toUpperCase()}`, 'started');
+                
+                currentLanguage = newLang;
                 updateLanguageUI();
                 updateAllTexts();
                 
                 // localStorage에 언어 설정 저장
                 localStorage.setItem('preferred-language', currentLanguage);
                 
+                // 알림 추가 - 완료
+                addNotification('language-change', `${previousLang.toUpperCase()} → ${newLang.toUpperCase()}`, 'completed');
+                
                 const langText = currentLanguage === 'ko' ? '한국어' : 'English';
                 showToast(`언어가 ${langText}로 변경되었습니다`, 'success');
             } catch (error) {
                 console.error('언어 변경 오류:', error);
+                addNotification('language-change', 'Language toggle', 'failed', error.message);
                 showToast('언어 변경 중 오류가 발생했습니다', 'error');
             }
         }
@@ -1095,9 +1213,236 @@
             }
         }
 
-        // 알림 표시
+        // 알림 히스토리에 항목 추가
+        function addNotification(type, action, status, details = null) {
+            const notification = {
+                id: Date.now() + Math.random(),
+                type: type, // 'admin-tool', 'data-generation', 'token-sync', 'cookie-management', 'language-change'
+                action: action, // 구체적인 액션명
+                status: status, // 'started', 'completed', 'failed'
+                details: details, // 추가 정보
+                timestamp: new Date(),
+                read: false
+            };
+            
+            notificationHistory.unshift(notification);
+            
+            // 최대 개수 초과 시 오래된 알림 제거
+            if (notificationHistory.length > maxNotifications) {
+                notificationHistory = notificationHistory.slice(0, maxNotifications);
+            }
+            
+            // localStorage에 저장
+            localStorage.setItem('notificationHistory', JSON.stringify(notificationHistory));
+            
+            // 알림 배지 업데이트
+            updateNotificationBadge();
+            
+            // 대시보드가 활성화되어 있으면 실시간 업데이트
+            if (currentTab === 'dashboard') {
+                updateRecentActivities();
+            }
+        }
+
+        // 알림 배지 업데이트
+        function updateNotificationBadge() {
+            const badge = document.getElementById('notification-badge');
+            const unreadCount = notificationHistory.filter(n => !n.read).length;
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // 알림 목록 표시
         function showNotifications() {
-            showToast('새로운 알림이 3개 있습니다', 'success');
+            const t = translations[currentLanguage];
+            
+            // 모든 알림을 읽음으로 표시
+            notificationHistory.forEach(n => n.read = true);
+            localStorage.setItem('notificationHistory', JSON.stringify(notificationHistory));
+            updateNotificationBadge();
+            
+            let notificationHTML = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-end z-50 pt-16 pr-4" onclick="closeNotifications()">
+                    <div class="bg-white rounded-2xl w-96 max-h-96 overflow-hidden shadow-2xl" onclick="event.stopPropagation()">
+                        <div class="p-4 border-b border-neutral-200 flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-neutral-800">${t.notifications}</h3>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="clearAllNotifications()" class="text-xs px-3 py-1 bg-neutral-100 hover:bg-neutral-200 rounded-md text-neutral-600 transition-colors">
+                                    ${t.clearNotifications}
+                                </button>
+                                <button onclick="closeNotifications()" class="p-1 hover:bg-neutral-100 rounded transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-y-auto max-h-80">
+            `;
+            
+            if (notificationHistory.length === 0) {
+                notificationHTML += `
+                    <div class="p-8 text-center text-neutral-500">
+                        <svg class="w-12 h-12 mx-auto mb-3 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m13.73 21a2 2 0 01-3.46 0"></path>
+                        </svg>
+                        <p>${t.noNotifications}</p>
+                    </div>
+                `;
+            } else {
+                notificationHistory.forEach(notification => {
+                    const timeAgo = getTimeAgo(notification.timestamp);
+                    const statusColor = getStatusColor(notification.status);
+                    const statusIcon = getStatusIcon(notification.status);
+                    const typeIcon = getTypeIcon(notification.type);
+                    
+                    notificationHTML += `
+                        <div class="p-4 border-b border-neutral-100 hover:bg-neutral-50 transition-colors">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 ${statusColor} rounded-full flex items-center justify-center flex-shrink-0">
+                                    ${typeIcon}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-medium text-neutral-800 text-sm">
+                                        ${getActionDisplayName(notification.type, notification.action)}
+                                    </p>
+                                    <div class="flex items-center space-x-2 mt-1">
+                                        <span class="text-xs ${statusColor.replace('bg-', 'text-').replace('-100', '-600')} font-medium">
+                                            ${statusIcon} ${getStatusDisplayName(notification.status)}
+                                        </span>
+                                        <span class="text-xs text-neutral-500">${timeAgo}</span>
+                                    </div>
+                                    ${notification.details ? `<p class="text-xs text-neutral-500 mt-1">${notification.details}</p>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            notificationHTML += `
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 알림 패널 표시
+            const existingPanel = document.getElementById('notification-panel');
+            if (existingPanel) {
+                existingPanel.remove();
+            }
+            
+            const panel = document.createElement('div');
+            panel.id = 'notification-panel';
+            panel.innerHTML = notificationHTML;
+            document.body.appendChild(panel);
+        }
+
+        // 알림 패널 닫기
+        function closeNotifications() {
+            const panel = document.getElementById('notification-panel');
+            if (panel) {
+                panel.remove();
+            }
+        }
+
+        // 모든 알림 지우기
+        function clearAllNotifications() {
+            if (confirm(currentLanguage === 'ko' ? '모든 알림을 삭제하시겠습니까?' : 'Are you sure you want to clear all notifications?')) {
+                notificationHistory = [];
+                localStorage.removeItem('notificationHistory');
+                updateNotificationBadge();
+                closeNotifications();
+                updateRecentActivities();
+                showToast(currentLanguage === 'ko' ? '모든 알림이 삭제되었습니다' : 'All notifications cleared', 'success');
+            }
+        }
+
+        // 시간 표시 함수
+        function getTimeAgo(timestamp) {
+            const t = translations[currentLanguage];
+            const now = new Date();
+            const diffMs = now - new Date(timestamp);
+            const diffMinutes = Math.floor(diffMs / (1000 * 60));
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            
+            if (diffMinutes < 1) return t.justNow;
+            if (diffMinutes < 60) return `${diffMinutes}${t.minutesAgo}`;
+            if (diffHours < 24) return `${diffHours}${t.hoursAgo}`;
+            return `${diffDays}${t.daysAgo}`;
+        }
+
+        // 상태별 색상 반환
+        function getStatusColor(status) {
+            switch (status) {
+                case 'started': return 'bg-blue-100';
+                case 'completed': return 'bg-green-100';
+                case 'failed': return 'bg-red-100';
+                default: return 'bg-neutral-100';
+            }
+        }
+
+        // 상태별 아이콘 반환
+        function getStatusIcon(status) {
+            switch (status) {
+                case 'started': return '⏳';
+                case 'completed': return '✅';
+                case 'failed': return '❌';
+                default: return 'ℹ️';
+            }
+        }
+
+        // 타입별 아이콘 반환
+        function getTypeIcon(type) {
+            switch (type) {
+                case 'admin-tool': return '<svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>';
+                case 'data-generation': return '<svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>';
+                case 'token-sync': return '<svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z"></path></svg>';
+                case 'cookie-management': return '<svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4"></path></svg>';
+                case 'language-change': return '<svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>';
+                default: return '<svg class="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+            }
+        }
+
+        // 액션명 표시 함수
+        function getActionDisplayName(type, action) {
+            const t = translations[currentLanguage];
+            
+            // 타입별 기본 이름
+            let baseName = '';
+            switch (type) {
+                case 'admin-tool': baseName = t.adminToolRequest; break;
+                case 'data-generation': baseName = t.dataGenerationRequest; break;
+                case 'token-sync': baseName = t.tokenSyncRequest; break;
+                case 'cookie-management': baseName = t.cookieManagementRequest; break;
+                case 'language-change': baseName = t.languageChangeRequest; break;
+                default: baseName = action;
+            }
+            
+            // 구체적인 액션명이 있으면 조합
+            if (action && action !== type) {
+                return `${baseName}: ${action}`;
+            }
+            
+            return baseName;
+        }
+
+        // 상태명 표시 함수
+        function getStatusDisplayName(status) {
+            const t = translations[currentLanguage];
+            switch (status) {
+                case 'started': return t.requestStarted;
+                case 'completed': return t.requestCompleted;
+                case 'failed': return t.requestFailed;
+                default: return status;
+            }
         }
 
         // 토큰 관리 함수들
@@ -1143,23 +1488,31 @@
 
         function syncTokens() {
             try {
+                // 알림 추가 - 시작
+                addNotification('token-sync', '토큰 동기화', 'started');
+                
                 const tokens = getStoredTokens();
                 console.log('동기화할 토큰:', tokens);
                 
+                let syncedWindows = 0;
                 Object.values(windowRefs).forEach(win => {
                     if (win && !win.closed) {
                         try {
                             win.postMessage({ type: 'SYNC_TOKENS', tokens: tokens }, '*');
+                            syncedWindows++;
                         } catch (e) {
                             console.log('토큰 전송 실패:', e);
                         }
                     }
                 });
                 
+                // 알림 추가 - 완료
+                addNotification('token-sync', '토큰 동기화', 'completed', `${syncedWindows}개 창에 동기화`);
                 showToast('토큰 동기화를 시도했습니다', 'success');
                 updateTokenStatus();
             } catch (error) {
                 console.error('토큰 동기화 오류:', error);
+                addNotification('token-sync', '토큰 동기화', 'failed', error.message);
                 showToast('토큰 동기화 중 오류가 발생했습니다', 'error');
             }
         }
@@ -1241,10 +1594,14 @@
             }
             
             try {
+                // 알림 추가 - 시작
+                addNotification('cookie-management', '쿠키 추가', 'started', input);
+                
                 const parts = input.split(';').map(p => p.trim());
                 const [name, value] = parts[0].split('=');
                 
                 if (!name) {
+                    addNotification('cookie-management', '쿠키 추가', 'failed', '쿠키 이름이 필요합니다');
                     showToast('쿠키 이름이 필요합니다', 'error');
                     return;
                 }
@@ -1252,9 +1609,13 @@
                 document.cookie = input;
                 updateCookieList();
                 document.getElementById('cookie-input').value = '';
+                
+                // 알림 추가 - 완료
+                addNotification('cookie-management', '쿠키 추가', 'completed', `${name} 쿠키 추가됨`);
                 showToast('쿠키가 추가되었습니다', 'success');
             } catch (e) {
                 console.error('쿠키 추가 오류:', e);
+                addNotification('cookie-management', '쿠키 추가', 'failed', e.message);
                 showToast('올바른 쿠키 형식이 아닙니다', 'error');
             }
         }
@@ -1465,6 +1826,9 @@
         // 샘플 이미지 생성 함수들 (기존 함수들 이어서 사용)
         function generateSampleImage() {
             try {
+                // 알림 추가 - 시작
+                addNotification('data-generation', '샘플 이미지 생성', 'started');
+                
                 const size = document.getElementById('sample-imageSize').value;
                 const [width, height] = size.split('x').map(Number);
                 const bgColor = document.getElementById('sample-bgColor').value;
@@ -1477,6 +1841,7 @@
                 });
 
                 if (formats.length === 0) {
+                    addNotification('data-generation', '샘플 이미지 생성', 'failed', '이미지 포맷 선택 안됨');
                     showToast('최소 하나의 이미지 포맷을 선택해주세요', 'error');
                     return;
                 }
@@ -1507,9 +1872,12 @@
                 window.sampleImageSettings = { width, height, bgColor, text, count, formats };
                 document.getElementById('sample-downloadBtn').disabled = false;
                 
+                // 알림 추가 - 완료
+                addNotification('data-generation', '샘플 이미지 생성', 'completed', `${size}, ${count}개, ${formats.join(', ')}`);
                 showToast('이미지 생성 완료', 'success');
             } catch (error) {
                 console.error('이미지 생성 오류:', error);
+                addNotification('data-generation', '샘플 이미지 생성', 'failed', error.message);
                 showToast('이미지 생성 중 오류가 발생했습니다', 'error');
             }
         }
@@ -1751,11 +2119,28 @@
                 currentLanguage = savedLanguage;
             }
             
+            // 저장된 알림 히스토리 불러오기
+            const savedNotifications = localStorage.getItem('notificationHistory');
+            if (savedNotifications) {
+                try {
+                    notificationHistory = JSON.parse(savedNotifications);
+                    // 날짜 객체 복원
+                    notificationHistory.forEach(n => {
+                        n.timestamp = new Date(n.timestamp);
+                    });
+                } catch (e) {
+                    console.error('알림 히스토리 로드 실패:', e);
+                    notificationHistory = [];
+                }
+            }
+            
             // 초기 UI 설정
             updateLanguageUI();
             updateAllTexts();
             updateTokenStatus();
             updateDashboardStats();
+            updateNotificationBadge();
+            updateRecentActivities();
             
             // 주기적으로 토큰 상태 업데이트
             setInterval(updateTokenStatus, 30000);
@@ -1764,10 +2149,14 @@
             setInterval(() => {
                 if (currentTab === 'dashboard') {
                     updateDashboardStats();
+                    updateRecentActivities();
                 }
             }, 60000);
             
-            console.log('CEO+ Help v2.1 - 다국어 지원 완료');
+            // 시작 알림 추가
+            addNotification('admin-tool', 'CEO+ Help 시작', 'completed', 'v2.1 - 알림 시스템 활성화');
+            
+            console.log('CEO+ Help v2.1 - 알림 시스템 완료');
         });
 
         // 메시지 수신 처리
