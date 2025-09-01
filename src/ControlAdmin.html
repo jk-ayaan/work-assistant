@@ -591,31 +591,44 @@
             <!-- 대시보드 탭 -->
             <div id="dashboard-content" class="tab-content">
                 <div class="mb-8">
-                    <h2 id="dashboard-title" class="text-3xl font-bold text-neutral-800 mb-2">대시보드</h2>
-                    <p id="dashboard-desc" class="text-neutral-600">CEO+ Help의 전체 현황을 확인하세요</p>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 id="dashboard-title" class="text-3xl font-bold text-neutral-800 mb-2">대시보드</h2>
+                            <p id="dashboard-desc" class="text-neutral-600">CEO+ Help의 전체 현황을 확인하세요</p>
+                        </div>
+                        <!-- 기간 필터 -->
+                        <div class="flex items-center space-x-2">
+                            <button onclick="changeDateRange('day')" id="range-day" class="px-3 py-1 rounded-lg bg-primary-100 text-primary-800 font-medium">오늘</button>
+                            <button onclick="changeDateRange('week')" id="range-week" class="px-3 py-1 rounded-lg hover:bg-neutral-100">주간</button>
+                            <button onclick="changeDateRange('month')" id="range-month" class="px-3 py-1 rounded-lg hover:bg-neutral-100">월간</button>
+                            <button onclick="changeDateRange('year')" id="range-year" class="px-3 py-1 rounded-lg hover:bg-neutral-100">연간</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 통계 카드들 -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="card stat-card p-6">
+                    <div class="card stat-card p-6" title="오늘 사용한 고유 기능 수">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p id="active-sessions-label" class="text-sm font-medium text-neutral-600">활성 세션</p>
-                                <p class="stat-number" id="active-sessions">12</p>
+                                <p id="active-sessions-label" class="text-sm font-medium text-neutral-600">오늘 활동</p>
+                                <p class="stat-number" id="active-sessions">0</p>
+                                <p class="text-xs text-neutral-500 mt-1">고유 기능 사용</p>
                             </div>
                             <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                                 </svg>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card stat-card p-6">
+                    <div class="card stat-card p-6" title="선택한 기간 동안 완료된 작업">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p id="completed-tasks-label" class="text-sm font-medium text-neutral-600">완료된 작업</p>
-                                <p class="stat-number" id="completed-tasks">47</p>
+                                <p class="stat-number" id="completed-tasks">0</p>
+                                <p class="text-xs text-neutral-500 mt-1">성공적으로 완료</p>
                             </div>
                             <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -625,11 +638,12 @@
                         </div>
                     </div>
 
-                    <div class="card stat-card p-6">
+                    <div class="card stat-card p-6" title="현재 브라우저에 저장된 토큰">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p id="saved-tokens-label" class="text-sm font-medium text-neutral-600">저장된 토큰</p>
-                                <p class="stat-number" id="token-count">8</p>
+                                <p class="stat-number" id="token-count">0</p>
+                                <p class="text-xs text-neutral-500 mt-1">현재 활성</p>
                             </div>
                             <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -639,11 +653,12 @@
                         </div>
                     </div>
 
-                    <div class="card stat-card p-6">
+                    <div class="card stat-card p-6" title="데이터 생성 도구로 생성한 파일">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p id="generated-files-label" class="text-sm font-medium text-neutral-600">생성된 파일</p>
-                                <p class="stat-number" id="file-count">156</p>
+                                <p class="stat-number" id="file-count">0</p>
+                                <p class="text-xs text-neutral-500 mt-1">데이터 파일</p>
                             </div>
                             <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -656,43 +671,14 @@
 
                 <!-- 최근 활동 -->
                 <div class="card p-6">
-                    <h3 id="recent-activities-title" class="text-xl font-bold text-neutral-800 mb-4">최근 활동</h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 id="recent-activities-title" class="text-xl font-bold text-neutral-800">최근 활동</h3>
+                        <button onclick="clearActivityHistory()" class="text-sm text-neutral-500 hover:text-red-600">
+                            기록 삭제
+                        </button>
+                    </div>
                     <div id="recent-activities" class="space-y-4">
-                        <div class="flex items-center space-x-4 p-3 bg-neutral-50 rounded-lg">
-                            <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                            </div>
-                            <div class="flex-1">
-                                <p class="font-medium text-neutral-800">QR XLSX 파일 생성</p>
-                                <p class="text-sm text-neutral-600">5분 전</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center space-x-4 p-3 bg-neutral-50 rounded-lg">
-                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            </div>
-                            <div class="flex-1">
-                                <p class="font-medium text-neutral-800">토큰 동기화 완료</p>
-                                <p class="text-sm text-neutral-600">12분 전</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center space-x-4 p-3 bg-neutral-50 rounded-lg">
-                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                            </div>
-                            <div class="flex-1">
-                                <p class="font-medium text-neutral-800">샘플 이미지 25개 생성</p>
-                                <p class="text-sm text-neutral-600">1시간 전</p>
-                            </div>
-                        </div>
+                        <!-- 실제 활동이 여기에 표시됩니다 -->
                     </div>
                 </div>
             </div>
@@ -938,6 +924,7 @@
         let activityHistory = []; // 활동 히스토리
         let maxActivities = 100; // 최대 활동 보관 개수
         const ACTIVITY_STORAGE_KEY = 'ceoplus_activity_history'; // 로컬스토리지 키
+        let currentDateRange = 'day'; // 현재 선택된 기간 필터
 
         // 다국어 텍스트 데이터
         const translations = {
@@ -1145,28 +1132,78 @@
 
         // 대시보드 통계 업데이트
         function updateDashboardStats() {
-            // 실제 활동 기록 기반으로 통계 계산
-            const today = new Date().toDateString();
-            const todayActivities = activityHistory.filter(a => new Date(a.timestamp).toDateString() === today);
+            // 기간별 필터링
+            const now = new Date();
+            const filteredActivities = getFilteredActivities(currentDateRange);
             
-            // 오늘의 활성 세션 (고유 액션 수)
-            const uniqueActions = new Set(todayActivities.map(a => a.action)).size;
+            // 고유 기능 사용 수
+            const uniqueActions = new Set(filteredActivities.map(a => a.type + ':' + a.action)).size;
             document.getElementById('active-sessions').textContent = uniqueActions;
             
             // 완료된 작업 수
-            const completedTasks = activityHistory.filter(a => a.status === 'completed').length;
+            const completedTasks = filteredActivities.filter(a => a.status === 'completed').length;
             document.getElementById('completed-tasks').textContent = completedTasks;
             
-            // 저장된 토큰 수 (토큰 관련 활동)
-            const tokenActivities = activityHistory.filter(a => a.type === 'token-sync').length;
-            document.getElementById('token-count').textContent = tokenActivities;
+            // 현재 저장된 토큰 수 (실제 토큰 체크)
+            updateTokenStatus();
             
             // 생성된 파일 수
-            const generatedFiles = activityHistory.filter(a => a.type === 'data-generation' && a.status === 'completed').length;
+            const generatedFiles = filteredActivities.filter(a => a.type === 'data-generation' && a.status === 'completed').length;
             document.getElementById('file-count').textContent = generatedFiles;
             
             // 최근 활동 업데이트
             updateRecentActivities();
+        }
+        
+        // 기간별 활동 필터링
+        function getFilteredActivities(range) {
+            const now = new Date();
+            const startDate = new Date();
+            
+            switch(range) {
+                case 'day':
+                    startDate.setHours(0, 0, 0, 0);
+                    break;
+                case 'week':
+                    startDate.setDate(now.getDate() - 7);
+                    break;
+                case 'month':
+                    startDate.setMonth(now.getMonth() - 1);
+                    break;
+                case 'year':
+                    startDate.setFullYear(now.getFullYear() - 1);
+                    break;
+            }
+            
+            return activityHistory.filter(a => new Date(a.timestamp) >= startDate);
+        }
+        
+        // 날짜 범위 변경
+        function changeDateRange(range) {
+            currentDateRange = range;
+            
+            // 버튼 스타일 업데이트
+            document.querySelectorAll('[id^="range-"]').forEach(btn => {
+                btn.classList.remove('bg-primary-100', 'text-primary-800', 'font-medium');
+                btn.classList.add('hover:bg-neutral-100');
+            });
+            
+            const activeBtn = document.getElementById(`range-${range}`);
+            activeBtn.classList.add('bg-primary-100', 'text-primary-800', 'font-medium');
+            activeBtn.classList.remove('hover:bg-neutral-100');
+            
+            // 통계 업데이트
+            updateDashboardStats();
+        }
+        
+        // 활동 기록 삭제
+        function clearActivityHistory() {
+            if (confirm(currentLanguage === 'ko' ? '모든 활동 기록을 삭제하시겠습니까?' : 'Delete all activity history?')) {
+                activityHistory = [];
+                saveActivityHistory();
+                updateDashboardStats();
+                showToast(currentLanguage === 'ko' ? '활동 기록이 삭제되었습니다' : 'Activity history cleared', 'success');
+            }
         }
 
         // 최근 활동 업데이트
@@ -1835,12 +1872,15 @@
                 if (tokenCountEl) {
                     tokenCountEl.textContent = totalCount;
                 }
+                
+                return totalCount;
             } catch (error) {
                 console.error('토큰 상태 업데이트 오류:', error);
                 const statusEl = document.getElementById('token-status-detail');
                 if (statusEl) {
                     statusEl.innerHTML = '❌ 오류 발생';
                 }
+                return 0;
             }
         }
 
@@ -2418,24 +2458,20 @@
                 currentLanguage = savedLanguage;
             }
             
+            // 활동 히스토리 불러오기
+            loadActivityHistory();
+            
             // 초기 UI 설정
             updateLanguageUI();
             updateAllTexts();
             updateTokenStatus();
             updateDashboardStats();
-            // updateNotificationBadge(); // 제거 - 더 이상 사용하지 않음
             updateRecentActivities();
             
             // 주기적으로 토큰 상태 업데이트 (자동 갱신 없음)
             // setInterval(updateTokenStatus, 30000); // 주석 처리
             
-            // 활동 히스토리 불러오기
-            loadActivityHistory();
-            
-            // 시작 활동 기록
-            logActivity('system', 'CEO+ Help 시작', 'completed');
-            
-            console.log('CEO+ Help v2.1 - 활동 기록 시스템 완료');
+            console.log('CEO+ Help v2.1 - 시스템 시작');
         });
 
         // 메시지 수신 처리
