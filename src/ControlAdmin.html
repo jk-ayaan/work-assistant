@@ -1520,8 +1520,20 @@
             }
         }
 
-        // 알림 목록 표시
+        // 알림 목록 표시 (현재는 최근 활동으로 이동)
         function showNotifications() {
+            // 대시보드의 최근 활동으로 이동
+            showTab('dashboard');
+            setTimeout(() => {
+                const recentSection = document.querySelector('#recent-activities-title');
+                if (recentSection) {
+                    recentSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+        }
+        
+        // 원래 알림 함수 (필요시 사용)
+        function showNotificationsOld() {
             const t = translations[currentLanguage];
             
             // 모든 알림을 읽음으로 표시
