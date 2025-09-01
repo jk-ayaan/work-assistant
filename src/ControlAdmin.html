@@ -77,6 +77,110 @@
             background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
         }
 
+        /* 햄버거 메뉴 버튼 */
+        .hamburger-menu {
+            display: none;
+            width: 40px;
+            height: 40px;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .hamburger-menu:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .hamburger-menu span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: currentColor;
+            margin: 5px 0;
+            transition: all 0.3s;
+        }
+
+        /* 모바일 사이드바 */
+        .mobile-sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .mobile-sidebar.active {
+            left: 0;
+        }
+
+        .mobile-sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 99;
+        }
+
+        .mobile-sidebar-overlay.active {
+            display: block;
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e5e5e5;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .mobile-nav-item:hover {
+            background: #f5f5f5;
+        }
+
+        .mobile-nav-item.active {
+            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+        }
+
+        .mobile-nav-item svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .hamburger-menu {
+                display: block;
+            }
+
+            .tab-container {
+                display: none !important;
+            }
+
+            nav.flex-1 {
+                display: none;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .header {
             grid-area: header;
             background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
@@ -352,12 +456,72 @@
 </head>
 
 <body>
+    <!-- 모바일 사이드바 -->
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="p-4 bg-gradient-to-r from-primary-500 to-primary-600">
+            <div class="flex items-center space-x-3">
+                <img src="../logo.jpg" alt="CEO+ Help" class="w-10 h-10 rounded-lg shadow-md">
+                <div>
+                    <h1 class="text-lg font-bold text-white">CEO+ Help</h1>
+                    <p class="text-xs text-white opacity-80">Admin Tools</p>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="py-2">
+            <div class="mobile-nav-item active" onclick="showTabFromMobile('dashboard')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"></path>
+                </svg>
+                <span data-ko="대시보드" data-en="Dashboard">대시보드</span>
+            </div>
+            
+            <div class="mobile-nav-item" onclick="showTabFromMobile('admin-tools')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span data-ko="어드민 활용" data-en="Admin Tools">어드민 활용</span>
+            </div>
+            
+            <div class="mobile-nav-item" onclick="showTabFromMobile('data-tools')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span data-ko="데이터 생성" data-en="Data Tools">데이터 생성</span>
+            </div>
+            
+            <div class="mobile-nav-item" onclick="showTabFromMobile('settings')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4"></path>
+                </svg>
+                <span data-ko="설정" data-en="Settings">설정</span>
+            </div>
+        </nav>
+        
+        <div class="border-t border-gray-200 mt-4 pt-4 px-4">
+            <button class="w-full p-3 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors" onclick="closeMobileSidebar()">
+                닫기
+            </button>
+        </div>
+    </div>
+    
+    <!-- 모바일 사이드바 오버레이 -->
+    <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay" onclick="closeMobileSidebar()"></div>
+    
     <div class="app-layout">
         <!-- 헤더 네비게이션 -->
         <header class="header">
             <div class="flex items-center justify-between h-full px-4 lg:px-8">
                 <!-- 로고 -->
                 <div class="flex items-center space-x-4">
+                    <!-- 햄버거 메뉴 버튼 -->
+                    <div class="hamburger-menu" onclick="toggleMobileSidebar()">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
                     <img src="../logo.jpg" alt="CEO+ Help" class="w-12 h-12 rounded-lg shadow-md">
                     <div class="hidden sm:block">
                         <h1 class="text-xl font-bold text-black">CEO+</h1>
@@ -771,8 +935,9 @@
         let currentTab = 'dashboard';
         let windowRefs = {};
         let currentLanguage = 'ko'; // 기본 언어는 한국어
-        let notificationHistory = []; // 알림 히스토리
-        let maxNotifications = 50; // 최대 알림 보관 개수
+        let activityHistory = []; // 활동 히스토리
+        let maxActivities = 100; // 최대 활동 보관 개수
+        const ACTIVITY_STORAGE_KEY = 'ceoplus_activity_history'; // 로컬스토리지 키
 
         // 다국어 텍스트 데이터
         const translations = {
@@ -910,6 +1075,38 @@
             }
         };
 
+        // 모바일 사이드바 토글
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const overlay = document.getElementById('mobileSidebarOverlay');
+            
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+        
+        // 모바일 사이드바 닫기
+        function closeMobileSidebar() {
+            const sidebar = document.getElementById('mobileSidebar');
+            const overlay = document.getElementById('mobileSidebarOverlay');
+            
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+        
+        // 모바일에서 탭 전환
+        function showTabFromMobile(tabName) {
+            showTab(tabName);
+            closeMobileSidebar();
+            
+            // 모바일 네비게이션 아이템 활성화 상태 업데이트
+            document.querySelectorAll('.mobile-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 클릭된 아이템 활성화
+            event.currentTarget.classList.add('active');
+        }
+
         // 탭 전환 함수
         function showTab(tabName) {
             // 모든 탭 버튼 비활성화
@@ -923,8 +1120,20 @@
             });
             
             // 선택된 탭 활성화
-            document.getElementById(`tab-${tabName}`).classList.add('active');
+            const tabButton = document.getElementById(`tab-${tabName}`);
+            if (tabButton) {
+                tabButton.classList.add('active');
+            }
             document.getElementById(`${tabName}-content`).classList.remove('hidden');
+            
+            // 모바일 네비게이션 업데이트
+            document.querySelectorAll('.mobile-nav-item').forEach((item, index) => {
+                item.classList.remove('active');
+                const tabs = ['dashboard', 'admin-tools', 'data-tools', 'settings'];
+                if (tabs[index] === tabName) {
+                    item.classList.add('active');
+                }
+            });
             
             currentTab = tabName;
             
@@ -936,28 +1145,41 @@
 
         // 대시보드 통계 업데이트
         function updateDashboardStats() {
-            // 실제 데이터로 업데이트하는 로직을 여기에 구현
-            document.getElementById('active-sessions').textContent = Math.floor(Math.random() * 20) + 5;
+            // 실제 활동 기록 기반으로 통계 계산
+            const today = new Date().toDateString();
+            const todayActivities = activityHistory.filter(a => new Date(a.timestamp).toDateString() === today);
             
-            // 완료된 작업 수는 성공한 알림 개수 반영
-            const completedTasks = notificationHistory.filter(n => n.status === 'completed').length;
-            document.getElementById('completed-tasks').textContent = completedTasks + Math.floor(Math.random() * 20) + 20;
+            // 오늘의 활성 세션 (고유 액션 수)
+            const uniqueActions = new Set(todayActivities.map(a => a.action)).size;
+            document.getElementById('active-sessions').textContent = uniqueActions;
             
-            document.getElementById('token-count').textContent = Math.floor(Math.random() * 15) + 3;
+            // 완료된 작업 수
+            const completedTasks = activityHistory.filter(a => a.status === 'completed').length;
+            document.getElementById('completed-tasks').textContent = completedTasks;
             
-            // 생성된 파일 수는 데이터 생성 완료 알림 개수 반영  
-            const generatedFiles = notificationHistory.filter(n => n.type === 'data-generation' && n.status === 'completed').length;
-            document.getElementById('file-count').textContent = generatedFiles + Math.floor(Math.random() * 100) + 50;
+            // 저장된 토큰 수 (토큰 관련 활동)
+            const tokenActivities = activityHistory.filter(a => a.type === 'token-sync').length;
+            document.getElementById('token-count').textContent = tokenActivities;
+            
+            // 생성된 파일 수
+            const generatedFiles = activityHistory.filter(a => a.type === 'data-generation' && a.status === 'completed').length;
+            document.getElementById('file-count').textContent = generatedFiles;
+            
+            // 최근 활동 업데이트
+            updateRecentActivities();
         }
 
-        // 최근 활동 업데이트 (알림 히스토리 기반)
+        // 최근 활동 업데이트
         function updateRecentActivities() {
             const container = document.getElementById('recent-activities');
             if (!container) return;
             
-            const recentNotifications = notificationHistory.slice(0, 3); // 최근 3개만
+            // 시간 내림차순 정렬 후 최근 5개만
+            const recentActivities = activityHistory
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                .slice(0, 5);
             
-            if (recentNotifications.length === 0) {
+            if (recentActivities.length === 0) {
                 container.innerHTML = `
                     <div class="text-center text-neutral-500 py-8">
                         <svg class="w-12 h-12 mx-auto mb-3 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -970,19 +1192,19 @@
             }
             
             let activitiesHTML = '';
-            recentNotifications.forEach(notification => {
-                const timeAgo = getTimeAgo(notification.timestamp);
-                const statusColor = getStatusColor(notification.status).replace('bg-', '').replace('-100', '-500');
-                const typeIcon = getTypeIcon(notification.type);
+            recentActivities.forEach(activity => {
+                const timeAgo = getTimeAgo(activity.timestamp);
+                const statusColor = getActivityColor(activity.type);
+                const typeIcon = getActivityIcon(activity.type);
                 
                 activitiesHTML += `
                     <div class="flex items-center space-x-4 p-3 bg-neutral-50 rounded-lg">
-                        <div class="w-8 h-8 bg-${statusColor} rounded-full flex items-center justify-center">
+                        <div class="w-8 h-8 ${statusColor} rounded-full flex items-center justify-center">
                             ${typeIcon}
                         </div>
                         <div class="flex-1">
                             <p class="font-medium text-neutral-800">
-                                ${getActionDisplayName(notification.type, notification.action)}
+                                ${activity.action}
                             </p>
                             <p class="text-sm text-neutral-600">${timeAgo}</p>
                         </div>
@@ -1034,11 +1256,10 @@
         // 어드민 URL 열기
         function openAdminUrl(url, name, isInternal) {
             try {
-                // 알림 추가 - 시작
-                addNotification('admin-tool', name, 'started', `URL: ${url}`);
+                // 활동 기록
+                logActivity('admin-tool', `${name} 어드민 열기`, 'started');
                 
                 if (isInternal) {
-                    // 내부 도구는 iframe으로 열기
                     showToast(`${name} 도구를 새 창에서 엽니다`, 'success');
                 }
                 
@@ -1048,17 +1269,17 @@
                 if (win) {
                     windowRefs[windowName] = win;
                     
-                    // 알림 추가 - 완료
-                    addNotification('admin-tool', name, 'completed', `새 창에서 열림`);
+                    // 활동 기록 - 완료
+                    logActivity('admin-tool', `${name} 어드민 열기`, 'completed');
                     showToast(`${name}이(가) 새 창에서 열렸습니다`, 'success');
                 } else {
-                    // 알림 추가 - 실패
-                    addNotification('admin-tool', name, 'failed', '팝업 차단됨');
+                    // 활동 기록 - 실패
+                    logActivity('admin-tool', `${name} 어드민 열기`, 'failed');
                     showToast('팝업이 차단되었습니다. 팝업 허용 후 다시 시도하세요', 'error');
                 }
             } catch (error) {
                 console.error('어드민 도구 실행 오류:', error);
-                addNotification('admin-tool', name, 'failed', error.message);
+                logActivity('admin-tool', `${name} 어드민 열기`, 'failed');
                 showToast('도구 실행 중 오류가 발생했습니다', 'error');
             }
         }
@@ -1129,6 +1350,11 @@
         // 언어 변경 함수
         function toggleLanguage() {
             try {
+                // 활동 기록
+                const oldLang = currentLanguage;
+                const newLang = currentLanguage === 'ko' ? 'en' : 'ko';
+                logActivity('settings', `언어 변경: ${oldLang.toUpperCase()} → ${newLang.toUpperCase()}`, 'completed');
+                
                 const previousLang = currentLanguage;
                 const newLang = currentLanguage === 'ko' ? 'en' : 'ko';
                 
@@ -1364,6 +1590,79 @@
             }
         }
 
+        // 활동 히스토리 관리 함수들
+        function loadActivityHistory() {
+            const saved = localStorage.getItem(ACTIVITY_STORAGE_KEY);
+            if (saved) {
+                try {
+                    activityHistory = JSON.parse(saved);
+                    // 날짜 객체 복원
+                    activityHistory.forEach(a => {
+                        a.timestamp = new Date(a.timestamp);
+                    });
+                } catch (e) {
+                    console.error('활동 히스토리 로드 실패:', e);
+                    activityHistory = [];
+                }
+            }
+        }
+        
+        function saveActivityHistory() {
+            try {
+                // 최대 개수 제한
+                if (activityHistory.length > maxActivities) {
+                    activityHistory = activityHistory.slice(-maxActivities);
+                }
+                localStorage.setItem(ACTIVITY_STORAGE_KEY, JSON.stringify(activityHistory));
+            } catch (e) {
+                console.error('활동 히스토리 저장 실패:', e);
+            }
+        }
+        
+        // 활동 기록 함수
+        function logActivity(type, action, status = 'completed') {
+            const activity = {
+                id: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                type: type,
+                action: action,
+                status: status,
+                timestamp: new Date(),
+                language: currentLanguage
+            };
+            
+            activityHistory.push(activity);
+            saveActivityHistory();
+            
+            // 대시보드에 있으면 업데이트
+            if (currentTab === 'dashboard') {
+                updateDashboardStats();
+            }
+        }
+        
+        // 활동 아이콘 가져오기
+        function getActivityIcon(type) {
+            const icons = {
+                'admin-tool': '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path></svg>',
+                'data-generation': '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>',
+                'token-sync': '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>',
+                'settings': '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4"></path></svg>',
+                'system': '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>'
+            };
+            return icons[type] || '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+        }
+        
+        // 활동 색상 가져오기
+        function getActivityColor(type) {
+            const colors = {
+                'admin-tool': 'bg-primary-500',
+                'data-generation': 'bg-green-500',
+                'token-sync': 'bg-blue-500',
+                'settings': 'bg-purple-500',
+                'system': 'bg-gray-500'
+            };
+            return colors[type] || 'bg-neutral-500';
+        }
+
         // 시간 표시 함수
         function getTimeAgo(timestamp) {
             const t = translations[currentLanguage];
@@ -1488,10 +1787,11 @@
 
         function syncTokens() {
             try {
-                // 알림 추가 - 시작
-                addNotification('token-sync', '토큰 동기화', 'started');
-                
                 const tokens = getStoredTokens();
+                const tokenCount = Object.keys(tokens.localStorage).length + 
+                                   Object.keys(tokens.sessionStorage).length + 
+                                   Object.keys(tokens.cookies).length;
+                
                 console.log('동기화할 토큰:', tokens);
                 
                 let syncedWindows = 0;
@@ -1506,13 +1806,12 @@
                     }
                 });
                 
-                // 알림 추가 - 완료
-                addNotification('token-sync', '토큰 동기화', 'completed', `${syncedWindows}개 창에 동기화`);
-                showToast('토큰 동기화를 시도했습니다', 'success');
+                logActivity('token-sync', `토큰 ${tokenCount}개 동기화 (${syncedWindows}개 창)`, 'completed');
+                showToast(`토큰 ${tokenCount}개가 동기화되었습니다`, 'success');
                 updateTokenStatus();
             } catch (error) {
                 console.error('토큰 동기화 오류:', error);
-                addNotification('token-sync', '토큰 동기화', 'failed', error.message);
+                logActivity('token-sync', '토큰 동기화 실패', 'failed');
                 showToast('토큰 동기화 중 오류가 발생했습니다', 'error');
             }
         }
@@ -1827,7 +2126,7 @@
         function generateSampleImage() {
             try {
                 // 알림 추가 - 시작
-                addNotification('data-generation', '샘플 이미지 생성', 'started');
+                logActivity('data-generation', '샘플 이미지 생성 시작', 'started');
                 
                 const size = document.getElementById('sample-imageSize').value;
                 const [width, height] = size.split('x').map(Number);
@@ -1841,7 +2140,7 @@
                 });
 
                 if (formats.length === 0) {
-                    addNotification('data-generation', '샘플 이미지 생성', 'failed', '이미지 포맷 선택 안됨');
+                    logActivity('data-generation', '샘플 이미지 생성 실패', 'failed');
                     showToast('최소 하나의 이미지 포맷을 선택해주세요', 'error');
                     return;
                 }
@@ -1873,11 +2172,11 @@
                 document.getElementById('sample-downloadBtn').disabled = false;
                 
                 // 알림 추가 - 완료
-                addNotification('data-generation', '샘플 이미지 생성', 'completed', `${size}, ${count}개, ${formats.join(', ')}`);
+                logActivity('data-generation', `샘플 이미지 ${count}개 생성 (${size})`, 'completed');
                 showToast('이미지 생성 완료', 'success');
             } catch (error) {
                 console.error('이미지 생성 오류:', error);
-                addNotification('data-generation', '샘플 이미지 생성', 'failed', error.message);
+                logActivity('data-generation', '샘플 이미지 생성 실패', 'failed');
                 showToast('이미지 생성 중 오류가 발생했습니다', 'error');
             }
         }
@@ -2119,44 +2418,24 @@
                 currentLanguage = savedLanguage;
             }
             
-            // 저장된 알림 히스토리 불러오기
-            const savedNotifications = localStorage.getItem('notificationHistory');
-            if (savedNotifications) {
-                try {
-                    notificationHistory = JSON.parse(savedNotifications);
-                    // 날짜 객체 복원
-                    notificationHistory.forEach(n => {
-                        n.timestamp = new Date(n.timestamp);
-                    });
-                } catch (e) {
-                    console.error('알림 히스토리 로드 실패:', e);
-                    notificationHistory = [];
-                }
-            }
-            
             // 초기 UI 설정
             updateLanguageUI();
             updateAllTexts();
             updateTokenStatus();
             updateDashboardStats();
-            updateNotificationBadge();
+            // updateNotificationBadge(); // 제거 - 더 이상 사용하지 않음
             updateRecentActivities();
             
-            // 주기적으로 토큰 상태 업데이트
-            setInterval(updateTokenStatus, 30000);
+            // 주기적으로 토큰 상태 업데이트 (자동 갱신 없음)
+            // setInterval(updateTokenStatus, 30000); // 주석 처리
             
-            // 주기적으로 대시보드 통계 업데이트
-            setInterval(() => {
-                if (currentTab === 'dashboard') {
-                    updateDashboardStats();
-                    updateRecentActivities();
-                }
-            }, 60000);
+            // 활동 히스토리 불러오기
+            loadActivityHistory();
             
-            // 시작 알림 추가
-            addNotification('admin-tool', 'CEO+ Help 시작', 'completed', 'v2.1 - 알림 시스템 활성화');
+            // 시작 활동 기록
+            logActivity('system', 'CEO+ Help 시작', 'completed');
             
-            console.log('CEO+ Help v2.1 - 알림 시스템 완료');
+            console.log('CEO+ Help v2.1 - 활동 기록 시스템 완료');
         });
 
         // 메시지 수신 처리
