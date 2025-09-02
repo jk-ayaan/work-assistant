@@ -921,6 +921,8 @@
         let currentTab = 'dashboard';
         let windowRefs = {};
         let currentLanguage = 'ko'; // 기본 언어는 한국어
+        let notificationHistory = []; // 알림 히스토리
+        let maxNotifications = 100; // 최대 알림 보관 개수
         let activityHistory = []; // 활동 히스토리
         let maxActivities = 100; // 최대 활동 보관 개수
         const ACTIVITY_STORAGE_KEY = 'ceoplus_activity_history'; // 로컬스토리지 키
@@ -1387,16 +1389,14 @@
         // 언어 변경 함수
         function toggleLanguage() {
             try {
-                // 활동 기록
                 const oldLang = currentLanguage;
                 const newLang = currentLanguage === 'ko' ? 'en' : 'ko';
+                
+                // 활동 기록
                 logActivity('settings', `언어 변경: ${oldLang.toUpperCase()} → ${newLang.toUpperCase()}`, 'completed');
                 
-                const previousLang = currentLanguage;
-                const newLang = currentLanguage === 'ko' ? 'en' : 'ko';
-                
                 // 알림 추가 - 시작
-                addNotification('language-change', `${previousLang.toUpperCase()} → ${newLang.toUpperCase()}`, 'started');
+                addNotification('language-change', `${oldLang.toUpperCase()} → ${newLang.toUpperCase()}`, 'started');
                 
                 currentLanguage = newLang;
                 updateLanguageUI();
@@ -1406,7 +1406,7 @@
                 localStorage.setItem('preferred-language', currentLanguage);
                 
                 // 알림 추가 - 완료
-                addNotification('language-change', `${previousLang.toUpperCase()} → ${newLang.toUpperCase()}`, 'completed');
+                addNotification('language-change', `${oldLang.toUpperCase()} → ${newLang.toUpperCase()}`, 'completed');
                 
                 const langText = currentLanguage === 'ko' ? '한국어' : 'English';
                 showToast(`언어가 ${langText}로 변경되었습니다`, 'success');
