@@ -4163,6 +4163,14 @@
             try {
                 console.log('CEO+ Help v2.1 - 시스템 초기화 시작');
                 
+                // DOM 요소 존재 확인
+                const dashboard = document.getElementById('dashboard-content');
+                if (!dashboard) {
+                    console.error('필수 DOM 요소가 없습니다. 초기화를 연기합니다.');
+                    setTimeout(initializeApp, 100);
+                    return;
+                }
+                
                 // 저장된 언어 설정 불러오기
                 const savedLanguage = localStorage.getItem('preferred-language');
                 if (savedLanguage && (savedLanguage === 'ko' || savedLanguage === 'en')) {
@@ -4170,35 +4178,81 @@
                 }
                 
                 // 활동 히스토리 불러오기
-                loadActivityHistory();
+                if (typeof loadActivityHistory === 'function') {
+                    loadActivityHistory();
+                }
                 
                 // 어드민 도구 초기화
-                initAdminTools();
+                if (typeof initAdminTools === 'function') {
+                    initAdminTools();
+                }
                 
                 // 초기 UI 설정
-                updateLanguageUI();
-                updateAllTexts();
-                updateTokenStatus();
-                updateDashboardStats();
-                updateRecentActivities();
+                if (typeof updateLanguageUI === 'function') {
+                    updateLanguageUI();
+                }
+                if (typeof updateAllTexts === 'function') {
+                    updateAllTexts();
+                }
+                if (typeof updateTokenStatus === 'function') {
+                    updateTokenStatus();
+                }
+                if (typeof updateDashboardStats === 'function') {
+                    updateDashboardStats();
+                }
+                if (typeof updateRecentActivities === 'function') {
+                    updateRecentActivities();
+                }
                 
-                // 첫 번째 탭 활성화 (대시보드)
-                showTab('dashboard');
+                // 모든 탭 콘텐츠 숨기기
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                // 모든 탭 버튼 비활성화
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // 대시보드 탭 활성화
+                const dashboardTab = document.getElementById('tab-dashboard');
+                const dashboardContent = document.getElementById('dashboard-content');
+                
+                if (dashboardTab && dashboardContent) {
+                    dashboardTab.classList.add('active');
+                    dashboardContent.classList.remove('hidden');
+                }
+                
+                // 첫 번째 모바일 네비게이션 아이템 활성화
+                const firstMobileNavItem = document.querySelector('.mobile-nav-item');
+                if (firstMobileNavItem) {
+                    firstMobileNavItem.classList.add('active');
+                }
                 
                 console.log('CEO+ Help v2.1 - 시스템 초기화 완료');
             } catch (error) {
                 console.error('앱 초기화 오류:', error);
-                showToast('시스템 초기화 중 오류가 발생했습니다.', 'error');
+                if (typeof showToast === 'function') {
+                    showToast('시스템 초기화 중 오류가 발생했습니다.', 'error');
+                }
             }
         }
         
-        // 페이지 로드 시 초기화
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeApp);
-        } else {
-            // DOM이 이미 로드된 경우 즉시 실행
-            initializeApp();
+        // 페이지 로드 시 초기화 - 여러 방법으로 시도
+        function safeInitialize() {
+            if (document.readyState === 'complete') {
+                initializeApp();
+            } else if (document.readyState === 'interactive') {
+                // DOM은 로드되었지만 리소스는 아직 로딩 중
+                setTimeout(initializeApp, 50);
+            } else {
+                // 아직 로딩 중
+                document.addEventListener('DOMContentLoaded', initializeApp);
+            }
         }
+        
+        // 즉시 실행
+        safeInitialize();
 
         // 에러 전역 처리
         window.addEventListener('error', function(event) {
