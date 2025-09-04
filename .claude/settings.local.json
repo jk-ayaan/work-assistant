@@ -6,7 +6,13 @@
       "Bash(python:*)",
       "Bash(rm:*)",
       "Bash(cp:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(open /Users/jk.jeong/Project/Python/work-assistant/src/ControlAdmin.html)",
+      "Bash(osascript:*)",
+      "Bash(open:*)",
+      "WebFetch(domain:jk-ayaan.github.io)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
