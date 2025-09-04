@@ -502,7 +502,7 @@
         
         <div class="border-t border-gray-200 mt-4 pt-4 px-4">
             <button class="w-full p-3 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors" onclick="closeMobileSidebar()">
-                닫기
+                <span data-ko="닫기" data-en="Close">닫기</span>
             </button>
         </div>
     </div>
@@ -598,22 +598,22 @@
                         </div>
                         <!-- 기간 필터 -->
                         <div class="flex items-center space-x-2">
-                            <button onclick="changeDateRange('day')" id="range-day" class="px-3 py-1 rounded-lg bg-primary-100 text-primary-800 font-medium">오늘</button>
-                            <button onclick="changeDateRange('week')" id="range-week" class="px-3 py-1 rounded-lg hover:bg-neutral-100">주간</button>
-                            <button onclick="changeDateRange('month')" id="range-month" class="px-3 py-1 rounded-lg hover:bg-neutral-100">월간</button>
-                            <button onclick="changeDateRange('year')" id="range-year" class="px-3 py-1 rounded-lg hover:bg-neutral-100">연간</button>
+                            <button onclick="changeDateRange('day')" id="range-day" class="px-3 py-1 rounded-lg bg-primary-100 text-primary-800 font-medium"><span data-ko="오늘" data-en="Today">오늘</span></button>
+                            <button onclick="changeDateRange('week')" id="range-week" class="px-3 py-1 rounded-lg hover:bg-neutral-100"><span data-ko="주간" data-en="Week">주간</span></button>
+                            <button onclick="changeDateRange('month')" id="range-month" class="px-3 py-1 rounded-lg hover:bg-neutral-100"><span data-ko="월간" data-en="Month">월간</span></button>
+                            <button onclick="changeDateRange('year')" id="range-year" class="px-3 py-1 rounded-lg hover:bg-neutral-100"><span data-ko="연간" data-en="Year">연간</span></button>
                         </div>
                     </div>
                 </div>
 
                 <!-- 통계 카드들 -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="card stat-card p-6" title="오늘 사용한 고유 기능 수">
+                    <div class="card stat-card p-6" data-ko-title="오늘 사용한 고유 기능 수" data-en-title="Number of unique features used today">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p id="active-sessions-label" class="text-sm font-medium text-neutral-600">오늘 활동</p>
+                                <p id="active-sessions-label" class="text-sm font-medium text-neutral-600"><span data-ko="오늘 활동" data-en="Today's Activity">오늘 활동</span></p>
                                 <p class="stat-number" id="active-sessions">0</p>
-                                <p class="text-xs text-neutral-500 mt-1">고유 기능 사용</p>
+                                <p class="text-xs text-neutral-500 mt-1"><span data-ko="고유 기능 사용" data-en="Unique features used">고유 기능 사용</span></p>
                             </div>
                             <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -623,12 +623,12 @@
                         </div>
                     </div>
 
-                    <div class="card stat-card p-6" title="선택한 기간 동안 완료된 작업">
+                    <div class="card stat-card p-6" data-ko-title="선택한 기간 동안 완료된 작업" data-en-title="Tasks completed during selected period">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p id="completed-tasks-label" class="text-sm font-medium text-neutral-600">완료된 작업</p>
+                                <p id="completed-tasks-label" class="text-sm font-medium text-neutral-600"><span data-ko="완료된 작업" data-en="Completed Tasks">완료된 작업</span></p>
                                 <p class="stat-number" id="completed-tasks">0</p>
-                                <p class="text-xs text-neutral-500 mt-1">성공적으로 완료</p>
+                                <p class="text-xs text-neutral-500 mt-1"><span data-ko="성공적으로 완료" data-en="Successfully completed">성공적으로 완료</span></p>
                             </div>
                             <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -638,12 +638,12 @@
                         </div>
                     </div>
 
-                    <div class="card stat-card p-6" title="현재 브라우저에 저장된 토큰">
+                    <div class="card stat-card p-6" data-ko-title="현재 브라우저에 저장된 토큰" data-en-title="Tokens saved in current browser">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p id="saved-tokens-label" class="text-sm font-medium text-neutral-600">저장된 토큰</p>
+                                <p id="saved-tokens-label" class="text-sm font-medium text-neutral-600"><span data-ko="저장된 토큰" data-en="Saved Tokens">저장된 토큰</span></p>
                                 <p class="stat-number" id="token-count">0</p>
-                                <p class="text-xs text-neutral-500 mt-1">현재 활성</p>
+                                <p class="text-xs text-neutral-500 mt-1"><span data-ko="현재 활성" data-en="Currently active">현재 활성</span></p>
                             </div>
                             <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -653,12 +653,12 @@
                         </div>
                     </div>
 
-                    <div class="card stat-card p-6" title="데이터 생성 도구로 생성한 파일">
+                    <div class="card stat-card p-6" data-ko-title="데이터 생성 도구로 생성한 파일" data-en-title="Files generated with data tools">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p id="generated-files-label" class="text-sm font-medium text-neutral-600">생성된 파일</p>
+                                <p id="generated-files-label" class="text-sm font-medium text-neutral-600"><span data-ko="생성된 파일" data-en="Generated Files">생성된 파일</span></p>
                                 <p class="stat-number" id="file-count">0</p>
-                                <p class="text-xs text-neutral-500 mt-1">데이터 파일</p>
+                                <p class="text-xs text-neutral-500 mt-1"><span data-ko="데이터 파일" data-en="Data files">데이터 파일</span></p>
                             </div>
                             <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                                 <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -674,7 +674,7 @@
                     <div class="flex items-center justify-between mb-4">
                         <h3 id="recent-activities-title" class="text-xl font-bold text-neutral-800">최근 활동</h3>
                         <button onclick="clearActivityHistory()" class="text-sm text-neutral-500 hover:text-red-600">
-                            기록 삭제
+                            <span data-ko="기록 삭제" data-en="Clear History">기록 삭제</span>
                         </button>
                     </div>
                     <div id="recent-activities" class="space-y-4">
@@ -686,52 +686,38 @@
             <!-- 어드민 도구 탭 -->
             <div id="admin-tools-content" class="tab-content hidden">
                 <div class="mb-8">
-                    <h2 id="admin-tools-title" class="text-3xl font-bold text-neutral-800 mb-2">어드민 활용</h2>
-                    <p id="admin-tools-desc" class="text-neutral-600">가맹점 관리 및 시스템 운영 도구들</p>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 id="admin-tools-title" class="text-3xl font-bold text-neutral-800 mb-2">어드민 활용</h2>
+                            <p id="admin-tools-desc" class="text-neutral-600">가맹점 관리 및 시스템 운영 도구들</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="openAdminToolManager()" class="btn-secondary">
+                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span data-ko="관리" data-en="Manage">관리</span>
+                            </button>
+                            <button onclick="exportAdminConfig()" class="btn-secondary">
+                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                                <span data-ko="내보내기" data-en="Export">내보내기</span>
+                            </button>
+                            <label class="btn-primary cursor-pointer">
+                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                                </svg>
+                                <span data-ko="불러오기" data-en="Import">불러오기</span>
+                                <input type="file" accept=".json" onchange="importAdminConfig(event)" class="hidden">
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="card-grid">
-                    <div class="card tool-card p-6" onclick="openAdminTool('qr-create')">
-                        <div class="icon-container">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-neutral-800 mb-2">가맹점 생성 및 QR 활성화</h3>
-                        <p class="text-neutral-600 mb-4">새로운 가맹점을 등록하고 QR 코드를 활성화합니다</p>
-                        <div class="flex items-center text-sm text-neutral-500">
-                            <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded text-xs mr-2">3개 어드민</span>
-                            <span>→</span>
-                        </div>
-                    </div>
-
-                    <div class="card tool-card p-6" onclick="openAdminTool('qr-recovery')">
-                        <div class="icon-container">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-neutral-800 mb-2">가맹점 QR 복구</h3>
-                        <p class="text-neutral-600 mb-4">손상된 QR 코드를 복구하고 재활성화합니다</p>
-                        <div class="flex items-center text-sm text-neutral-500">
-                            <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded text-xs mr-2">3개 어드민</span>
-                            <span>→</span>
-                        </div>
-                    </div>
-
-                    <div class="card tool-card p-6" onclick="openAdminTool('permission')">
-                        <div class="icon-container">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-neutral-800 mb-2">매장 권한 변경</h3>
-                        <p class="text-neutral-600 mb-4">매장별 사용자 권한을 관리하고 수정합니다</p>
-                        <div class="flex items-center text-sm text-neutral-500">
-                            <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded text-xs mr-2">3개 어드민</span>
-                            <span>→</span>
-                        </div>
-                    </div>
+                <div id="admin-tools-grid" class="card-grid">
+                    <!-- 동적으로 로드될 어드민 도구 카드들 -->
                 </div>
             </div>
 
@@ -749,10 +735,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-neutral-800 mb-2">샘플 이미지 생성기</h3>
-                        <p class="text-neutral-600 mb-4">다양한 크기와 포맷의 테스트 이미지를 생성합니다</p>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2"><span data-ko="샘플 이미지 생성기" data-en="Sample Image Generator">샘플 이미지 생성기</span></h3>
+                        <p class="text-neutral-600 mb-4"><span data-ko="다양한 크기와 포맷의 테스트 이미지를 생성합니다" data-en="Generate test images in various sizes and formats">다양한 크기와 포맷의 테스트 이미지를 생성합니다</span></p>
                         <div class="flex items-center text-sm text-neutral-500">
-                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs mr-2">이미지 도구</span>
+                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs mr-2"><span data-ko="이미지 도구" data-en="Image Tool">이미지 도구</span></span>
                             <span>→</span>
                         </div>
                     </div>
@@ -763,10 +749,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-neutral-800 mb-2">QR XLSX 생성기</h3>
-                        <p class="text-neutral-600 mb-4">QR 코드 정보가 포함된 엑셀 파일을 생성합니다</p>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2"><span data-ko="QR XLSX 생성기" data-en="QR XLSX Generator">QR XLSX 생성기</span></h3>
+                        <p class="text-neutral-600 mb-4"><span data-ko="QR 코드 정보가 포함된 엑셀 파일을 생성합니다" data-en="Generate Excel files with QR code information">QR 코드 정보가 포함된 엑셀 파일을 생성합니다</span></p>
                         <div class="flex items-center text-sm text-neutral-500">
-                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-2">엑셀 도구</span>
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs mr-2"><span data-ko="엑셀 도구" data-en="Excel Tool">엑셀 도구</span></span>
                             <span>→</span>
                         </div>
                     </div>
@@ -777,10 +763,52 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-neutral-800 mb-2">CSV 생성기</h3>
-                        <p class="text-neutral-600 mb-4">커스텀 CSV 파일을 생성하고 다운로드합니다</p>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2"><span data-ko="CSV 생성기" data-en="CSV Generator">CSV 생성기</span></h3>
+                        <p class="text-neutral-600 mb-4"><span data-ko="커스텀 CSV 파일을 생성하고 다운로드합니다" data-en="Generate and download custom CSV files">커스텀 CSV 파일을 생성하고 다운로드합니다</span></p>
                         <div class="flex items-center text-sm text-neutral-500">
-                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-2">데이터 도구</span>
+                            <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-2"><span data-ko="데이터 도구" data-en="Data Tool">데이터 도구</span></span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <div class="card tool-card p-6" onclick="openDataTool('profile-generator')">
+                        <div class="icon-container">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2"><span data-ko="프로필 이미지 생성기" data-en="Profile Image Generator">프로필 이미지 생성기</span></h3>
+                        <p class="text-neutral-600 mb-4"><span data-ko="텍스트 기반 프로필 이미지를 환경별 칩과 함께 생성합니다" data-en="Generate text-based profile images with environment chips">텍스트 기반 프로필 이미지를 환경별 칩과 함께 생성합니다</span></p>
+                        <div class="flex items-center text-sm text-neutral-500">
+                            <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs mr-2"><span data-ko="프로필 도구" data-en="Profile Tool">프로필 도구</span></span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <div class="card tool-card p-6" onclick="openDataTool('env-badge')">
+                        <div class="icon-container">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2"><span data-ko="환경 뱃지 생성기" data-en="Environment Badge Generator">환경 뱃지 생성기</span></h3>
+                        <p class="text-neutral-600 mb-4"><span data-ko="QA, 개발, 운영 환경을 구분하는 뱃지를 생성합니다" data-en="Generate badges to distinguish QA, dev, and production environments">QA, 개발, 운영 환경을 구분하는 뱃지를 생성합니다</span></p>
+                        <div class="flex items-center text-sm text-neutral-500">
+                            <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs mr-2"><span data-ko="뱃지 도구" data-en="Badge Tool">뱃지 도구</span></span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <div class="card tool-card p-6" onclick="openDataTool('business-number')">
+                        <div class="icon-container">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2"><span data-ko="사업자등록번호 생성기" data-en="Business Number Generator">사업자등록번호 생성기</span></h3>
+                        <p class="text-neutral-600 mb-4"><span data-ko="유효한 한국 사업자등록번호를 생성합니다" data-en="Generate valid Korean business registration numbers">유효한 한국 사업자등록번호를 생성합니다</span></p>
+                        <div class="flex items-center text-sm text-neutral-500">
+                            <span class="bg-teal-100 text-teal-800 px-2 py-1 rounded text-xs mr-2"><span data-ko="번호 생성" data-en="Number Generator">번호 생성</span></span>
                             <span>→</span>
                         </div>
                     </div>
@@ -801,19 +829,19 @@
                         <div class="space-y-4">
                             <div class="flex items-center justify-between p-4 bg-neutral-50 rounded-lg">
                                 <div>
-                                    <p class="font-medium text-neutral-800">토큰 상태</p>
-                                    <p class="text-sm text-neutral-600" id="token-status-detail">토큰 확인 중...</p>
+                                    <p class="font-medium text-neutral-800"><span data-ko="토큰 상태" data-en="Token Status">토큰 상태</span></p>
+                                    <p class="text-sm text-neutral-600" id="token-status-detail"><span data-ko="토큰 확인 중..." data-en="Checking tokens...">토큰 확인 중...</span></p>
                                 </div>
                                 <button class="btn-primary" onclick="syncTokens()">
-                                    🔄 토큰 동기화
+                                    🔄 <span data-ko="토큰 동기화" data-en="Sync Tokens">토큰 동기화</span>
                                 </button>
                             </div>
                             <div class="flex space-x-4">
                                 <button class="btn-secondary" onclick="showCookieModal()">
-                                    🍪 쿠키 관리
+                                    🍪 <span data-ko="쿠키 관리" data-en="Manage Cookies">쿠키 관리</span>
                                 </button>
                                 <button class="btn-primary" onclick="exportTokens()">
-                                    📤 토큰 내보내기
+                                    📤 <span data-ko="토큰 내보내기" data-en="Export Tokens">토큰 내보내기</span>
                                 </button>
                             </div>
                         </div>
@@ -825,8 +853,8 @@
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="font-medium text-neutral-800">다크 모드</p>
-                                    <p class="text-sm text-neutral-600">인터페이스 테마 변경</p>
+                                    <p class="font-medium text-neutral-800"><span data-ko="다크 모드" data-en="Dark Mode">다크 모드</span></p>
+                                    <p class="text-sm text-neutral-600"><span data-ko="인터페이스 테마 변경" data-en="Change interface theme">인터페이스 테마 변경</span></p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" class="sr-only peer" id="dark-mode-toggle">
@@ -836,8 +864,8 @@
                             
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="font-medium text-neutral-800">자동 저장</p>
-                                    <p class="text-sm text-neutral-600">작업 내용 자동 저장</p>
+                                    <p class="font-medium text-neutral-800"><span data-ko="자동 저장" data-en="Auto Save">자동 저장</span></p>
+                                    <p class="text-sm text-neutral-600"><span data-ko="작업 내용 자동 저장" data-en="Automatically save work">작업 내용 자동 저장</span></p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" class="sr-only peer" id="auto-save-toggle" checked>
@@ -852,19 +880,19 @@
                         <h3 id="system-info-title" class="text-xl font-bold text-neutral-800 mb-4">시스템 정보</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="p-4 bg-neutral-50 rounded-lg">
-                                <p class="text-sm font-medium text-neutral-600">버전</p>
+                                <p class="text-sm font-medium text-neutral-600"><span data-ko="버전" data-en="Version">버전</span></p>
                                 <p class="text-lg font-bold text-neutral-800">v2.1.0</p>
                             </div>
                             <div class="p-4 bg-neutral-50 rounded-lg">
-                                <p class="text-sm font-medium text-neutral-600">마지막 업데이트</p>
+                                <p class="text-sm font-medium text-neutral-600"><span data-ko="마지막 업데이트" data-en="Last Update">마지막 업데이트</span></p>
                                 <p class="text-lg font-bold text-neutral-800">2024-08-15</p>
                             </div>
                             <div class="p-4 bg-neutral-50 rounded-lg">
-                                <p class="text-sm font-medium text-neutral-600">총 사용자</p>
-                                <p class="text-lg font-bold text-neutral-800">247명</p>
+                                <p class="text-sm font-medium text-neutral-600"><span data-ko="총 사용자" data-en="Total Users">총 사용자</span></p>
+                                <p class="text-lg font-bold text-neutral-800"><span data-ko="247명" data-en="247">247명</span></p>
                             </div>
                             <div class="p-4 bg-neutral-50 rounded-lg">
-                                <p class="text-sm font-medium text-neutral-600">업타임</p>
+                                <p class="text-sm font-medium text-neutral-600"><span data-ko="업타임" data-en="Uptime">업타임</span></p>
                                 <p class="text-lg font-bold text-neutral-800">99.9%</p>
                             </div>
                         </div>
@@ -877,24 +905,24 @@
     <!-- 쿠키 관리 모달 -->
     <div id="cookie-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
         <div class="bg-white rounded-2xl p-8 max-w-2xl w-full m-4 max-h-[80vh] overflow-y-auto">
-            <h3 class="text-2xl font-bold text-neutral-800 mb-6">🍪 쿠키 관리</h3>
+            <h3 class="text-2xl font-bold text-neutral-800 mb-6">🍪 <span data-ko="쿠키 관리" data-en="Cookie Management">쿠키 관리</span></h3>
             <div class="mb-6">
-                <h4 class="font-medium text-neutral-700 mb-3">현재 저장된 쿠키:</h4>
+                <h4 class="font-medium text-neutral-700 mb-3"><span data-ko="현재 저장된 쿠키:" data-en="Current Saved Cookies:">현재 저장된 쿠키:</span></h4>
                 <div id="cookie-list" class="bg-neutral-100 p-4 rounded-lg text-sm font-mono max-h-40 overflow-y-auto">
-                    로딩중...
+                    <span data-ko="로딩중..." data-en="Loading...">로딩중...</span>
                 </div>
             </div>
             <div class="mb-6">
-                <h4 class="font-medium text-neutral-700 mb-3">쿠키 추가/수정:</h4>
+                <h4 class="font-medium text-neutral-700 mb-3"><span data-ko="쿠키 추가/수정:" data-en="Add/Edit Cookie:">쿠키 추가/수정:</span></h4>
                 <input id="cookie-input" type="text"
                        placeholder="name=value; domain=.example.com; path=/"
                        class="form-input mb-3">
                 <button onclick="addCookie()" class="btn-primary">
-                    쿠키 추가
+                    <span data-ko="쿠키 추가" data-en="Add Cookie">쿠키 추가</span>
                 </button>
             </div>
             <button onclick="closeCookieModal()" class="w-full p-3 bg-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-400 transition-colors">
-                닫기
+                <span data-ko="닫기" data-en="Close">닫기</span>
             </button>
         </div>
     </div>
@@ -903,7 +931,7 @@
     <div id="tool-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
         <div class="bg-white rounded-2xl max-w-4xl w-full m-4 max-h-[90vh] overflow-hidden">
             <div class="p-6 border-b border-neutral-200 flex items-center justify-between">
-                <h3 id="tool-modal-title" class="text-2xl font-bold text-neutral-800">도구</h3>
+                <h3 id="tool-modal-title" class="text-2xl font-bold text-neutral-800"><span data-ko="도구" data-en="Tool">도구</span></h3>
                 <button onclick="closeToolModal()" class="p-2 hover:bg-neutral-100 rounded-lg transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -912,6 +940,88 @@
             </div>
             <div id="tool-modal-content" class="p-6 overflow-y-auto" style="max-height: calc(90vh - 100px);">
                 <!-- 도구별 콘텐츠가 여기에 로드됩니다 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 어드민 도구 관리 모달 -->
+    <div id="admin-manager-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl max-w-5xl w-full m-4 max-h-[90vh] overflow-hidden">
+            <div class="p-6 border-b border-neutral-200 flex items-center justify-between">
+                <h3 class="text-2xl font-bold text-neutral-800">
+                    <span data-ko="어드민 도구 관리" data-en="Admin Tool Manager">어드민 도구 관리</span>
+                </h3>
+                <button onclick="closeAdminToolManager()" class="p-2 hover:bg-neutral-100 rounded-lg transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 100px);">
+                <!-- 도구 추가 섹션 -->
+                <div class="mb-6 p-4 bg-neutral-50 rounded-lg">
+                    <h4 class="font-semibold text-neutral-800 mb-4">
+                        <span data-ko="새 도구 추가" data-en="Add New Tool">새 도구 추가</span>
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-700 mb-2">
+                                <span data-ko="도구 이름" data-en="Tool Name">도구 이름</span>
+                            </label>
+                            <input type="text" id="new-tool-name" class="form-input" placeholder="예: 가맹점 생성">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-700 mb-2">
+                                <span data-ko="태그" data-en="Tag">태그</span>
+                            </label>
+                            <input type="text" id="new-tool-tag" class="form-input" placeholder="예: 3개 어드민">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-neutral-700 mb-2">
+                                <span data-ko="설명" data-en="Description">설명</span>
+                            </label>
+                            <textarea id="new-tool-desc" class="form-input" rows="2" placeholder="도구의 기능을 설명하세요"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-700 mb-2">
+                                <span data-ko="아이콘 타입" data-en="Icon Type">아이콘 타입</span>
+                            </label>
+                            <select id="new-tool-icon" class="form-input">
+                                <option value="plus">➕ 추가</option>
+                                <option value="refresh">🔄 새로고침</option>
+                                <option value="lock">🔒 보안</option>
+                                <option value="chart">📊 차트</option>
+                                <option value="settings">⚙️ 설정</option>
+                                <option value="users">👥 사용자</option>
+                                <option value="store">🏪 매장</option>
+                                <option value="qr">📱 QR</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="addAdminTool()" class="btn-primary mt-4">
+                        <span data-ko="도구 추가" data-en="Add Tool">도구 추가</span>
+                    </button>
+                </div>
+
+                <!-- 기존 도구 목록 -->
+                <div>
+                    <h4 class="font-semibold text-neutral-800 mb-4">
+                        <span data-ko="등록된 도구 목록" data-en="Registered Tools">등록된 도구 목록</span>
+                    </h4>
+                    <div id="admin-tools-list" class="space-y-2">
+                        <!-- 동적으로 로드될 도구 목록 -->
+                    </div>
+                </div>
+
+                <!-- 기본값 복원 -->
+                <div class="mt-6 pt-6 border-t flex justify-between">
+                    <button onclick="loadDefaultAdminTools()" class="btn-secondary">
+                        <span data-ko="기본값 복원" data-en="Restore Defaults">기본값 복원</span>
+                    </button>
+                    <button onclick="downloadDefaultConfig()" class="btn-secondary">
+                        <span data-ko="기본 설정 다운로드" data-en="Download Default Config">기본 설정 다운로드</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1299,7 +1409,8 @@
                 logActivity('admin-tool', `${name} 어드민 열기`, 'started');
                 
                 if (isInternal) {
-                    showToast(`${name} 도구를 새 창에서 엽니다`, 'success');
+                    const msg = currentLanguage === 'ko' ? `${name} 도구를 새 창에서 엽니다` : `Opening ${name} tool in new window`;
+                    showToast(msg, 'success');
                 }
                 
                 const windowName = 'admin_' + name.replace(/\s/g, '_');
@@ -1310,16 +1421,18 @@
                     
                     // 활동 기록 - 완료
                     logActivity('admin-tool', `${name} 어드민 열기`, 'completed');
-                    showToast(`${name}이(가) 새 창에서 열렸습니다`, 'success');
+                    const msg = currentLanguage === 'ko' ? `${name}이(가) 새 창에서 열렸습니다` : `${name} opened in new window`;
+                    showToast(msg, 'success');
                 } else {
                     // 활동 기록 - 실패
                     logActivity('admin-tool', `${name} 어드민 열기`, 'failed');
-                    showToast('팝업이 차단되었습니다. 팝업 허용 후 다시 시도하세요', 'error');
+                    const msg = currentLanguage === 'ko' ? '팝업이 차단되었습니다. 팝업 허용 후 다시 시도하세요' : 'Popup blocked. Please allow popups and try again';
+                    showToast(msg, 'error');
                 }
             } catch (error) {
                 console.error('어드민 도구 실행 오류:', error);
                 logActivity('admin-tool', `${name} 어드민 열기`, 'failed');
-                showToast('도구 실행 중 오류가 발생했습니다', 'error');
+                showToast(currentLanguage === 'ko' ? '도구 실행 중 오류가 발생했습니다' : 'Error running tool', 'error');
             }
         }
 
@@ -1340,6 +1453,18 @@
                     title = 'CSV 생성기';
                     content = getCsvGeneratorHTML();
                     break;
+                case 'profile-generator':
+                    title = currentLanguage === 'ko' ? '프로필 이미지 생성기' : 'Profile Image Generator';
+                    content = getProfileGeneratorHTML();
+                    break;
+                case 'env-badge':
+                    title = currentLanguage === 'ko' ? '환경 뱃지 생성기' : 'Environment Badge Generator';
+                    content = getEnvBadgeGeneratorHTML();
+                    break;
+                case 'business-number':
+                    title = currentLanguage === 'ko' ? '사업자등록번호 생성기' : 'Business Number Generator';
+                    content = getBusinessNumberGeneratorHTML();
+                    break;
                 default:
                     title = '도구';
                     content = '<p class="text-center text-neutral-500">도구를 찾을 수 없습니다.</p>';
@@ -1352,6 +1477,20 @@
             // 샘플 이미지 생성기인 경우 초기 이미지 생성
             if (toolId === 'sample-image') {
                 setTimeout(generateSampleImage, 100);
+            }
+            // 프로필 생성기인 경우 초기 프리뷰
+            if (toolId === 'profile-generator') {
+                setTimeout(generateProfilePreview, 100);
+            }
+            // 환경 뱃지 생성기인 경우 초기 프리뷰
+            if (toolId === 'env-badge') {
+                setTimeout(generateEnvBadgePreview, 100);
+            }
+            // 사업자등록번호 생성기 초기화
+            if (toolId === 'business-number') {
+                setTimeout(() => {
+                    window.generatedBusinessNumbers = [];
+                }, 100);
             }
         }
 
@@ -1409,11 +1548,12 @@
                 addNotification('language-change', `${oldLang.toUpperCase()} → ${newLang.toUpperCase()}`, 'completed');
                 
                 const langText = currentLanguage === 'ko' ? '한국어' : 'English';
-                showToast(`언어가 ${langText}로 변경되었습니다`, 'success');
+                const message = currentLanguage === 'ko' ? `언어가 ${langText}로 변경되었습니다` : `Language changed to ${langText}`;
+                showToast(message, 'success');
             } catch (error) {
                 console.error('언어 변경 오류:', error);
                 addNotification('language-change', 'Language toggle', 'failed', error.message);
-                showToast('언어 변경 중 오류가 발생했습니다', 'error');
+                showToast(currentLanguage === 'ko' ? '언어 변경 중 오류가 발생했습니다' : 'Error changing language', 'error');
             }
         }
 
@@ -1856,12 +1996,13 @@
                 });
                 
                 logActivity('token-sync', `토큰 ${tokenCount}개 동기화 (${syncedWindows}개 창)`, 'completed');
-                showToast(`토큰 ${tokenCount}개가 동기화되었습니다`, 'success');
+                const msg = currentLanguage === 'ko' ? `토큰 ${tokenCount}개가 동기화되었습니다` : `${tokenCount} tokens synchronized`;
+                showToast(msg, 'success');
                 updateTokenStatus();
             } catch (error) {
                 console.error('토큰 동기화 오류:', error);
                 logActivity('token-sync', '토큰 동기화 실패', 'failed');
-                showToast('토큰 동기화 중 오류가 발생했습니다', 'error');
+                showToast(currentLanguage === 'ko' ? '토큰 동기화 중 오류가 발생했습니다' : 'Error synchronizing tokens', 'error');
             }
         }
 
@@ -1873,9 +2014,10 @@
                 const statusEl = document.getElementById('token-status-detail');
                 if (statusEl) {
                     if (totalCount > 0) {
-                        statusEl.innerHTML = `✅ 토큰 ${totalCount}개 발견 (Local: ${Object.keys(tokens.localStorage).length}, Session: ${Object.keys(tokens.sessionStorage).length}, Cookie: ${Object.keys(tokens.cookies).length})`;
+                        const foundText = currentLanguage === 'ko' ? `✅ 토큰 ${totalCount}개 발견` : `✅ ${totalCount} tokens found`;
+                        statusEl.innerHTML = `${foundText} (Local: ${Object.keys(tokens.localStorage).length}, Session: ${Object.keys(tokens.sessionStorage).length}, Cookie: ${Object.keys(tokens.cookies).length})`;
                     } else {
-                        statusEl.innerHTML = '❌ 토큰 없음';
+                        statusEl.innerHTML = currentLanguage === 'ko' ? '❌ 토큰 없음' : '❌ No tokens';
                     }
                 }
                 
@@ -1890,7 +2032,7 @@
                 console.error('토큰 상태 업데이트 오류:', error);
                 const statusEl = document.getElementById('token-status-detail');
                 if (statusEl) {
-                    statusEl.innerHTML = '❌ 오류 발생';
+                    statusEl.innerHTML = currentLanguage === 'ko' ? '❌ 오류 발생' : '❌ Error occurred';
                 }
                 return 0;
             }
@@ -1907,10 +2049,10 @@
                 link.download = `tokens_${new Date().toISOString().split('T')[0]}.json`;
                 link.click();
                 
-                showToast('토큰 정보가 다운로드되었습니다', 'success');
+                showToast(currentLanguage === 'ko' ? '토큰 정보가 다운로드되었습니다' : 'Token information downloaded', 'success');
             } catch (error) {
                 console.error('토큰 내보내기 오류:', error);
-                showToast('토큰 내보내기 중 오류가 발생했습니다', 'error');
+                showToast(currentLanguage === 'ko' ? '토큰 내보내기 중 오류가 발생했습니다' : 'Error exporting tokens', 'error');
             }
         }
 
@@ -1929,7 +2071,7 @@
             const cookieList = document.getElementById('cookie-list');
             
             if (Object.keys(cookies).length === 0) {
-                cookieList.textContent = '쿠키가 없습니다.';
+                cookieList.textContent = currentLanguage === 'ko' ? '쿠키가 없습니다.' : 'No cookies.';
             } else {
                 cookieList.innerHTML = Object.entries(cookies)
                     .map(([name, value]) => `<div class="mb-1"><strong>${name}</strong> = ${value}</div>`)
@@ -1940,7 +2082,7 @@
         function addCookie() {
             const input = document.getElementById('cookie-input').value.trim();
             if (!input) {
-                showToast('쿠키 정보를 입력해주세요', 'error');
+                showToast(currentLanguage === 'ko' ? '쿠키 정보를 입력해주세요' : 'Please enter cookie information', 'error');
                 return;
             }
             
@@ -1953,7 +2095,7 @@
                 
                 if (!name) {
                     addNotification('cookie-management', '쿠키 추가', 'failed', '쿠키 이름이 필요합니다');
-                    showToast('쿠키 이름이 필요합니다', 'error');
+                    showToast(currentLanguage === 'ko' ? '쿠키 이름이 필요합니다' : 'Cookie name is required', 'error');
                     return;
                 }
                 
@@ -1963,11 +2105,11 @@
                 
                 // 알림 추가 - 완료
                 addNotification('cookie-management', '쿠키 추가', 'completed', `${name} 쿠키 추가됨`);
-                showToast('쿠키가 추가되었습니다', 'success');
+                showToast(currentLanguage === 'ko' ? '쿠키가 추가되었습니다' : 'Cookie added', 'success');
             } catch (e) {
                 console.error('쿠키 추가 오류:', e);
                 addNotification('cookie-management', '쿠키 추가', 'failed', e.message);
-                showToast('올바른 쿠키 형식이 아닙니다', 'error');
+                showToast(currentLanguage === 'ko' ? '올바른 쿠키 형식이 아닙니다' : 'Invalid cookie format', 'error');
             }
         }
 
@@ -2193,7 +2335,7 @@
 
                 if (formats.length === 0) {
                     logActivity('data-generation', '샘플 이미지 생성 실패', 'failed');
-                    showToast('최소 하나의 이미지 포맷을 선택해주세요', 'error');
+                    showToast(currentLanguage === 'ko' ? '최소 하나의 이미지 포맷을 선택해주세요' : 'Please select at least one image format', 'error');
                     return;
                 }
 
@@ -2225,11 +2367,11 @@
                 
                 // 알림 추가 - 완료
                 logActivity('data-generation', `샘플 이미지 ${count}개 생성 (${size})`, 'completed');
-                showToast('이미지 생성 완료', 'success');
+                showToast(currentLanguage === 'ko' ? '이미지 생성 완료' : 'Image generation complete', 'success');
             } catch (error) {
                 console.error('이미지 생성 오류:', error);
                 logActivity('data-generation', '샘플 이미지 생성 실패', 'failed');
-                showToast('이미지 생성 중 오류가 발생했습니다', 'error');
+                showToast(currentLanguage === 'ko' ? '이미지 생성 중 오류가 발생했습니다' : 'Error generating image', 'error');
             }
         }
 
@@ -2237,7 +2379,7 @@
             try {
                 const settings = window.sampleImageSettings;
                 if (!settings) {
-                    showToast('먼저 이미지를 생성해주세요', 'error');
+                    showToast(currentLanguage === 'ko' ? '먼저 이미지를 생성해주세요' : 'Please generate an image first', 'error');
                     return;
                 }
 
@@ -2282,10 +2424,11 @@
                     });
                 }
 
-                showToast(`${count}개 이미지 × ${formats.length}개 포맷 = 총 ${count * formats.length}개 파일 다운로드 완료`, 'success');
+                const msg = currentLanguage === 'ko' ? `${count}개 이미지 × ${formats.length}개 포맷 = 총 ${count * formats.length}개 파일 다운로드 완료` : `${count} images × ${formats.length} formats = ${count * formats.length} files downloaded`;
+                showToast(msg, 'success');
             } catch (error) {
                 console.error('다운로드 오류:', error);
-                showToast('다운로드 중 오류가 발생했습니다', 'error');
+                showToast(currentLanguage === 'ko' ? '다운로드 중 오류가 발생했습니다' : 'Error during download', 'error');
             }
         }
 
@@ -2312,10 +2455,10 @@
                 XLSX.writeFile(wb, `QR_Data${cidPart}_${timestamp}.xlsx`);
 
                 document.getElementById('qr-preview').classList.remove('hidden');
-                showToast('QR XLSX 파일이 생성되었습니다', 'success');
+                showToast(currentLanguage === 'ko' ? 'QR XLSX 파일이 생성되었습니다' : 'QR XLSX file generated', 'success');
             } catch (error) {
                 console.error('XLSX 생성 오류:', error);
-                showToast('XLSX 파일 생성 중 오류가 발생했습니다', 'error');
+                showToast(currentLanguage === 'ko' ? 'XLSX 파일 생성 중 오류가 발생했습니다' : 'Error generating XLSX file', 'error');
             }
         }
 
@@ -2349,7 +2492,7 @@
                 const rowCount = parseInt(document.getElementById('csv-rowCount').value);
 
                 if (rowCount <= 0 || rowCount > 1000) {
-                    showToast('행 수는 1~1000 범위로 입력해주세요', 'error');
+                    showToast(currentLanguage === 'ko' ? '행 수는 1~1000 범위로 입력해주세요' : 'Please enter row count between 1-1000', 'error');
                     return;
                 }
 
@@ -2396,10 +2539,10 @@
                 }
 
                 displayCsvPreview();
-                showToast('CSV 미리보기가 생성되었습니다', 'success');
+                showToast(currentLanguage === 'ko' ? 'CSV 미리보기가 생성되었습니다' : 'CSV preview generated', 'success');
             } catch (error) {
                 console.error('CSV 생성 오류:', error);
-                showToast('CSV 파일 생성 중 오류가 발생했습니다', 'error');
+                showToast(currentLanguage === 'ko' ? 'CSV 파일 생성 중 오류가 발생했습니다' : 'Error generating CSV file', 'error');
             }
         }
 
@@ -2441,7 +2584,7 @@
 
         function downloadCsv() {
             if (csvData.length === 0) {
-                showToast('먼저 CSV를 생성해주세요', 'error');
+                showToast(currentLanguage === 'ko' ? '먼저 CSV를 생성해주세요' : 'Please generate CSV first', 'error');
                 return;
             }
 
@@ -2459,7 +2602,7 @@
             link.setAttribute('download', `custom_data_${rowCount}rows_${timestamp}.csv`);
             link.click();
 
-            showToast('CSV 파일이 다운로드되었습니다', 'success');
+            showToast(currentLanguage === 'ko' ? 'CSV 파일이 다운로드되었습니다' : 'CSV file downloaded', 'success');
         }
 
         // 초기화
@@ -2504,7 +2647,1556 @@
         // 에러 전역 처리
         window.addEventListener('error', function(event) {
             console.error('전역 에러:', event.error);
-            showToast('예상치 못한 오류가 발생했습니다', 'error');
+            showToast(currentLanguage === 'ko' ? '예상치 못한 오류가 발생했습니다' : 'An unexpected error occurred', 'error');
+        });
+
+        // 프로필 이미지 생성기 HTML
+        function getProfileGeneratorHTML() {
+            return `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">${currentLanguage === 'ko' ? '메인 텍스트' : 'Main Text'}</label>
+                                <input type="text" id="profile-mainText" value="PQA|1247" placeholder="${currentLanguage === 'ko' ? '텍스트 입력 (| 로 줄바꿈)' : 'Enter text (| for line break)'}" class="form-input" oninput="generateProfilePreview()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">${currentLanguage === 'ko' ? '텍스트 크기' : 'Text Size'}</label>
+                                <input type="range" id="profile-textSize" min="50" max="200" value="120" class="w-full" oninput="document.getElementById('profile-textSizeLabel').textContent = this.value; generateProfilePreview()">
+                                <span id="profile-textSizeLabel" class="text-sm text-neutral-600">120</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-neutral-700 mb-2">${currentLanguage === 'ko' ? '배경색' : 'Background'}</label>
+                                    <input type="color" id="profile-bgColor" value="#4a5568" class="form-input h-12 w-full" onchange="generateProfilePreview()">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-neutral-700 mb-2">${currentLanguage === 'ko' ? '텍스트 색' : 'Text Color'}</label>
+                                    <input type="color" id="profile-textColor" value="#ffffff" class="form-input h-12 w-full" onchange="generateProfilePreview()">
+                                </div>
+                            </div>
+                            
+                            <div class="border-t pt-4">
+                                <h4 class="font-medium text-neutral-800 mb-3">${currentLanguage === 'ko' ? '환경 칩 설정' : 'Environment Chip Settings'}</h4>
+                                <div class="mb-3">
+                                    <label class="block text-sm font-medium text-neutral-700 mb-2">${currentLanguage === 'ko' ? '칩 텍스트 크기' : 'Chip Text Size'}</label>
+                                    <input type="range" id="chip-textSize" min="8" max="20" value="12" class="w-full" oninput="updateChipSizeLabel()">
+                                    <span id="chip-textSizeLabel" class="text-sm text-neutral-600">12px</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <!-- 좌상단 칩 -->
+                                    <div class="p-3 border rounded">
+                                        <label class="flex items-center mb-2">
+                                            <input type="checkbox" id="chip-tl-enabled" class="mr-2" onchange="generateProfilePreview()">
+                                            <span class="text-sm">${currentLanguage === 'ko' ? '좌상단' : 'Top-Left'}</span>
+                                        </label>
+                                        <input type="text" id="chip-tl-text" placeholder="QA" class="form-input text-xs mb-1" oninput="generateProfilePreview()">
+                                        <div class="flex gap-1">
+                                            <input type="color" id="chip-tl-bg" value="#ff6b6b" class="w-full h-8" onchange="generateProfilePreview()">
+                                            <input type="color" id="chip-tl-color" value="#ffffff" class="w-full h-8" onchange="generateProfilePreview()">
+                                        </div>
+                                    </div>
+                                    <!-- 우상단 칩 -->
+                                    <div class="p-3 border rounded">
+                                        <label class="flex items-center mb-2">
+                                            <input type="checkbox" id="chip-tr-enabled" class="mr-2" onchange="generateProfilePreview()">
+                                            <span class="text-sm">${currentLanguage === 'ko' ? '우상단' : 'Top-Right'}</span>
+                                        </label>
+                                        <input type="text" id="chip-tr-text" placeholder="STAGE" class="form-input text-xs mb-1" oninput="generateProfilePreview()">
+                                        <div class="flex gap-1">
+                                            <input type="color" id="chip-tr-bg" value="#4ecdc4" class="w-full h-8" onchange="generateProfilePreview()">
+                                            <input type="color" id="chip-tr-color" value="#ffffff" class="w-full h-8" onchange="generateProfilePreview()">
+                                        </div>
+                                    </div>
+                                    <!-- 좌하단 칩 -->
+                                    <div class="p-3 border rounded">
+                                        <label class="flex items-center mb-2">
+                                            <input type="checkbox" id="chip-bl-enabled" class="mr-2" onchange="generateProfilePreview()">
+                                            <span class="text-sm">${currentLanguage === 'ko' ? '좌하단' : 'Bottom-Left'}</span>
+                                        </label>
+                                        <input type="text" id="chip-bl-text" placeholder="TEST" class="form-input text-xs mb-1" oninput="generateProfilePreview()">
+                                        <div class="flex gap-1">
+                                            <input type="color" id="chip-bl-bg" value="#f7b731" class="w-full h-8" onchange="generateProfilePreview()">
+                                            <input type="color" id="chip-bl-color" value="#ffffff" class="w-full h-8" onchange="generateProfilePreview()">
+                                        </div>
+                                    </div>
+                                    <!-- 우하단 칩 -->
+                                    <div class="p-3 border rounded">
+                                        <label class="flex items-center mb-2">
+                                            <input type="checkbox" id="chip-br-enabled" class="mr-2" onchange="generateProfilePreview()">
+                                            <span class="text-sm">${currentLanguage === 'ko' ? '우하단' : 'Bottom-Right'}</span>
+                                        </label>
+                                        <input type="text" id="chip-br-text" placeholder="v2.0" class="form-input text-xs mb-1" oninput="generateProfilePreview()">
+                                        <div class="flex gap-1">
+                                            <input type="color" id="chip-br-bg" value="#5f27cd" class="w-full h-8" onchange="generateProfilePreview()">
+                                            <input type="color" id="chip-br-color" value="#ffffff" class="w-full h-8" onchange="generateProfilePreview()">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="generateProfilePreview()" class="btn-primary w-full">
+                                ${currentLanguage === 'ko' ? '프로필 생성하기' : 'Generate Profile'}
+                            </button>
+                        </div>
+                        
+                        <div>
+                            <div class="border-2 border-dashed border-neutral-300 rounded-lg p-6 bg-neutral-50 min-h-64 flex items-center justify-center">
+                                <canvas id="profile-canvas" width="300" height="300" class="border border-neutral-200 rounded shadow-sm"></canvas>
+                            </div>
+                            <button onclick="downloadProfileImage()" class="btn-secondary w-full mt-4">
+                                ${currentLanguage === 'ko' ? '이미지 다운로드 (1080x1080)' : 'Download Image (1080x1080)'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 환경 뱃지 생성기 HTML
+        function getEnvBadgeGeneratorHTML() {
+            return `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">${currentLanguage === 'ko' ? '환경 선택' : 'Select Environment'}</label>
+                                <select id="badge-env" class="form-input" onchange="updateBadgePreset()">
+                                    <option value="dev">Development</option>
+                                    <option value="qa">QA/Test</option>
+                                    <option value="stage">Staging</option>
+                                    <option value="prod">Production</option>
+                                    <option value="custom">${currentLanguage === 'ko' ? '커스텀' : 'Custom'}</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">${currentLanguage === 'ko' ? '뱃지 텍스트' : 'Badge Text'}</label>
+                                <input type="text" id="badge-text" value="DEV" class="form-input">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">${currentLanguage === 'ko' ? '뱃지 스타일' : 'Badge Style'}</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="badgeStyle" value="rounded" checked class="mr-2">
+                                        <span>${currentLanguage === 'ko' ? '둥근 모서리' : 'Rounded'}</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="badgeStyle" value="square" class="mr-2">
+                                        <span>${currentLanguage === 'ko' ? '사각형' : 'Square'}</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="badgeStyle" value="circle" class="mr-2">
+                                        <span>${currentLanguage === 'ko' ? '원형' : 'Circle'}</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-neutral-700 mb-2">${currentLanguage === 'ko' ? '배경색' : 'Background'}</label>
+                                    <input type="color" id="badge-bgColor" value="#ff6b6b" class="form-input h-12 w-full">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-neutral-700 mb-2">${currentLanguage === 'ko' ? '텍스트 색' : 'Text Color'}</label>
+                                    <input type="color" id="badge-textColor" value="#ffffff" class="form-input h-12 w-full">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">${currentLanguage === 'ko' ? '크기' : 'Size'}</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button class="btn-secondary" onclick="setBadgeSize('small')">${currentLanguage === 'ko' ? '작게' : 'Small'}</button>
+                                    <button class="btn-secondary" onclick="setBadgeSize('medium')">${currentLanguage === 'ko' ? '보통' : 'Medium'}</button>
+                                    <button class="btn-secondary" onclick="setBadgeSize('large')">${currentLanguage === 'ko' ? '크게' : 'Large'}</button>
+                                </div>
+                            </div>
+                            
+                            <button onclick="generateEnvBadgePreview()" class="btn-primary w-full">
+                                ${currentLanguage === 'ko' ? '뱃지 생성하기' : 'Generate Badge'}
+                            </button>
+                        </div>
+                        
+                        <div>
+                            <div class="border-2 border-dashed border-neutral-300 rounded-lg p-6 bg-neutral-50 min-h-64 flex items-center justify-center">
+                                <canvas id="badge-canvas" width="200" height="200" class="border border-neutral-200 rounded shadow-sm"></canvas>
+                            </div>
+                            <div class="mt-4 space-y-2">
+                                <button onclick="downloadBadgeImage('png')" class="btn-secondary w-full">
+                                    ${currentLanguage === 'ko' ? 'PNG로 다운로드' : 'Download as PNG'}
+                                </button>
+                                <button onclick="downloadBadgeImage('svg')" class="btn-primary w-full">
+                                    ${currentLanguage === 'ko' ? 'SVG로 다운로드' : 'Download as SVG'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 칩 텍스트 크기 레이블 업데이트
+        function updateChipSizeLabel() {
+            const size = document.getElementById('chip-textSize').value;
+            document.getElementById('chip-textSizeLabel').textContent = size + 'px';
+            generateProfilePreview();
+        }
+
+        // 프로필 이미지 생성 함수
+        function generateProfilePreview() {
+            try {
+                const canvas = document.getElementById('profile-canvas');
+                if (!canvas) {
+                    console.log('Canvas not found');
+                    return;
+                }
+                
+                const ctx = canvas.getContext('2d');
+                const mainText = document.getElementById('profile-mainText')?.value || 'PROFILE';
+                const textSize = parseInt(document.getElementById('profile-textSize')?.value || 120);
+                const bgColor = document.getElementById('profile-bgColor')?.value || '#4a5568';
+                const textColor = document.getElementById('profile-textColor')?.value || '#ffffff';
+                const chipTextSize = parseInt(document.getElementById('chip-textSize')?.value || 12);
+                
+                // 텍스트 크기 레이블 업데이트
+                const textSizeLabel = document.getElementById('profile-textSizeLabel');
+                if (textSizeLabel) {
+                    textSizeLabel.textContent = textSize;
+                }
+                
+                // 캔버스 초기화
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(0, 0, 300, 300);
+                
+                // 메인 텍스트 그리기
+                ctx.save();
+                ctx.fillStyle = textColor;
+                ctx.font = `bold ${textSize}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                const lines = mainText.split('|');
+                const lineHeight = textSize * 1.2;
+                const startY = 150 - ((lines.length - 1) * lineHeight) / 2;
+                
+                lines.forEach((line, index) => {
+                    ctx.fillText(line.trim(), 150, startY + (index * lineHeight));
+                });
+                ctx.restore();
+                
+                // 칩 그리기
+                const chips = [
+                    { id: 'tl', x: 10, y: 10, align: 'left', vAlign: 'top' },
+                    { id: 'tr', x: 290, y: 10, align: 'right', vAlign: 'top' },
+                    { id: 'bl', x: 10, y: 290, align: 'left', vAlign: 'bottom' },
+                    { id: 'br', x: 290, y: 290, align: 'right', vAlign: 'bottom' }
+                ];
+                
+                chips.forEach(chip => {
+                    const enabledEl = document.getElementById(`chip-${chip.id}-enabled`);
+                    const textEl = document.getElementById(`chip-${chip.id}-text`);
+                    const bgEl = document.getElementById(`chip-${chip.id}-bg`);
+                    const colorEl = document.getElementById(`chip-${chip.id}-color`);
+                    
+                    console.log(`Checking chip ${chip.id}:`, {
+                        enabled: enabledEl?.checked,
+                        text: textEl?.value,
+                        hasElements: !!(enabledEl && textEl && bgEl && colorEl)
+                    });
+                    
+                    if (enabledEl && enabledEl.checked && textEl && bgEl && colorEl) {
+                        // Use input value or placeholder as fallback
+                        const text = textEl.value.trim() || textEl.getAttribute('placeholder') || '';
+                        const bg = bgEl.value || '#ff6b6b';
+                        const color = colorEl.value || '#ffffff';
+                        
+                        console.log(`Drawing chip ${chip.id}:`, { text, bg, color, placeholder: textEl.getAttribute('placeholder') });
+                        
+                        if (text) {
+                            ctx.save();
+                            
+                            // 칩 텍스트 설정
+                            ctx.font = `bold ${chipTextSize}px Arial`;
+                            const metrics = ctx.measureText(text);
+                            const padding = chipTextSize * 0.8;
+                            const chipWidth = metrics.width + padding * 2;
+                            const chipHeight = chipTextSize * 2;
+                            
+                            let chipX = chip.x;
+                            let chipY = chip.y;
+                            
+                            // 정렬 처리
+                            if (chip.align === 'right') {
+                                chipX = chip.x - chipWidth;
+                            }
+                            
+                            if (chip.vAlign === 'bottom') {
+                                chipY = chip.y - chipHeight;
+                            }
+                            
+                            console.log(`Chip position ${chip.id}:`, { x: chipX, y: chipY, width: chipWidth, height: chipHeight });
+                            
+                            // 칩 배경 그리기 (둥근 모서리)
+                            ctx.fillStyle = bg;
+                            const radius = Math.min(4, chipHeight * 0.2);
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(chipX + radius, chipY);
+                            ctx.lineTo(chipX + chipWidth - radius, chipY);
+                            ctx.quadraticCurveTo(chipX + chipWidth, chipY, chipX + chipWidth, chipY + radius);
+                            ctx.lineTo(chipX + chipWidth, chipY + chipHeight - radius);
+                            ctx.quadraticCurveTo(chipX + chipWidth, chipY + chipHeight, chipX + chipWidth - radius, chipY + chipHeight);
+                            ctx.lineTo(chipX + radius, chipY + chipHeight);
+                            ctx.quadraticCurveTo(chipX, chipY + chipHeight, chipX, chipY + chipHeight - radius);
+                            ctx.lineTo(chipX, chipY + radius);
+                            ctx.quadraticCurveTo(chipX, chipY, chipX + radius, chipY);
+                            ctx.closePath();
+                            ctx.fill();
+                            
+                            // 칩 텍스트 그리기
+                            ctx.fillStyle = color;
+                            ctx.font = `bold ${chipTextSize}px Arial`;
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(text, chipX + chipWidth/2, chipY + chipHeight/2);
+                            
+                            ctx.restore();
+                        }
+                    }
+                });
+                
+                console.log('Profile preview generated');
+                
+            } catch (error) {
+                console.error('프로필 생성 오류:', error);
+            }
+        }
+
+        // 프로필 이미지 다운로드
+        function downloadProfileImage() {
+            try {
+                const sourceCanvas = document.getElementById('profile-canvas');
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                canvas.width = 1080;
+                canvas.height = 1080;
+                
+                // 고해상도로 다시 그리기
+                const scale = 1080 / 300;
+                ctx.scale(scale, scale);
+                ctx.drawImage(sourceCanvas, 0, 0);
+                
+                const link = document.createElement('a');
+                const mainText = document.getElementById('profile-mainText').value || 'PROFILE';
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                link.download = `profile_${mainText.replace(/[|\\s]/g, '_')}_${timestamp}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                showToast(currentLanguage === 'ko' ? '프로필 이미지가 다운로드되었습니다' : 'Profile image downloaded', 'success');
+            } catch (error) {
+                console.error('다운로드 오류:', error);
+                showToast(currentLanguage === 'ko' ? '다운로드 중 오류가 발생했습니다' : 'Error downloading image', 'error');
+            }
+        }
+
+        // 환경 뱃지 프리셋 업데이트
+        function updateBadgePreset() {
+            const env = document.getElementById('badge-env').value;
+            const presets = {
+                dev: { text: 'DEV', bg: '#4a5568', color: '#ffffff' },
+                qa: { text: 'QA', bg: '#ff6b6b', color: '#ffffff' },
+                stage: { text: 'STAGE', bg: '#f7b731', color: '#ffffff' },
+                prod: { text: 'PROD', bg: '#00d2d3', color: '#ffffff' }
+            };
+            
+            if (presets[env]) {
+                document.getElementById('badge-text').value = presets[env].text;
+                document.getElementById('badge-bgColor').value = presets[env].bg;
+                document.getElementById('badge-textColor').value = presets[env].color;
+                generateEnvBadgePreview();
+            }
+        }
+
+        // 뱃지 크기 설정
+        let badgeSize = 'medium';
+        function setBadgeSize(size) {
+            badgeSize = size;
+            generateEnvBadgePreview();
+        }
+
+        // 환경 뱃지 생성
+        function generateEnvBadgePreview() {
+            try {
+                const canvas = document.getElementById('badge-canvas');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                const text = document.getElementById('badge-text').value || 'BADGE';
+                const bgColor = document.getElementById('badge-bgColor').value;
+                const textColor = document.getElementById('badge-textColor').value;
+                const style = document.querySelector('input[name="badgeStyle"]:checked').value;
+                
+                // 크기 설정
+                const sizes = {
+                    small: { font: 14, padding: 8, height: 30 },
+                    medium: { font: 18, padding: 12, height: 40 },
+                    large: { font: 24, padding: 16, height: 50 }
+                };
+                const size = sizes[badgeSize];
+                
+                // 캔버스 초기화
+                ctx.clearRect(0, 0, 200, 200);
+                
+                // 텍스트 크기 계산
+                ctx.font = `bold ${size.font}px Arial`;
+                const metrics = ctx.measureText(text);
+                const width = metrics.width + size.padding * 2;
+                
+                // 위치 계산
+                const x = (200 - width) / 2;
+                const y = (200 - size.height) / 2;
+                
+                // 뱃지 배경 그리기
+                ctx.fillStyle = bgColor;
+                ctx.beginPath();
+                
+                if (style === 'rounded') {
+                    ctx.roundRect(x, y, width, size.height, 8);
+                } else if (style === 'circle') {
+                    const radius = Math.max(width, size.height) / 2;
+                    ctx.arc(100, 100, radius, 0, Math.PI * 2);
+                } else {
+                    ctx.rect(x, y, width, size.height);
+                }
+                ctx.fill();
+                
+                // 텍스트 그리기
+                ctx.fillStyle = textColor;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                if (style === 'circle') {
+                    ctx.fillText(text, 100, 100);
+                } else {
+                    ctx.fillText(text, x + width/2, y + size.height/2);
+                }
+                
+                showToast(currentLanguage === 'ko' ? '뱃지 생성 완료' : 'Badge generated', 'success');
+            } catch (error) {
+                console.error('뱃지 생성 오류:', error);
+                showToast(currentLanguage === 'ko' ? '뱃지 생성 중 오류가 발생했습니다' : 'Error generating badge', 'error');
+            }
+        }
+
+        // 뱃지 다운로드
+        function downloadBadgeImage(format) {
+            try {
+                if (format === 'png') {
+                    const canvas = document.getElementById('badge-canvas');
+                    const link = document.createElement('a');
+                    const text = document.getElementById('badge-text').value || 'BADGE';
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                    link.download = `badge_${text}_${timestamp}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                } else if (format === 'svg') {
+                    // SVG 생성
+                    const text = document.getElementById('badge-text').value || 'BADGE';
+                    const bgColor = document.getElementById('badge-bgColor').value;
+                    const textColor = document.getElementById('badge-textColor').value;
+                    const style = document.querySelector('input[name="badgeStyle"]:checked').value;
+                    
+                    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60">`;
+                    
+                    if (style === 'rounded') {
+                        svg += `<rect x="10" y="10" width="180" height="40" rx="8" fill="${bgColor}"/>`;
+                    } else if (style === 'circle') {
+                        svg += `<circle cx="100" cy="30" r="25" fill="${bgColor}"/>`;
+                    } else {
+                        svg += `<rect x="10" y="10" width="180" height="40" fill="${bgColor}"/>`;
+                    }
+                    
+                    svg += `<text x="100" y="30" text-anchor="middle" dominant-baseline="middle" fill="${textColor}" font-family="Arial" font-weight="bold" font-size="18">${text}</text>`;
+                    svg += `</svg>`;
+                    
+                    const blob = new Blob([svg], { type: 'image/svg+xml' });
+                    const link = document.createElement('a');
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                    link.download = `badge_${text}_${timestamp}.svg`;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                }
+                
+                showToast(currentLanguage === 'ko' ? '뱃지가 다운로드되었습니다' : 'Badge downloaded', 'success');
+            } catch (error) {
+                console.error('다운로드 오류:', error);
+                showToast(currentLanguage === 'ko' ? '다운로드 중 오류가 발생했습니다' : 'Error downloading badge', 'error');
+            }
+        }
+
+        // 사업자등록번호 생성기 HTML
+        function getBusinessNumberGeneratorHTML() {
+            return `
+                <div class="space-y-6">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p class="text-sm text-blue-800">
+                            ${currentLanguage === 'ko' ? 
+                                '✅ 생성된 번호는 체크섬 검증을 통과한 유효한 형식의 번호입니다.' : 
+                                '✅ Generated numbers are valid format numbers that pass checksum verification.'}
+                        </p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">
+                                    ${currentLanguage === 'ko' ? '사업자 유형' : 'Business Type'}
+                                </label>
+                                <select id="business-type" class="form-input" onchange="updateBusinessTypeSettings()">
+                                    <option value="individual-01-79">${currentLanguage === 'ko' ? '개인사업자 (01-79)' : 'Individual (01-79)'}</option>
+                                    <option value="individual-90-99">${currentLanguage === 'ko' ? '개인사업자 (90-99)' : 'Individual (90-99)'}</option>
+                                    <option value="corporate-domestic">${currentLanguage === 'ko' ? '법인 영리 국내 (81,85-88)' : 'Corporate Domestic (81,85-88)'}</option>
+                                    <option value="corporate-foreign">${currentLanguage === 'ko' ? '법인 영리 해외 (84)' : 'Corporate Foreign (84)'}</option>
+                                    <option value="nonprofit">${currentLanguage === 'ko' ? '비영리/국가 및 지자체 (82,83)' : 'Non-profit/Government (82,83)'}</option>
+                                    <option value="association">${currentLanguage === 'ko' ? '임의단체 (80,89)' : 'Association (80,89)'}</option>
+                                    <option value="random">${currentLanguage === 'ko' ? '전체 랜덤' : 'All Random'}</option>
+                                    <option value="max-all">${currentLanguage === 'ko' ? '전체 MAX 생성 (모든 유형)' : 'MAX Generation (All Types)'}</option>
+                                </select>
+                            </div>
+                            
+                            <div id="count-settings">
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">
+                                    ${currentLanguage === 'ko' ? '생성 개수' : 'Count'}
+                                </label>
+                                <select id="business-count" class="form-input">
+                                    <option value="5">5${currentLanguage === 'ko' ? '개' : ''}</option>
+                                    <option value="10" selected>10${currentLanguage === 'ko' ? '개' : ''}</option>
+                                    <option value="20">20${currentLanguage === 'ko' ? '개' : ''}</option>
+                                    <option value="50">50${currentLanguage === 'ko' ? '개' : ''}</option>
+                                    <option value="100">100${currentLanguage === 'ko' ? '개' : ''}</option>
+                                </select>
+                            </div>
+                            
+                            <div id="max-settings" class="hidden">
+                                <div class="bg-yellow-50 border border-yellow-200 rounded p-3 mb-3">
+                                    <p class="text-xs text-yellow-800">${currentLanguage === 'ko' ? 'MAX 생성 모드: 각 유형별 최대 생성량 설정' : 'MAX Generation Mode: Set maximum count per type'}</p>
+                                </div>
+                                
+                                <div class="space-y-3 text-sm">
+                                    <div class="flex justify-between items-center">
+                                        <span>${currentLanguage === 'ko' ? '개인사업자 (01-79)' : 'Individual (01-79)'}</span>
+                                        <input type="number" id="max-individual-01-79" min="0" max="200" value="30" class="w-16 text-xs p-1 border rounded">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>${currentLanguage === 'ko' ? '개인사업자 (90-99)' : 'Individual (90-99)'}</span>
+                                        <input type="number" id="max-individual-90-99" min="0" max="50" value="20" class="w-16 text-xs p-1 border rounded">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>${currentLanguage === 'ko' ? '법인 영리 국내' : 'Corporate Domestic'}</span>
+                                        <input type="number" id="max-corporate-domestic" min="0" max="100" value="25" class="w-16 text-xs p-1 border rounded">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>${currentLanguage === 'ko' ? '법인 영리 해외' : 'Corporate Foreign'}</span>
+                                        <input type="number" id="max-corporate-foreign" min="0" max="30" value="10" class="w-16 text-xs p-1 border rounded">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>${currentLanguage === 'ko' ? '비영리/국가·지자체' : 'Non-profit/Gov'}</span>
+                                        <input type="number" id="max-nonprofit" min="0" max="50" value="15" class="w-16 text-xs p-1 border rounded">
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span>${currentLanguage === 'ko' ? '임의단체' : 'Association'}</span>
+                                        <input type="number" id="max-association" min="0" max="50" value="10" class="w-16 text-xs p-1 border rounded">
+                                    </div>
+                                    
+                                    <div class="border-t pt-2 mt-3">
+                                        <div class="flex justify-between items-center font-medium">
+                                            <span>${currentLanguage === 'ko' ? '전체 생성 상한' : 'Total Generation Limit'}</span>
+                                            <input type="number" id="max-total-limit" min="50" max="500" value="200" class="w-16 text-xs p-1 border rounded font-medium">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="generateBusinessNumbers()" class="btn-primary w-full">
+                                🎲 ${currentLanguage === 'ko' ? '사업자번호 생성' : 'Generate Numbers'}
+                            </button>
+                            
+                            <div class="flex gap-2">
+                                <button onclick="copyBusinessNumbers()" class="btn-secondary flex-1">
+                                    📋 ${currentLanguage === 'ko' ? '전체 복사' : 'Copy All'}
+                                </button>
+                                <button onclick="downloadBusinessNumbers()" class="btn-secondary flex-1">
+                                    💾 ${currentLanguage === 'ko' ? 'CSV 다운로드' : 'Download CSV'}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="lg:col-span-2">
+                            <div class="bg-neutral-50 border border-neutral-200 rounded-lg p-4 h-96 overflow-y-auto">
+                                <div id="business-numbers-list" class="space-y-2">
+                                    <p class="text-center text-neutral-500">
+                                        ${currentLanguage === 'ko' ? 
+                                            '생성 버튼을 클릭하여 사업자번호를 생성하세요' : 
+                                            'Click generate button to create business numbers'}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="mt-2 flex justify-between text-sm text-neutral-600">
+                                <span><span id="business-count-display">0</span> ${currentLanguage === 'ko' ? '개 생성됨' : 'numbers generated'}</span>
+                                <span id="business-type-breakdown" class="text-xs"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 사업자등록번호 유효성 검사
+        function validateBusinessNumber(number) {
+            const weights = [1, 3, 7, 1, 3, 7, 1, 3, 5];
+            const nums = number.replace(/-/g, '').split('').map(Number);
+            
+            if (nums.length !== 10) return false;
+            
+            let sum = 0;
+            for (let i = 0; i < 9; i++) {
+                sum += nums[i] * weights[i];
+            }
+            
+            sum += Math.floor((nums[8] * 5) / 10);
+            const checkDigit = (10 - (sum % 10)) % 10;
+            
+            return checkDigit === nums[9];
+        }
+
+        // 유효한 사업자등록번호 생성
+        function generateValidBusinessNumber(prefix, middle, suffix) {
+            const base9 = prefix + middle + suffix;
+            
+            const weights = [1, 3, 7, 1, 3, 7, 1, 3, 5];
+            const nums = base9.split('').map(Number);
+            
+            let sum = 0;
+            for (let i = 0; i < 9; i++) {
+                sum += nums[i] * weights[i];
+            }
+            
+            sum += Math.floor((nums[8] * 5) / 10);
+            const checkDigit = (10 - (sum % 10)) % 10;
+            
+            return prefix + '-' + middle + '-' + suffix + checkDigit;
+        }
+
+        // 사업자번호 유형 설정 업데이트
+        function updateBusinessTypeSettings() {
+            const type = document.getElementById('business-type').value;
+            const countSettings = document.getElementById('count-settings');
+            const maxSettings = document.getElementById('max-settings');
+            
+            if (type === 'max-all') {
+                countSettings.classList.add('hidden');
+                maxSettings.classList.remove('hidden');
+            } else {
+                countSettings.classList.remove('hidden');
+                maxSettings.classList.add('hidden');
+            }
+        }
+        
+        // 정확한 경계값 분할을 위한 유형별 범위 정의
+        const businessTypeRanges = {
+            'individual-01-79': [
+                { start: 1, end: 79 }  // 01-79
+            ],
+            'individual-90-99': [
+                { start: 90, end: 99 } // 90-99
+            ],
+            'corporate-domestic': [
+                { start: 81, end: 81 }, // 81
+                { start: 85, end: 88 }  // 85-88
+            ],
+            'corporate-foreign': [
+                { start: 84, end: 84 }  // 84
+            ],
+            'nonprofit': [
+                { start: 82, end: 83 }  // 82-83
+            ],
+            'association': [
+                { start: 80, end: 80 }, // 80
+                { start: 89, end: 89 }  // 89
+            ]
+        };
+
+        // 사업자등록번호 생성
+        function generateBusinessNumbers() {
+            try {
+                const type = document.getElementById('business-type').value;
+                
+                let businessNumbers = new Set();
+                let typeBreakdown = {};
+                
+                if (type === 'max-all') {
+                    // MAX 생성 모드
+                    const maxCounts = {
+                        'individual-01-79': parseInt(document.getElementById('max-individual-01-79').value || 30),
+                        'individual-90-99': parseInt(document.getElementById('max-individual-90-99').value || 20),
+                        'corporate-domestic': parseInt(document.getElementById('max-corporate-domestic').value || 25),
+                        'corporate-foreign': parseInt(document.getElementById('max-corporate-foreign').value || 10),
+                        'nonprofit': parseInt(document.getElementById('max-nonprofit').value || 15),
+                        'association': parseInt(document.getElementById('max-association').value || 10)
+                    };
+                    
+                    const totalLimit = parseInt(document.getElementById('max-total-limit').value || 200);
+                    let totalGenerated = 0;
+                    
+                    // 각 유형별로 생성
+                    for (const [businessType, maxCount] of Object.entries(maxCounts)) {
+                        if (maxCount > 0 && totalGenerated < totalLimit) {
+                            const actualCount = Math.min(maxCount, totalLimit - totalGenerated);
+                            const typeNumbers = generateNumbersByType(businessType, actualCount);
+                            typeNumbers.forEach(num => businessNumbers.add(num));
+                            typeBreakdown[businessType] = typeNumbers.length;
+                            totalGenerated += typeNumbers.length;
+                        }
+                    }
+                    
+                } else if (type === 'random') {
+                    // 전체 랜덤 모드
+                    const count = parseInt(document.getElementById('business-count').value);
+                    const allTypes = Object.keys(businessTypeRanges);
+                    
+                    for (let i = 0; i < count; i++) {
+                        const randomType = allTypes[Math.floor(Math.random() * allTypes.length)];
+                        const numbers = generateNumbersByType(randomType, 1);
+                        numbers.forEach(num => businessNumbers.add(num));
+                        typeBreakdown[randomType] = (typeBreakdown[randomType] || 0) + 1;
+                    }
+                    
+                } else {
+                    // 단일 유형 모드
+                    const count = parseInt(document.getElementById('business-count').value);
+                    const numbers = generateNumbersByType(type, count);
+                    numbers.forEach(num => businessNumbers.add(num));
+                    typeBreakdown[type] = numbers.length;
+                }
+                
+                window.generatedBusinessNumbers = Array.from(businessNumbers);
+                window.businessTypeBreakdown = typeBreakdown;
+                displayBusinessNumbers();
+                
+                const totalCount = businessNumbers.size;
+                showToast(
+                    currentLanguage === 'ko' ? 
+                        `${totalCount}개의 사업자등록번호가 생성되었습니다` : 
+                        `${totalCount} business numbers generated`, 
+                    'success'
+                );
+            } catch (error) {
+                console.error('사업자번호 생성 오류:', error);
+                showToast(
+                    currentLanguage === 'ko' ? 
+                        '사업자번호 생성 중 오류가 발생했습니다' : 
+                        'Error generating business numbers', 
+                    'error'
+                );
+            }
+        }
+        
+        // 유형별 사업자번호 생성
+        function generateNumbersByType(type, count) {
+            const ranges = businessTypeRanges[type];
+            if (!ranges) return [];
+            
+            const numbers = new Set();
+            const today = new Date();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            
+            let attempts = 0;
+            const maxAttempts = count * 100; // 무한루프 방지
+            
+            while (numbers.size < count && attempts < maxAttempts) {
+                attempts++;
+                
+                // 지역코드 (전국: 101-999)
+                const prefix = String(101 + Math.floor(Math.random() * 899)).padStart(3, '0');
+                
+                // 해당 유형의 범위에서 중간번호 선택
+                const range = ranges[Math.floor(Math.random() * ranges.length)];
+                const middleNum = range.start + Math.floor(Math.random() * (range.end - range.start + 1));
+                const middle = String(middleNum).padStart(2, '0');
+                
+                // 일련번호 (월일 + 1자리 랜덤)
+                const randomDigit = Math.floor(Math.random() * 10);
+                const suffix = month + day + randomDigit;
+                
+                const businessNumber = generateValidBusinessNumber(prefix, middle, suffix);
+                
+                if (validateBusinessNumber(businessNumber)) {
+                    numbers.add(businessNumber);
+                }
+            }
+            
+            return Array.from(numbers);
+        }
+                console.error('사업자번호 생성 오류:', error);
+                showToast(
+                    currentLanguage === 'ko' ? 
+                        '번호 생성 중 오류가 발생했습니다' : 
+                        'Error generating numbers', 
+                    'error'
+                );
+            }
+        }
+
+        // 사업자등록번호 표시
+        function displayBusinessNumbers() {
+            const listElement = document.getElementById('business-numbers-list');
+            const countElement = document.getElementById('business-count-display');
+            
+            if (!window.generatedBusinessNumbers || window.generatedBusinessNumbers.length === 0) {
+                listElement.innerHTML = `
+                    <p class="text-center text-neutral-500">
+                        ${currentLanguage === 'ko' ? 
+                            '생성 버튼을 클릭하여 사업자번호를 생성하세요' : 
+                            'Click generate button to create business numbers'}
+                    </p>
+                `;
+                countElement.textContent = '0';
+                return;
+            }
+            
+            listElement.innerHTML = window.generatedBusinessNumbers.map((number, index) => `
+                <div class="flex items-center justify-between p-2 bg-white rounded border hover:border-primary-400 transition-colors">
+                    <span class="font-mono text-sm">${number}</span>
+                    <button onclick="copyToClipboard('${number}')" class="text-primary-600 hover:text-primary-800">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+            
+            countElement.textContent = window.generatedBusinessNumbers.length;
+            
+            // 유형별 분류하여 표시
+            updateBusinessNumbersDisplay();
+        }
+        
+        // 개선된 사업자번호 표시 (유형별 분류)
+        function updateBusinessNumbersDisplay() {
+            const listElement = document.getElementById('business-numbers-list');
+            const breakdownElement = document.getElementById('business-type-breakdown');
+            
+            if (!window.generatedBusinessNumbers || window.generatedBusinessNumbers.length === 0) {
+                return;
+            }
+            
+            // 번호별 유형 분류
+            const categorizedNumbers = categorizeBusinessNumbers(window.generatedBusinessNumbers);
+            
+            // HTML 생성
+            let html = '';
+            for (const [category, numbers] of Object.entries(categorizedNumbers)) {
+                if (numbers.length > 0) {
+                    const categoryName = getBusinessTypeName(category);
+                    html += `
+                        <div class="mb-4">
+                            <div class="flex items-center justify-between mb-2 pb-1 border-b border-neutral-200">
+                                <h4 class="text-sm font-medium text-neutral-700">${categoryName}</h4>
+                                <span class="text-xs text-neutral-500">${numbers.length}개</span>
+                            </div>
+                            <div class="space-y-1">
+                                ${numbers.map(number => `
+                                    <div class="flex items-center justify-between p-2 bg-white rounded border hover:border-primary-400 transition-colors">
+                                        <span class="font-mono text-sm">${number}</span>
+                                        <button onclick="copyToClipboard('${number}')" class="text-primary-600 hover:text-primary-800">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            if (html) {
+                listElement.innerHTML = html;
+            }
+            
+            // 유형별 요약 정보 표시
+            if (breakdownElement && window.businessTypeBreakdown) {
+                const breakdownText = Object.entries(window.businessTypeBreakdown)
+                    .map(([type, count]) => {
+                        const shortName = getBusinessTypeShortName(type);
+                        return `${shortName}: ${count}`;
+                    }).join(', ');
+                breakdownElement.textContent = breakdownText;
+            }
+        }
+        
+        // 사업자번호를 유형별로 분류
+        function categorizeBusinessNumbers(numbers) {
+            const categories = {
+                'individual-01-79': [],
+                'individual-90-99': [],
+                'corporate-domestic': [],
+                'corporate-foreign': [],
+                'nonprofit': [],
+                'association': []
+            };
+            
+            numbers.forEach(number => {
+                const middleNum = parseInt(number.split('-')[1]);
+                
+                if (middleNum >= 1 && middleNum <= 79) {
+                    categories['individual-01-79'].push(number);
+                } else if (middleNum >= 90 && middleNum <= 99) {
+                    categories['individual-90-99'].push(number);
+                } else if (middleNum === 81 || (middleNum >= 85 && middleNum <= 88)) {
+                    categories['corporate-domestic'].push(number);
+                } else if (middleNum === 84) {
+                    categories['corporate-foreign'].push(number);
+                } else if (middleNum >= 82 && middleNum <= 83) {
+                    categories['nonprofit'].push(number);
+                } else if (middleNum === 80 || middleNum === 89) {
+                    categories['association'].push(number);
+                }
+            });
+            
+            return categories;
+        }
+        
+        // 사업자 유형 이름 반환
+        function getBusinessTypeName(type) {
+            const names = {
+                'individual-01-79': currentLanguage === 'ko' ? '개인사업자 (01-79)' : 'Individual (01-79)',
+                'individual-90-99': currentLanguage === 'ko' ? '개인사업자 (90-99)' : 'Individual (90-99)',
+                'corporate-domestic': currentLanguage === 'ko' ? '법인 영리 국내 (81,85-88)' : 'Corporate Domestic (81,85-88)',
+                'corporate-foreign': currentLanguage === 'ko' ? '법인 영리 해외 (84)' : 'Corporate Foreign (84)',
+                'nonprofit': currentLanguage === 'ko' ? '비영리/국가 및 지자체 (82,83)' : 'Non-profit/Government (82,83)',
+                'association': currentLanguage === 'ko' ? '임의단체 (80,89)' : 'Association (80,89)'
+            };
+            return names[type] || type;
+        }
+        
+        // 사업자 유형 짧은 이름 반환
+        function getBusinessTypeShortName(type) {
+            const shortNames = {
+                'individual-01-79': currentLanguage === 'ko' ? '개인(01-79)' : 'Ind(01-79)',
+                'individual-90-99': currentLanguage === 'ko' ? '개인(90-99)' : 'Ind(90-99)',
+                'corporate-domestic': currentLanguage === 'ko' ? '법인국내' : 'Corp-Dom',
+                'corporate-foreign': currentLanguage === 'ko' ? '법인해외' : 'Corp-For',
+                'nonprofit': currentLanguage === 'ko' ? '비영리' : 'Non-profit',
+                'association': currentLanguage === 'ko' ? '임의단체' : 'Assoc'
+            };
+            return shortNames[type] || type;
+        }
+
+        // 클립보드에 복사
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(
+                    currentLanguage === 'ko' ? 
+                        '클립보드에 복사되었습니다' : 
+                        'Copied to clipboard', 
+                    'success'
+                );
+            });
+        }
+
+        // 전체 사업자번호 복사
+        function copyBusinessNumbers() {
+            if (!window.generatedBusinessNumbers || window.generatedBusinessNumbers.length === 0) {
+                showToast(
+                    currentLanguage === 'ko' ? 
+                        '먼저 사업자번호를 생성해주세요' : 
+                        'Please generate numbers first', 
+                    'error'
+                );
+                return;
+            }
+            
+            const text = window.generatedBusinessNumbers.join('\n');
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(
+                    currentLanguage === 'ko' ? 
+                        `${window.generatedBusinessNumbers.length}개의 번호가 복사되었습니다` : 
+                        `${window.generatedBusinessNumbers.length} numbers copied`, 
+                    'success'
+                );
+            });
+        }
+
+        // CSV 다운로드
+        function downloadBusinessNumbers() {
+            if (!window.generatedBusinessNumbers || window.generatedBusinessNumbers.length === 0) {
+                showToast(
+                    currentLanguage === 'ko' ? 
+                        '먼저 사업자번호를 생성해주세요' : 
+                        'Please generate numbers first', 
+                    'error'
+                );
+                return;
+            }
+            
+            const csv = '사업자등록번호\n' + window.generatedBusinessNumbers.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().split('T')[0];
+            link.download = `business_numbers_${timestamp}.csv`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            
+            showToast(
+                currentLanguage === 'ko' ? 
+                    'CSV 파일이 다운로드되었습니다' : 
+                    'CSV file downloaded', 
+                'success'
+            );
+        }
+
+        // 어드민 도구 관리 시스템
+        const ADMIN_TOOLS_KEY = 'ceoplus_admin_tools_config';
+        let adminToolsConfig = [];
+
+        // 기본 어드민 도구 설정
+        const defaultAdminTools = [
+            {
+                id: 'qr-create',
+                name: '가맹점 생성 및 QR 활성화',
+                nameEn: 'Create Store & Activate QR',
+                desc: '새로운 가맹점을 등록하고 QR 코드를 활성화합니다',
+                descEn: 'Register a new store and activate QR code',
+                tag: '3개 어드민',
+                tagEn: '3 Admins',
+                icon: 'plus',
+                subAdmins: [
+                    {
+                        name: '파트너 서비스 어드민',
+                        nameEn: 'Partner Service Admin',
+                        desc: '파트너 서비스 관리',
+                        descEn: 'Partner service management',
+                        url: 'https://partner.admin.example.com',
+                        isInternal: true
+                    },
+                    {
+                        name: '커머스 어드민',
+                        nameEn: 'Commerce Admin',
+                        desc: '상거래 플랫폼 관리',
+                        descEn: 'Commerce platform management',
+                        url: 'https://commerce.admin.example.com',
+                        isInternal: false
+                    },
+                    {
+                        name: 'QR 관리 어드민',
+                        nameEn: 'QR Management Admin',
+                        desc: 'QR 코드 생성 및 관리',
+                        descEn: 'QR code generation and management',
+                        url: 'https://qr.admin.example.com',
+                        isInternal: true
+                    }
+                ]
+            },
+            {
+                id: 'qr-recovery',
+                name: '가맹점 QR 복구',
+                nameEn: 'Store QR Recovery',
+                desc: '손상된 QR 코드를 복구하고 재활성화합니다',
+                descEn: 'Recover and reactivate damaged QR codes',
+                tag: '3개 어드민',
+                tagEn: '3 Admins',
+                icon: 'refresh',
+                subAdmins: [
+                    {
+                        name: 'QR 복구 어드민',
+                        nameEn: 'QR Recovery Admin',
+                        desc: '손상된 QR 복구 처리',
+                        descEn: 'Damaged QR recovery processing',
+                        url: 'https://recovery.admin.example.com',
+                        isInternal: true
+                    },
+                    {
+                        name: '매장 관리 어드민',
+                        nameEn: 'Store Management Admin',
+                        desc: '매장 정보 관리',
+                        descEn: 'Store information management',
+                        url: 'https://store.admin.example.com',
+                        isInternal: false
+                    },
+                    {
+                        name: '데이터 백업 어드민',
+                        nameEn: 'Data Backup Admin',
+                        desc: '데이터 백업 및 복원',
+                        descEn: 'Data backup and restore',
+                        url: 'https://backup.admin.example.com',
+                        isInternal: true
+                    }
+                ]
+            },
+            {
+                id: 'permission',
+                name: '매장 권한 변경',
+                nameEn: 'Store Permission Management',
+                desc: '매장별 사용자 권한을 관리하고 수정합니다',
+                descEn: 'Manage and modify user permissions per store',
+                tag: '3개 어드민',
+                tagEn: '3 Admins',
+                icon: 'lock',
+                subAdmins: [
+                    {
+                        name: '권한 관리 어드민',
+                        nameEn: 'Permission Management Admin',
+                        desc: '사용자 권한 설정',
+                        descEn: 'User permission settings',
+                        url: 'https://permission.admin.example.com',
+                        isInternal: true
+                    },
+                    {
+                        name: '사용자 관리 어드민',
+                        nameEn: 'User Management Admin',
+                        desc: '사용자 계정 관리',
+                        descEn: 'User account management',
+                        url: 'https://user.admin.example.com',
+                        isInternal: false
+                    },
+                    {
+                        name: '보안 설정 어드민',
+                        nameEn: 'Security Settings Admin',
+                        desc: '보안 정책 관리',
+                        descEn: 'Security policy management',
+                        url: 'https://security.admin.example.com',
+                        isInternal: true
+                    }
+                ]
+            }
+        ];
+
+        // 아이콘 SVG 매핑
+        const iconSvg = {
+            plus: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>',
+            refresh: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>',
+            lock: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>',
+            chart: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>',
+            settings: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>',
+            users: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>',
+            store: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>',
+            qr: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>'
+        };
+
+        // 어드민 도구 초기화
+        function initAdminTools() {
+            const stored = localStorage.getItem(ADMIN_TOOLS_KEY);
+            if (stored) {
+                try {
+                    adminToolsConfig = JSON.parse(stored);
+                } catch (e) {
+                    adminToolsConfig = [...defaultAdminTools];
+                }
+            } else {
+                adminToolsConfig = [...defaultAdminTools];
+            }
+            renderAdminTools();
+        }
+
+        // 어드민 도구 렌더링
+        function renderAdminTools() {
+            const grid = document.getElementById('admin-tools-grid');
+            if (!grid) return;
+            
+            grid.innerHTML = adminToolsConfig.map(tool => `
+                <div class="card tool-card p-6" onclick="openAdminTool('${tool.id}')">
+                    <div class="icon-container">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            ${iconSvg[tool.icon] || iconSvg.plus}
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral-800 mb-2">
+                        ${currentLanguage === 'ko' ? tool.name : tool.nameEn}
+                    </h3>
+                    <p class="text-neutral-600 mb-4">
+                        ${currentLanguage === 'ko' ? tool.desc : tool.descEn}
+                    </p>
+                    <div class="flex items-center text-sm text-neutral-500">
+                        <span class="bg-primary-100 text-primary-800 px-2 py-1 rounded text-xs mr-2">
+                            ${currentLanguage === 'ko' ? tool.tag : tool.tagEn}
+                        </span>
+                        <span>→</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 어드민 도구 열기 (세부 어드민 목록 표시)
+        function openAdminTool(toolId) {
+            const tool = adminToolsConfig.find(t => t.id === toolId);
+            if (!tool) return;
+            
+            const title = currentLanguage === 'ko' ? tool.name : tool.nameEn;
+            
+            let content = '<div class="space-y-4">';
+            
+            if (tool.subAdmins && tool.subAdmins.length > 0) {
+                tool.subAdmins.forEach((admin, index) => {
+                    const adminName = currentLanguage === 'ko' ? admin.name : admin.nameEn;
+                    const adminDesc = currentLanguage === 'ko' ? admin.desc : admin.descEn;
+                    
+                    content += `
+                        <div class="card p-4 cursor-pointer hover:shadow-lg transition-all" onclick="openAdminUrl('${admin.url}', '${adminName}')">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-primary-600">${index + 1}</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-neutral-800">${adminName}</h4>
+                                        <p class="text-sm text-neutral-600">${adminDesc}</p>
+                                        <p class="text-xs text-neutral-400 mt-1">${admin.url}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    ${admin.isInternal ? 
+                                        '<span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">내부</span>' : 
+                                        '<span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">외부</span>'
+                                    }
+                                    <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                content += `
+                    <div class="text-center p-8 text-neutral-500">
+                        <p>${currentLanguage === 'ko' ? '세부 어드민이 설정되지 않았습니다.' : 'No sub-admins configured.'}</p>
+                        <button onclick="openAdminToolManager()" class="btn-primary mt-4">
+                            ${currentLanguage === 'ko' ? '어드민 설정하기' : 'Configure Admins'}
+                        </button>
+                    </div>
+                `;
+            }
+            
+            content += '</div>';
+            
+            document.getElementById('tool-modal-title').textContent = title;
+            document.getElementById('tool-modal-content').innerHTML = content;
+            document.getElementById('tool-modal').classList.remove('hidden');
+        }
+
+        // 어드민 URL 열기
+        function openAdminUrl(url, name) {
+            try {
+                logActivity('admin-tool', `${name} 열기`, 'started');
+                
+                const windowName = 'admin_' + name.replace(/\s/g, '_');
+                const win = window.open(url, windowName, 'width=1200,height=800,menubar=yes,toolbar=yes,location=yes,status=yes,scrollbars=yes,resizable=yes');
+                
+                if (win) {
+                    windowRefs[windowName] = win;
+                    logActivity('admin-tool', `${name} 열기`, 'completed');
+                    showToast(currentLanguage === 'ko' ? `${name} 도구를 새 창에서 열었습니다` : `${name} tool opened in new window`, 'success');
+                }
+            } catch (error) {
+                console.error('어드민 URL 열기 오류:', error);
+                logActivity('admin-tool', `${name} 열기`, 'failed');
+                showToast(currentLanguage === 'ko' ? '도구를 여는 중 오류가 발생했습니다' : 'Error opening tool', 'error');
+            }
+        }
+
+        // 어드민 도구 관리자 열기
+        function openAdminToolManager() {
+            renderAdminToolsList();
+            document.getElementById('admin-manager-modal').classList.remove('hidden');
+        }
+
+        // 어드민 도구 관리자 닫기
+        function closeAdminToolManager() {
+            document.getElementById('admin-manager-modal').classList.add('hidden');
+        }
+
+        // 어드민 도구 목록 렌더링
+        function renderAdminToolsList() {
+            const list = document.getElementById('admin-tools-list');
+            if (!list) return;
+            
+            list.innerHTML = adminToolsConfig.map((tool, index) => `
+                <div class="border rounded-lg overflow-hidden mb-4">
+                    <div class="flex items-center justify-between p-3 bg-white">
+                        <div class="flex-1">
+                            <div class="font-medium text-neutral-800">${tool.name}</div>
+                            <div class="text-sm text-neutral-600">${tool.desc}</div>
+                            <div class="text-xs text-neutral-500 mt-1">
+                                ${tool.subAdmins ? `${tool.subAdmins.length}개의 세부 어드민` : '세부 어드민 없음'}
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="toggleSubAdmins(${index})" class="p-2 text-primary-600 hover:bg-primary-50 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4"></path>
+                                </svg>
+                            </button>
+                            <button onclick="removeAdminTool(${index})" class="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="sub-admins-${index}" class="hidden bg-gray-50 p-3">
+                        <div class="mb-3">
+                            <h5 class="text-sm font-medium text-neutral-700 mb-2">세부 어드민 추가</h5>
+                            <div class="grid grid-cols-1 gap-2">
+                                <input type="text" id="sub-name-${index}" class="form-input text-sm" placeholder="어드민 이름">
+                                <input type="text" id="sub-desc-${index}" class="form-input text-sm" placeholder="설명">
+                                <input type="text" id="sub-url-${index}" class="form-input text-sm" placeholder="URL">
+                                <label class="flex items-center text-sm">
+                                    <input type="checkbox" id="sub-internal-${index}" class="mr-2">
+                                    <span>내부 어드민</span>
+                                </label>
+                                <button onclick="addSubAdmin(${index})" class="btn-primary text-sm py-1">세부 어드민 추가</button>
+                            </div>
+                        </div>
+                        ${tool.subAdmins && tool.subAdmins.length > 0 ? `
+                            <div class="space-y-2">
+                                <h5 class="text-sm font-medium text-neutral-700">등록된 세부 어드민</h5>
+                                ${tool.subAdmins.map((sub, subIndex) => `
+                                    <div class="flex items-center justify-between p-2 bg-white rounded border">
+                                        <div class="flex-1">
+                                            <div class="text-sm font-medium">${sub.name}</div>
+                                            <div class="text-xs text-neutral-600">${sub.desc}</div>
+                                            <div class="text-xs text-neutral-400">${sub.url}</div>
+                                        </div>
+                                        <button onclick="removeSubAdmin(${index}, ${subIndex})" class="p-1 text-red-600 hover:bg-red-50 rounded">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<p class="text-sm text-neutral-500">세부 어드민이 없습니다.</p>'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 어드민 도구 추가
+        function addAdminTool() {
+            const name = document.getElementById('new-tool-name').value.trim();
+            const desc = document.getElementById('new-tool-desc').value.trim();
+            const tag = document.getElementById('new-tool-tag').value.trim();
+            const icon = document.getElementById('new-tool-icon').value;
+            
+            if (!name || !desc) {
+                showToast(currentLanguage === 'ko' ? '도구 이름과 설명을 입력해주세요' : 'Please enter tool name and description', 'error');
+                return;
+            }
+            
+            const newTool = {
+                id: 'custom-' + Date.now(),
+                name: name,
+                nameEn: name,
+                desc: desc,
+                descEn: desc,
+                tag: tag || '커스텀',
+                tagEn: tag || 'Custom',
+                icon: icon,
+                subAdmins: []
+            };
+            
+            adminToolsConfig.push(newTool);
+            saveAdminTools();
+            renderAdminTools();
+            renderAdminToolsList();
+            
+            // 입력 필드 초기화
+            document.getElementById('new-tool-name').value = '';
+            document.getElementById('new-tool-desc').value = '';
+            document.getElementById('new-tool-tag').value = '';
+            
+            showToast(currentLanguage === 'ko' ? '도구가 추가되었습니다' : 'Tool added successfully', 'success');
+        }
+
+        // 세부 어드민 토글
+        function toggleSubAdmins(index) {
+            const subAdminDiv = document.getElementById(`sub-admins-${index}`);
+            if (subAdminDiv) {
+                subAdminDiv.classList.toggle('hidden');
+            }
+        }
+
+        // 세부 어드민 추가
+        function addSubAdmin(toolIndex) {
+            const name = document.getElementById(`sub-name-${toolIndex}`).value.trim();
+            const desc = document.getElementById(`sub-desc-${toolIndex}`).value.trim();
+            const url = document.getElementById(`sub-url-${toolIndex}`).value.trim();
+            const isInternal = document.getElementById(`sub-internal-${toolIndex}`).checked;
+            
+            if (!name || !desc || !url) {
+                showToast(currentLanguage === 'ko' ? '모든 필드를 입력해주세요' : 'Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (!adminToolsConfig[toolIndex].subAdmins) {
+                adminToolsConfig[toolIndex].subAdmins = [];
+            }
+            
+            adminToolsConfig[toolIndex].subAdmins.push({
+                name: name,
+                nameEn: name,
+                desc: desc,
+                descEn: desc,
+                url: url,
+                isInternal: isInternal
+            });
+            
+            // 태그 업데이트
+            adminToolsConfig[toolIndex].tag = `${adminToolsConfig[toolIndex].subAdmins.length}개 어드민`;
+            adminToolsConfig[toolIndex].tagEn = `${adminToolsConfig[toolIndex].subAdmins.length} Admins`;
+            
+            saveAdminTools();
+            renderAdminTools();
+            renderAdminToolsList();
+            
+            // 입력 필드 초기화
+            document.getElementById(`sub-name-${toolIndex}`).value = '';
+            document.getElementById(`sub-desc-${toolIndex}`).value = '';
+            document.getElementById(`sub-url-${toolIndex}`).value = '';
+            document.getElementById(`sub-internal-${toolIndex}`).checked = false;
+            
+            showToast(currentLanguage === 'ko' ? '세부 어드민이 추가되었습니다' : 'Sub-admin added successfully', 'success');
+        }
+
+        // 세부 어드민 제거
+        function removeSubAdmin(toolIndex, subIndex) {
+            if (confirm(currentLanguage === 'ko' ? '이 세부 어드민을 삭제하시겠습니까?' : 'Delete this sub-admin?')) {
+                adminToolsConfig[toolIndex].subAdmins.splice(subIndex, 1);
+                
+                // 태그 업데이트
+                if (adminToolsConfig[toolIndex].subAdmins.length > 0) {
+                    adminToolsConfig[toolIndex].tag = `${adminToolsConfig[toolIndex].subAdmins.length}개 어드민`;
+                    adminToolsConfig[toolIndex].tagEn = `${adminToolsConfig[toolIndex].subAdmins.length} Admins`;
+                } else {
+                    adminToolsConfig[toolIndex].tag = '세부 어드민 없음';
+                    adminToolsConfig[toolIndex].tagEn = 'No Sub-admins';
+                }
+                
+                saveAdminTools();
+                renderAdminTools();
+                renderAdminToolsList();
+                
+                showToast(currentLanguage === 'ko' ? '세부 어드민이 삭제되었습니다' : 'Sub-admin deleted', 'success');
+            }
+        }
+
+        // 어드민 도구 제거
+        function removeAdminTool(index) {
+            if (confirm(currentLanguage === 'ko' ? '이 도구를 삭제하시겠습니까?' : 'Are you sure you want to delete this tool?')) {
+                adminToolsConfig.splice(index, 1);
+                saveAdminTools();
+                renderAdminTools();
+                renderAdminToolsList();
+                showToast(currentLanguage === 'ko' ? '도구가 삭제되었습니다' : 'Tool deleted successfully', 'success');
+            }
+        }
+
+        // 어드민 도구 저장
+        function saveAdminTools() {
+            localStorage.setItem(ADMIN_TOOLS_KEY, JSON.stringify(adminToolsConfig));
+        }
+
+        // 기본값 복원
+        function loadDefaultAdminTools() {
+            if (confirm(currentLanguage === 'ko' ? '기본값으로 복원하시겠습니까? 현재 설정이 삭제됩니다.' : 'Restore defaults? Current settings will be deleted.')) {
+                adminToolsConfig = [...defaultAdminTools];
+                saveAdminTools();
+                renderAdminTools();
+                renderAdminToolsList();
+                showToast(currentLanguage === 'ko' ? '기본값으로 복원되었습니다' : 'Restored to defaults', 'success');
+            }
+        }
+
+        // 설정 내보내기
+        function exportAdminConfig() {
+            const config = {
+                version: '1.0',
+                exportDate: new Date().toISOString(),
+                tools: adminToolsConfig
+            };
+            
+            const json = JSON.stringify(config, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().split('T')[0];
+            link.download = `admin_tools_config_${timestamp}.json`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            
+            showToast(currentLanguage === 'ko' ? '설정이 내보내졌습니다' : 'Configuration exported', 'success');
+        }
+
+        // 설정 불러오기
+        function importAdminConfig(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const config = JSON.parse(e.target.result);
+                    if (config.tools && Array.isArray(config.tools)) {
+                        adminToolsConfig = config.tools;
+                        saveAdminTools();
+                        renderAdminTools();
+                        showToast(currentLanguage === 'ko' ? '설정을 불러왔습니다' : 'Configuration imported', 'success');
+                    } else {
+                        showToast(currentLanguage === 'ko' ? '잘못된 파일 형식입니다' : 'Invalid file format', 'error');
+                    }
+                } catch (error) {
+                    console.error('Import error:', error);
+                    showToast(currentLanguage === 'ko' ? '파일을 읽을 수 없습니다' : 'Cannot read file', 'error');
+                }
+            };
+            reader.readAsText(file);
+            
+            // 파일 입력 초기화
+            event.target.value = '';
+        }
+
+        // 기본 설정 다운로드
+        function downloadDefaultConfig() {
+            const config = {
+                version: '1.0',
+                exportDate: new Date().toISOString(),
+                tools: defaultAdminTools
+            };
+            
+            const json = JSON.stringify(config, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.download = 'default_admin_tools_config.json';
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            
+            showToast(currentLanguage === 'ko' ? '기본 설정을 다운로드했습니다' : 'Default configuration downloaded', 'success');
+        }
+
+        // 페이지 로드 시 어드민 도구 초기화
+        window.addEventListener('DOMContentLoaded', function() {
+            initAdminTools();
+        });
+
+        // 에러 전역 처리
+        window.addEventListener('error', function(event) {
+            console.error('전역 에러:', event.error);
+            showToast(currentLanguage === 'ko' ? '예상치 못한 오류가 발생했습니다' : 'An unexpected error occurred', 'error');
         });
     </script>
 
