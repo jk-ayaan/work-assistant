@@ -3211,6 +3211,62 @@
                                 </div>
                             </div>
                             
+                            <div class="border-t pt-4">
+                                <details class="group">
+                                    <summary class="cursor-pointer flex items-center justify-between text-sm font-medium text-neutral-700 hover:text-neutral-900">
+                                        <span>⚙️ ${currentLanguage === 'ko' ? '고급 설정 (앞자리 고정)' : 'Advanced Settings (Fix Prefix)'}</span>
+                                        <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </summary>
+                                    <div class="mt-4 space-y-3">
+                                        <div class="bg-amber-50 border border-amber-200 rounded p-3">
+                                            <p class="text-xs text-amber-800">
+                                                ${currentLanguage === 'ko' ? 
+                                                    '💡 최대 9자리까지 고정 가능 (마지막 1자리는 체크디지트)' : 
+                                                    '💡 Fix up to 9 digits (last digit is checksum)'}
+                                            </p>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-neutral-700 mb-2">
+                                                ${currentLanguage === 'ko' ? '고정값 입력' : 'Fixed Value Input'}
+                                            </label>
+                                            <input type="text" 
+                                                   id="fixed-prefix" 
+                                                   class="form-input" 
+                                                   placeholder="${currentLanguage === 'ko' ? '예: 123 또는 123-45 또는 123-45-6789' : 'e.g., 123 or 123-45 or 123-45-6789'}"
+                                                   maxlength="13"
+                                                   oninput="validateFixedPrefix(this)">
+                                            <div id="fixed-prefix-help" class="mt-1 text-xs text-neutral-500">
+                                                ${currentLanguage === 'ko' ? 
+                                                    '입력 형식: XXX (지역) 또는 XXX-XX (지역-업종) 또는 XXX-XX-XXXX (지역-업종-일련번호)' : 
+                                                    'Format: XXX (region) or XXX-XX (region-type) or XXX-XX-XXXX (region-type-serial)'}
+                                            </div>
+                                            <div id="fixed-prefix-error" class="mt-1 text-xs text-red-600 hidden"></div>
+                                        </div>
+                                        
+                                        <div class="flex gap-2">
+                                            <button onclick="applyFixedPrefix()" class="btn-secondary text-sm py-1 px-3">
+                                                ✓ ${currentLanguage === 'ko' ? '적용' : 'Apply'}
+                                            </button>
+                                            <button onclick="clearFixedPrefix()" class="btn-secondary text-sm py-1 px-3">
+                                                ✗ ${currentLanguage === 'ko' ? '초기화' : 'Clear'}
+                                            </button>
+                                        </div>
+                                        
+                                        <div id="fixed-prefix-status" class="hidden">
+                                            <div class="bg-green-50 border border-green-200 rounded p-2">
+                                                <p class="text-xs text-green-800">
+                                                    <span class="font-medium">${currentLanguage === 'ko' ? '고정값 적용됨:' : 'Fixed value applied:'}</span>
+                                                    <span id="fixed-prefix-display" class="ml-1"></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
+                            
                             <button onclick="generateBusinessNumbers()" class="btn-primary w-full">
                                 🎲 ${currentLanguage === 'ko' ? '사업자번호 생성' : 'Generate Numbers'}
                             </button>
@@ -3348,7 +3404,7 @@
                     for (const [businessType, maxCount] of Object.entries(maxCounts)) {
                         if (maxCount > 0 && totalGenerated < totalLimit) {
                             const actualCount = Math.min(maxCount, totalLimit - totalGenerated);
-                            const typeNumbers = generateNumbersByType(businessType, actualCount);
+                            const typeNumbers = generateNumbersByType(businessType, actualCount, fixedPrefixData);
                             typeNumbers.forEach(num => businessNumbers.add(num));
                             typeBreakdown[businessType] = typeNumbers.length;
                             totalGenerated += typeNumbers.length;
@@ -3362,7 +3418,7 @@
                     
                     for (let i = 0; i < count; i++) {
                         const randomType = allTypes[Math.floor(Math.random() * allTypes.length)];
-                        const numbers = generateNumbersByType(randomType, 1);
+                        const numbers = generateNumbersByType(randomType, 1, fixedPrefixData);
                         numbers.forEach(num => businessNumbers.add(num));
                         typeBreakdown[randomType] = (typeBreakdown[randomType] || 0) + 1;
                     }
@@ -3370,7 +3426,7 @@
                 } else {
                     // 단일 유형 모드
                     const count = parseInt(document.getElementById('business-count').value);
-                    const numbers = generateNumbersByType(type, count);
+                    const numbers = generateNumbersByType(type, count, fixedPrefixData);
                     numbers.forEach(num => businessNumbers.add(num));
                     typeBreakdown[type] = numbers.length;
                 }
@@ -3398,7 +3454,7 @@
         }
         
         // 유형별 사업자번호 생성
-        function generateNumbersByType(type, count) {
+        function generateNumbersByType(type, count, fixedData = null) {
             const ranges = businessTypeRanges[type];
             if (!ranges) return [];
             
@@ -3413,16 +3469,53 @@
             while (numbers.size < count && attempts < maxAttempts) {
                 attempts++;
                 
-                // 지역코드 (전국: 101-999)
-                const prefix = String(101 + Math.floor(Math.random() * 899)).padStart(3, '0');
+                let prefix, middle, suffix;
                 
-                // 해당 유형의 범위에서 중간번호 선택
-                const range = ranges[Math.floor(Math.random() * ranges.length)];
-                const middleNum = range.start + Math.floor(Math.random() * (range.end - range.start + 1));
-                const middle = String(middleNum).padStart(2, '0');
-                
-                // 일련번호 (4자리 랜덤: 0001~9999)
-                const suffix = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
+                // 고정값이 있으면 사용, 없으면 랜덤 생성
+                if (fixedData && fixedData.enabled) {
+                    // 지역코드
+                    if (fixedData.prefix) {
+                        prefix = fixedData.prefix;
+                    } else {
+                        prefix = String(101 + Math.floor(Math.random() * 899)).padStart(3, '0');
+                    }
+                    
+                    // 업종코드
+                    if (fixedData.middle) {
+                        middle = fixedData.middle;
+                    } else {
+                        const range = ranges[Math.floor(Math.random() * ranges.length)];
+                        const middleNum = range.start + Math.floor(Math.random() * (range.end - range.start + 1));
+                        middle = String(middleNum).padStart(2, '0');
+                    }
+                    
+                    // 일련번호
+                    if (fixedData.suffix) {
+                        // 고정된 일련번호가 있는 경우
+                        const fixedLength = fixedData.suffix.length;
+                        if (fixedLength === 4) {
+                            // 4자리 모두 고정
+                            suffix = fixedData.suffix;
+                        } else {
+                            // 일부만 고정, 나머지는 랜덤
+                            const remainingDigits = 4 - fixedLength;
+                            const randomPart = String(Math.floor(Math.random() * Math.pow(10, remainingDigits)))
+                                .padStart(remainingDigits, '0');
+                            suffix = fixedData.suffix + randomPart;
+                        }
+                    } else {
+                        suffix = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
+                    }
+                } else {
+                    // 고정값이 없는 경우 (기존 로직)
+                    prefix = String(101 + Math.floor(Math.random() * 899)).padStart(3, '0');
+                    
+                    const range = ranges[Math.floor(Math.random() * ranges.length)];
+                    const middleNum = range.start + Math.floor(Math.random() * (range.end - range.start + 1));
+                    middle = String(middleNum).padStart(2, '0');
+                    
+                    suffix = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
+                }
                 
                 const businessNumber = generateValidBusinessNumber(prefix, middle, suffix);
                 
@@ -3640,6 +3733,131 @@
                 currentLanguage === 'ko' ? 
                     'CSV 파일이 다운로드되었습니다' : 
                     'CSV file downloaded', 
+                'success'
+            );
+        }
+        
+        // 고정값 관련 전역 변수
+        let fixedPrefixData = {
+            enabled: false,
+            prefix: null,    // 3자리
+            middle: null,    // 2자리
+            suffix: null     // 최대 4자리
+        };
+        
+        // 고정값 입력 유효성 검사
+        function validateFixedPrefix(input) {
+            const value = input.value.replace(/[^\d-]/g, ''); // 숫자와 하이픈만 허용
+            input.value = value;
+            
+            const errorDiv = document.getElementById('fixed-prefix-error');
+            const parts = value.split('-').filter(p => p);
+            
+            // 유효성 검사
+            if (parts.length > 0) {
+                // 첫 번째 부분 (지역코드): 3자리
+                if (parts[0] && (parts[0].length !== 3 || parseInt(parts[0]) < 101)) {
+                    errorDiv.textContent = currentLanguage === 'ko' ? 
+                        '지역코드는 101-999 범위의 3자리여야 합니다' : 
+                        'Region code must be 3 digits (101-999)';
+                    errorDiv.classList.remove('hidden');
+                    return false;
+                }
+                
+                // 두 번째 부분 (업종코드): 2자리
+                if (parts[1] && parts[1].length !== 2) {
+                    errorDiv.textContent = currentLanguage === 'ko' ? 
+                        '업종코드는 2자리여야 합니다' : 
+                        'Business type code must be 2 digits';
+                    errorDiv.classList.remove('hidden');
+                    return false;
+                }
+                
+                // 세 번째 부분 (일련번호): 최대 4자리
+                if (parts[2] && parts[2].length > 4) {
+                    errorDiv.textContent = currentLanguage === 'ko' ? 
+                        '일련번호는 최대 4자리까지 가능합니다' : 
+                        'Serial number can be up to 4 digits';
+                    errorDiv.classList.remove('hidden');
+                    return false;
+                }
+                
+                // 전체 자리수 체크 (최대 9자리)
+                const totalDigits = parts.join('').length;
+                if (totalDigits > 9) {
+                    errorDiv.textContent = currentLanguage === 'ko' ? 
+                        '전체 고정값은 최대 9자리까지 가능합니다' : 
+                        'Total fixed value can be up to 9 digits';
+                    errorDiv.classList.remove('hidden');
+                    return false;
+                }
+            }
+            
+            errorDiv.classList.add('hidden');
+            return true;
+        }
+        
+        // 고정값 적용
+        function applyFixedPrefix() {
+            const input = document.getElementById('fixed-prefix');
+            const value = input.value.trim();
+            
+            if (!value) {
+                showToast(
+                    currentLanguage === 'ko' ? '고정값을 입력해주세요' : 'Please enter a fixed value',
+                    'error'
+                );
+                return;
+            }
+            
+            if (!validateFixedPrefix(input)) {
+                return;
+            }
+            
+            const parts = value.split('-').filter(p => p);
+            
+            // 고정값 데이터 설정
+            fixedPrefixData.enabled = true;
+            fixedPrefixData.prefix = parts[0] || null;
+            fixedPrefixData.middle = parts[1] || null;
+            fixedPrefixData.suffix = parts[2] || null;
+            
+            // UI 업데이트
+            const statusDiv = document.getElementById('fixed-prefix-status');
+            const displaySpan = document.getElementById('fixed-prefix-display');
+            
+            let displayText = '';
+            if (fixedPrefixData.prefix) displayText += fixedPrefixData.prefix;
+            if (fixedPrefixData.middle) displayText += '-' + fixedPrefixData.middle;
+            if (fixedPrefixData.suffix) displayText += '-' + fixedPrefixData.suffix;
+            displayText += '-' + 'X'.repeat(9 - displayText.replace(/-/g, '').length) + 'C';
+            
+            displaySpan.textContent = displayText;
+            statusDiv.classList.remove('hidden');
+            
+            showToast(
+                currentLanguage === 'ko' ? 
+                    `고정값이 적용되었습니다: ${displayText}` : 
+                    `Fixed value applied: ${displayText}`,
+                'success'
+            );
+        }
+        
+        // 고정값 초기화
+        function clearFixedPrefix() {
+            fixedPrefixData = {
+                enabled: false,
+                prefix: null,
+                middle: null,
+                suffix: null
+            };
+            
+            document.getElementById('fixed-prefix').value = '';
+            document.getElementById('fixed-prefix-status').classList.add('hidden');
+            document.getElementById('fixed-prefix-error').classList.add('hidden');
+            
+            showToast(
+                currentLanguage === 'ko' ? '고정값이 초기화되었습니다' : 'Fixed value cleared',
                 'success'
             );
         }
