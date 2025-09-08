@@ -3477,7 +3477,8 @@
                     if (fixedData.prefix) {
                         prefix = fixedData.prefix;
                     } else {
-                        prefix = String(101 + Math.floor(Math.random() * 899)).padStart(3, '0');
+                        // 000도 포함하여 000-999 범위에서 랜덤 생성
+                        prefix = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
                     }
                     
                     // 업종코드
@@ -3507,8 +3508,8 @@
                         suffix = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
                     }
                 } else {
-                    // 고정값이 없는 경우 (기존 로직)
-                    prefix = String(101 + Math.floor(Math.random() * 899)).padStart(3, '0');
+                    // 고정값이 없는 경우 (000-999 범위로 확장)
+                    prefix = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
                     
                     const range = ranges[Math.floor(Math.random() * ranges.length)];
                     const middleNum = range.start + Math.floor(Math.random() * (range.end - range.start + 1));
@@ -3755,11 +3756,11 @@
             
             // 유효성 검사
             if (parts.length > 0) {
-                // 첫 번째 부분 (지역코드): 3자리
-                if (parts[0] && (parts[0].length !== 3 || parseInt(parts[0]) < 101)) {
+                // 첫 번째 부분 (지역코드): 3자리 (000도 허용)
+                if (parts[0] && parts[0].length !== 3) {
                     errorDiv.textContent = currentLanguage === 'ko' ? 
-                        '지역코드는 101-999 범위의 3자리여야 합니다' : 
-                        'Region code must be 3 digits (101-999)';
+                        '지역코드는 3자리여야 합니다' : 
+                        'Region code must be 3 digits';
                     errorDiv.classList.remove('hidden');
                     return false;
                 }
