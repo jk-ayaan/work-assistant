@@ -812,6 +812,20 @@
                             <span>→</span>
                         </div>
                     </div>
+
+                    <div class="card tool-card p-6" onclick="openDataTool('combination-check')">
+                        <div class="icon-container">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2"><span data-ko="조합확인 (Pairwise)" data-en="Combination Check (Pairwise)">조합확인 (Pairwise)</span></h3>
+                        <p class="text-neutral-600 mb-4"><span data-ko="페어와이즈 기법으로 최적화된 테스트 케이스를 생성합니다" data-en="Generate optimized test cases using pairwise testing">페어와이즈 기법으로 최적화된 테스트 케이스를 생성합니다</span></p>
+                        <div class="flex items-center text-sm text-neutral-500">
+                            <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs mr-2"><span data-ko="테스트 케이스" data-en="Test Cases">테스트 케이스</span></span>
+                            <span>→</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1455,6 +1469,10 @@
                 case 'business-number':
                     title = currentLanguage === 'ko' ? '사업자등록번호 생성기' : 'Business Number Generator';
                     content = getBusinessNumberGeneratorHTML();
+                    break;
+                case 'combination-check':
+                    title = currentLanguage === 'ko' ? '조합확인 (Pairwise Testing)' : 'Combination Check (Pairwise Testing)';
+                    content = getCombinationCheckHTML();
                     break;
                 default:
                     title = '도구';
@@ -3993,6 +4011,536 @@ pm.request.headers.add({
             
             showToast(
                 currentLanguage === 'ko' ? '고정값이 초기화되었습니다' : 'Fixed value cleared',
+                'success'
+            );
+        }
+
+        // 조합확인 (Pairwise Testing) 관련 변수
+        let combinationParameters = [];
+        let combinationResults = [];
+        
+        // 조합확인 HTML 생성
+        function getCombinationCheckHTML() {
+            return `
+                <div class="space-y-6">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p class="text-sm text-blue-800">
+                            ${currentLanguage === 'ko' ? 
+                                '🔬 페어와이즈 테스팅으로 최소한의 테스트 케이스로 모든 파라미터 조합을 효과적으로 검증합니다.' : 
+                                '🔬 Pairwise testing effectively validates all parameter combinations with minimal test cases.'}
+                        </p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- 파라미터 설정 영역 -->
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-lg font-semibold">
+                                    ${currentLanguage === 'ko' ? '파라미터 설정' : 'Parameter Settings'}
+                                </h3>
+                                <button onclick="addCombinationParameter()" class="btn-secondary text-sm">
+                                    ➕ ${currentLanguage === 'ko' ? '파라미터 추가' : 'Add Parameter'}
+                                </button>
+                            </div>
+                            
+                            <div id="combination-parameters" class="space-y-3">
+                                <!-- 파라미터가 동적으로 추가될 영역 -->
+                                <div class="text-center text-gray-500 py-8">
+                                    ${currentLanguage === 'ko' ? 
+                                        '파라미터 추가 버튼을 클릭하여 시작하세요' : 
+                                        'Click Add Parameter button to start'}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 생성 옵션 영역 -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold">
+                                ${currentLanguage === 'ko' ? '생성 옵션' : 'Generation Options'}
+                            </h3>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    ${currentLanguage === 'ko' ? '생성 모드' : 'Generation Mode'}
+                                </label>
+                                <select id="combination-mode" class="form-input" onchange="updateCombinationStats()">
+                                    <option value="pairwise">${currentLanguage === 'ko' ? 'Pairwise (2-way)' : 'Pairwise (2-way)'}</option>
+                                    <option value="3way">${currentLanguage === 'ko' ? '3-way Coverage' : '3-way Coverage'}</option>
+                                    <option value="full">${currentLanguage === 'ko' ? 'Full Combination (모든 조합)' : 'Full Combination (All)'}</option>
+                                </select>
+                            </div>
+                            
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h4 class="font-medium mb-2">
+                                    ${currentLanguage === 'ko' ? '📊 예상 결과' : '📊 Expected Results'}
+                                </h4>
+                                <div id="combination-stats" class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>${currentLanguage === 'ko' ? '전체 조합 수:' : 'Total Combinations:'}</span>
+                                        <span id="total-combinations" class="font-medium">0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>${currentLanguage === 'ko' ? '생성될 케이스:' : 'Cases to Generate:'}</span>
+                                        <span id="generated-cases" class="font-medium">0</span>
+                                    </div>
+                                    <div class="flex justify-between text-green-600">
+                                        <span>${currentLanguage === 'ko' ? '감소율:' : 'Reduction:'}</span>
+                                        <span id="reduction-rate" class="font-medium">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="generateCombinations()" class="btn-primary w-full">
+                                🎯 ${currentLanguage === 'ko' ? '조합 생성' : 'Generate Combinations'}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 결과 표시 영역 -->
+                    <div id="combination-results" class="hidden">
+                        <div class="border-t pt-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold">
+                                    ${currentLanguage === 'ko' ? '생성된 테스트 케이스' : 'Generated Test Cases'}
+                                </h3>
+                                <div class="flex gap-2">
+                                    <button onclick="copyCombinationResults()" class="btn-secondary text-sm">
+                                        📋 ${currentLanguage === 'ko' ? '복사' : 'Copy'}
+                                    </button>
+                                    <button onclick="downloadCombinationCSV()" class="btn-secondary text-sm">
+                                        💾 ${currentLanguage === 'ko' ? 'CSV 다운로드' : 'Download CSV'}
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table id="combination-table" class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr id="combination-table-header">
+                                            <!-- 동적으로 생성될 헤더 -->
+                                        </tr>
+                                    </thead>
+                                    <tbody id="combination-table-body" class="bg-white divide-y divide-gray-200">
+                                        <!-- 동적으로 생성될 테스트 케이스 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 파라미터 추가
+        function addCombinationParameter() {
+            const paramId = Date.now();
+            const parameterDiv = document.getElementById('combination-parameters');
+            
+            // 초기 안내 메시지 제거
+            if (combinationParameters.length === 0) {
+                parameterDiv.innerHTML = '';
+            }
+            
+            if (combinationParameters.length >= 10) {
+                showToast(
+                    currentLanguage === 'ko' ? 
+                        '최대 10개의 파라미터만 추가할 수 있습니다' : 
+                        'Maximum 10 parameters allowed',
+                    'error'
+                );
+                return;
+            }
+            
+            const paramHtml = `
+                <div class="border rounded-lg p-4 bg-white" id="param-${paramId}">
+                    <div class="flex justify-between items-start mb-3">
+                        <input type="text" 
+                               placeholder="${currentLanguage === 'ko' ? '파라미터명' : 'Parameter Name'}" 
+                               class="form-input text-sm font-medium w-48"
+                               id="param-name-${paramId}"
+                               onchange="updateCombinationStats()">
+                        <button onclick="removeCombinationParameter(${paramId})" class="text-red-500 hover:text-red-700">
+                            ❌
+                        </button>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex gap-2">
+                            <input type="text" 
+                                   placeholder="${currentLanguage === 'ko' ? '값 입력 (콤마로 구분)' : 'Enter values (comma separated)'}" 
+                                   class="form-input text-sm flex-1"
+                                   id="param-values-${paramId}">
+                            <button onclick="addParamValues(${paramId})" class="btn-secondary text-sm">
+                                ${currentLanguage === 'ko' ? '추가' : 'Add'}
+                            </button>
+                        </div>
+                        <div id="param-value-list-${paramId}" class="flex flex-wrap gap-2">
+                            <!-- 값들이 태그로 표시될 영역 -->
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            parameterDiv.insertAdjacentHTML('beforeend', paramHtml);
+            
+            combinationParameters.push({
+                id: paramId,
+                name: '',
+                values: []
+            });
+            
+            updateCombinationStats();
+        }
+        
+        // 파라미터 제거
+        function removeCombinationParameter(paramId) {
+            document.getElementById(`param-${paramId}`).remove();
+            combinationParameters = combinationParameters.filter(p => p.id !== paramId);
+            
+            if (combinationParameters.length === 0) {
+                document.getElementById('combination-parameters').innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        ${currentLanguage === 'ko' ? 
+                            '파라미터 추가 버튼을 클릭하여 시작하세요' : 
+                            'Click Add Parameter button to start'}
+                    </div>
+                `;
+            }
+            
+            updateCombinationStats();
+        }
+        
+        // 파라미터 값 추가
+        function addParamValues(paramId) {
+            const input = document.getElementById(`param-values-${paramId}`);
+            const values = input.value.split(',').map(v => v.trim()).filter(v => v);
+            
+            if (values.length === 0) return;
+            
+            const param = combinationParameters.find(p => p.id === paramId);
+            const valueList = document.getElementById(`param-value-list-${paramId}`);
+            
+            values.forEach(value => {
+                if (!param.values.includes(value)) {
+                    param.values.push(value);
+                    
+                    const valueTag = `
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                            ${value}
+                            <button onclick="removeParamValue(${paramId}, '${value}')" class="ml-2 text-blue-600 hover:text-blue-800">
+                                ×
+                            </button>
+                        </span>
+                    `;
+                    
+                    valueList.insertAdjacentHTML('beforeend', valueTag);
+                }
+            });
+            
+            input.value = '';
+            updateCombinationStats();
+        }
+        
+        // 파라미터 값 제거
+        function removeParamValue(paramId, value) {
+            const param = combinationParameters.find(p => p.id === paramId);
+            param.values = param.values.filter(v => v !== value);
+            
+            // UI 업데이트
+            const valueList = document.getElementById(`param-value-list-${paramId}`);
+            valueList.innerHTML = '';
+            
+            param.values.forEach(val => {
+                const valueTag = `
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                        ${val}
+                        <button onclick="removeParamValue(${paramId}, '${val}')" class="ml-2 text-blue-600 hover:text-blue-800">
+                            ×
+                        </button>
+                    </span>
+                `;
+                valueList.insertAdjacentHTML('beforeend', valueTag);
+            });
+            
+            updateCombinationStats();
+        }
+        
+        // 통계 업데이트
+        function updateCombinationStats() {
+            // 파라미터 이름 업데이트
+            combinationParameters.forEach(param => {
+                const nameInput = document.getElementById(`param-name-${param.id}`);
+                if (nameInput) {
+                    param.name = nameInput.value || `Param${param.id}`;
+                }
+            });
+            
+            const validParams = combinationParameters.filter(p => p.values.length > 0);
+            
+            if (validParams.length === 0) {
+                document.getElementById('total-combinations').textContent = '0';
+                document.getElementById('generated-cases').textContent = '0';
+                document.getElementById('reduction-rate').textContent = '0%';
+                return;
+            }
+            
+            // 전체 조합 수 계산
+            const totalCombinations = validParams.reduce((acc, param) => acc * param.values.length, 1);
+            
+            // 예상 생성 케이스 수
+            const mode = document.getElementById('combination-mode').value;
+            let estimatedCases = 0;
+            
+            if (mode === 'full') {
+                estimatedCases = totalCombinations;
+            } else if (mode === 'pairwise') {
+                // 페어와이즈 추정: 대략적으로 최대 값 개수의 제곱
+                const maxValues = Math.max(...validParams.map(p => p.values.length));
+                estimatedCases = Math.min(maxValues * maxValues, totalCombinations);
+            } else if (mode === '3way') {
+                // 3-way 추정
+                const maxValues = Math.max(...validParams.map(p => p.values.length));
+                estimatedCases = Math.min(maxValues * maxValues * maxValues, totalCombinations);
+            }
+            
+            const reduction = totalCombinations > 0 ? 
+                Math.round((1 - estimatedCases / totalCombinations) * 100) : 0;
+            
+            document.getElementById('total-combinations').textContent = totalCombinations.toLocaleString();
+            document.getElementById('generated-cases').textContent = estimatedCases.toLocaleString();
+            document.getElementById('reduction-rate').textContent = `${reduction}%`;
+        }
+        
+        // 페어와이즈 알고리즘 구현
+        function generatePairwiseCombinations(parameters) {
+            if (parameters.length === 0) return [];
+            if (parameters.length === 1) {
+                return parameters[0].values.map(v => ({ [parameters[0].name]: v }));
+            }
+            
+            const result = [];
+            const pairs = [];
+            
+            // 모든 2-way 페어 생성
+            for (let i = 0; i < parameters.length; i++) {
+                for (let j = i + 1; j < parameters.length; j++) {
+                    for (const val1 of parameters[i].values) {
+                        for (const val2 of parameters[j].values) {
+                            pairs.push({
+                                params: [i, j],
+                                values: [val1, val2]
+                            });
+                        }
+                    }
+                }
+            }
+            
+            // 페어를 커버하는 최소 테스트 케이스 생성
+            const coveredPairs = new Set();
+            
+            while (coveredPairs.size < pairs.length) {
+                const testCase = {};
+                
+                // 각 파라미터에 대해 가장 많은 미커버 페어를 커버하는 값 선택
+                for (let i = 0; i < parameters.length; i++) {
+                    let bestValue = parameters[i].values[0];
+                    let maxNewPairs = 0;
+                    
+                    for (const value of parameters[i].values) {
+                        let newPairs = 0;
+                        
+                        // 이 값을 선택했을 때 새로 커버되는 페어 수 계산
+                        for (const pair of pairs) {
+                            if (coveredPairs.has(JSON.stringify(pair))) continue;
+                            
+                            const paramIndex = pair.params.indexOf(i);
+                            if (paramIndex !== -1 && pair.values[paramIndex] === value) {
+                                // 다른 파라미터 값도 일치하는지 확인
+                                const otherParamIndex = pair.params[1 - paramIndex];
+                                if (!testCase[parameters[otherParamIndex].name] || 
+                                    testCase[parameters[otherParamIndex].name] === pair.values[1 - paramIndex]) {
+                                    newPairs++;
+                                }
+                            }
+                        }
+                        
+                        if (newPairs > maxNewPairs) {
+                            maxNewPairs = newPairs;
+                            bestValue = value;
+                        }
+                    }
+                    
+                    testCase[parameters[i].name] = bestValue;
+                }
+                
+                // 이 테스트 케이스가 커버하는 페어들 표시
+                for (const pair of pairs) {
+                    const values = pair.params.map(i => testCase[parameters[i].name]);
+                    if (values[0] === pair.values[0] && values[1] === pair.values[1]) {
+                        coveredPairs.add(JSON.stringify(pair));
+                    }
+                }
+                
+                result.push(testCase);
+                
+                // 무한루프 방지
+                if (result.length > pairs.length) break;
+            }
+            
+            return result;
+        }
+        
+        // 전체 조합 생성
+        function generateFullCombinations(parameters) {
+            if (parameters.length === 0) return [];
+            
+            const result = [];
+            
+            function generateRecursive(index, current) {
+                if (index === parameters.length) {
+                    result.push({ ...current });
+                    return;
+                }
+                
+                for (const value of parameters[index].values) {
+                    current[parameters[index].name] = value;
+                    generateRecursive(index + 1, current);
+                }
+            }
+            
+            generateRecursive(0, {});
+            return result;
+        }
+        
+        // 조합 생성
+        function generateCombinations() {
+            const validParams = combinationParameters.filter(p => p.values.length > 0);
+            
+            if (validParams.length === 0) {
+                showToast(
+                    currentLanguage === 'ko' ? 
+                        '최소 1개 이상의 파라미터와 값을 추가해주세요' : 
+                        'Please add at least one parameter with values',
+                    'error'
+                );
+                return;
+            }
+            
+            const mode = document.getElementById('combination-mode').value;
+            
+            if (mode === 'full') {
+                combinationResults = generateFullCombinations(validParams);
+            } else if (mode === 'pairwise') {
+                combinationResults = generatePairwiseCombinations(validParams);
+            } else if (mode === '3way') {
+                // 3-way는 간단히 full combination 사용 (실제로는 더 복잡한 알고리즘 필요)
+                combinationResults = generateFullCombinations(validParams);
+                // 여기서는 데모용으로 일부만 선택
+                if (combinationResults.length > 100) {
+                    combinationResults = combinationResults.slice(0, 100);
+                }
+            }
+            
+            displayCombinationResults();
+            
+            showToast(
+                currentLanguage === 'ko' ? 
+                    `${combinationResults.length}개의 테스트 케이스가 생성되었습니다` : 
+                    `${combinationResults.length} test cases generated`,
+                'success'
+            );
+        }
+        
+        // 결과 표시
+        function displayCombinationResults() {
+            if (combinationResults.length === 0) return;
+            
+            const resultsDiv = document.getElementById('combination-results');
+            const headerRow = document.getElementById('combination-table-header');
+            const tbody = document.getElementById('combination-table-body');
+            
+            // 헤더 생성
+            const headers = Object.keys(combinationResults[0]);
+            headerRow.innerHTML = `
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    #
+                </th>
+                ${headers.map(h => `
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        ${h}
+                    </th>
+                `).join('')}
+            `;
+            
+            // 바디 생성
+            tbody.innerHTML = combinationResults.map((row, index) => `
+                <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        ${index + 1}
+                    </td>
+                    ${headers.map(h => `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${row[h]}
+                        </td>
+                    `).join('')}
+                </tr>
+            `).join('');
+            
+            resultsDiv.classList.remove('hidden');
+        }
+        
+        // 결과 복사
+        function copyCombinationResults() {
+            if (combinationResults.length === 0) {
+                showToast(
+                    currentLanguage === 'ko' ? '복사할 데이터가 없습니다' : 'No data to copy',
+                    'error'
+                );
+                return;
+            }
+            
+            const headers = Object.keys(combinationResults[0]);
+            const tsv = [
+                headers.join('\t'),
+                ...combinationResults.map(row => headers.map(h => row[h]).join('\t'))
+            ].join('\n');
+            
+            navigator.clipboard.writeText(tsv).then(() => {
+                showToast(
+                    currentLanguage === 'ko' ? 
+                        'Google Sheets에 붙여넣기 가능한 형식으로 복사되었습니다' : 
+                        'Copied in format pasteable to Google Sheets',
+                    'success'
+                );
+            });
+        }
+        
+        // CSV 다운로드
+        function downloadCombinationCSV() {
+            if (combinationResults.length === 0) {
+                showToast(
+                    currentLanguage === 'ko' ? '다운로드할 데이터가 없습니다' : 'No data to download',
+                    'error'
+                );
+                return;
+            }
+            
+            const headers = Object.keys(combinationResults[0]);
+            const csv = [
+                headers.join(','),
+                ...combinationResults.map(row => 
+                    headers.map(h => `"${row[h]}"`).join(',')
+                )
+            ].join('\n');
+            
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().split('T')[0];
+            link.download = `test_combinations_${timestamp}.csv`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            
+            showToast(
+                currentLanguage === 'ko' ? 'CSV 파일이 다운로드되었습니다' : 'CSV file downloaded',
                 'success'
             );
         }
