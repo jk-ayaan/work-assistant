@@ -3279,111 +3279,10 @@
                                     💾 ${currentLanguage === 'ko' ? 'CSV 다운로드' : 'Download CSV'}
                                 </button>
                             </div>
-                            
-                            <div class="border-t pt-4">
-                                <details class="group">
-                                    <summary class="cursor-pointer flex items-center justify-between text-sm font-medium text-neutral-700 hover:text-neutral-900">
-                                        <span>📚 ${currentLanguage === 'ko' ? 'Postman에서 CSV 활용 가이드' : 'Using CSV in Postman Guide'}</span>
-                                        <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </summary>
-                                    <div class="mt-4 space-y-4">
-                                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                            <h4 class="font-medium text-blue-900 mb-3">
-                                                ${currentLanguage === 'ko' ? '📝 CSV 파일을 Postman 변수로 활용하기' : '📝 Using CSV File as Postman Variables'}
-                                            </h4>
-                                            
-                                            <div class="space-y-3 text-sm">
-                                                <div>
-                                                    <p class="font-medium text-blue-800 mb-1">
-                                                        ${currentLanguage === 'ko' ? 'Step 1: CSV 파일 다운로드' : 'Step 1: Download CSV File'}
-                                                    </p>
-                                                    <p class="text-blue-700">
-                                                        ${currentLanguage === 'ko' ? 
-                                                            '위의 "CSV 다운로드" 버튼을 클릭하여 생성된 사업자번호를 CSV 파일로 저장합니다.' : 
-                                                            'Click the "Download CSV" button above to save generated business numbers as a CSV file.'}
-                                                    </p>
-                                                </div>
-                                                
-                                                <div>
-                                                    <p class="font-medium text-blue-800 mb-1">
-                                                        ${currentLanguage === 'ko' ? 'Step 2: Postman Collection Runner 열기' : 'Step 2: Open Postman Collection Runner'}
-                                                    </p>
-                                                    <p class="text-blue-700">
-                                                        ${currentLanguage === 'ko' ? 
-                                                            'Postman에서 Collection → Run collection → Select File로 CSV 파일을 업로드합니다.' : 
-                                                            'In Postman, go to Collection → Run collection → Select File to upload the CSV file.'}
-                                                    </p>
-                                                </div>
-                                                
-                                                <div>
-                                                    <p class="font-medium text-blue-800 mb-1">
-                                                        ${currentLanguage === 'ko' ? 'Step 3: 요청에서 변수 사용' : 'Step 3: Use Variables in Request'}
-                                                    </p>
-                                                    <div class="bg-white rounded p-2 font-mono text-xs border border-blue-200">
-                                                        <div class="flex justify-between items-center mb-1">
-                                                            <span class="text-blue-600">${currentLanguage === 'ko' ? '// Body 예제' : '// Body Example'}</span>
-                                                            <button onclick="copyToClipboard(this.parentElement.nextElementSibling.textContent)" class="text-blue-500 hover:text-blue-700">
-                                                                📋 ${currentLanguage === 'ko' ? '복사' : 'Copy'}
-                                                            </button>
-                                                        </div>
-                                                        <pre class="text-gray-800">{
-  "businessNumber": "{{사업자등록번호}}",
-  "companyName": "테스트 회사",
-  "representative": "홍길동"
-}</pre>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div>
-                                                    <p class="font-medium text-blue-800 mb-1">
-                                                        ${currentLanguage === 'ko' ? 'Step 4: 반복 실행' : 'Step 4: Iterate Execution'}
-                                                    </p>
-                                                    <p class="text-blue-700">
-                                                        ${currentLanguage === 'ko' ? 
-                                                            'Runner는 CSV 파일의 각 행에 대해 요청을 자동으로 반복 실행합니다.' : 
-                                                            'Runner will automatically iterate the request for each row in the CSV file.'}
-                                                    </p>
-                                                </div>
-                                                
-                                                <div class="bg-amber-50 border border-amber-200 rounded p-2">
-                                                    <p class="text-amber-800 text-xs">
-                                                        <strong>${currentLanguage === 'ko' ? '💡 팁:' : '💡 Tip:'}</strong>
-                                                        ${currentLanguage === 'ko' ? 
-                                                            'CSV 헤더는 "사업자등록번호"로 되어 있으며, Postman에서 {{사업자등록번호}} 형식으로 참조할 수 있습니다.' : 
-                                                            'The CSV header is "사업자등록번호" and can be referenced as {{사업자등록번호}} in Postman.'}
-                                                    </p>
-                                                </div>
-                                                
-                                                <div>
-                                                    <p class="font-medium text-blue-800 mb-1">
-                                                        ${currentLanguage === 'ko' ? '예제: Pre-request Script' : 'Example: Pre-request Script'}
-                                                    </p>
-                                                    <div class="bg-white rounded p-2 font-mono text-xs border border-blue-200">
-                                                        <div class="flex justify-between items-center mb-1">
-                                                            <span class="text-blue-600">// JavaScript</span>
-                                                            <button onclick="copyToClipboard(this.parentElement.nextElementSibling.textContent)" class="text-blue-500 hover:text-blue-700">
-                                                                📋 ${currentLanguage === 'ko' ? '복사' : 'Copy'}
-                                                            </button>
-                                                        </div>
-                                                        <pre class="text-gray-800">// CSV에서 읽은 사업자번호를 환경 변수로 설정
-const businessNumber = pm.iterationData.get("사업자등록번호");
-pm.environment.set("currentBusinessNumber", businessNumber);
-
-// 콘솔에 로그 출력
-console.log("Processing: " + businessNumber);</pre>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </details>
-                            </div>
                         </div>
                         
                         <div class="lg:col-span-2">
-                            <div class="bg-neutral-50 border border-neutral-200 rounded-lg p-4 h-96 overflow-y-auto">
+                            <div class="bg-neutral-50 border border-neutral-200 rounded-lg p-4 h-[600px] overflow-y-auto">
                                 <div id="business-numbers-list" class="space-y-2">
                                     <p class="text-center text-neutral-500">
                                         ${currentLanguage === 'ko' ? 
@@ -3395,6 +3294,140 @@ console.log("Processing: " + businessNumber);</pre>
                             <div class="mt-2 flex justify-between text-sm text-neutral-600">
                                 <span><span id="business-count-display">0</span> ${currentLanguage === 'ko' ? '개 생성됨' : 'numbers generated'}</span>
                                 <span id="business-type-breakdown" class="text-xs"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Postman CSV 가이드 푸터 -->
+                    <div class="mt-8 border-t pt-8 bg-gray-50 -mx-6 px-6 pb-6">
+                        <div class="max-w-7xl mx-auto">
+                            <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
+                                📚 ${currentLanguage === 'ko' ? 'Postman에서 CSV 파일 활용 가이드' : 'Using CSV Files in Postman Guide'}
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+                                <!-- Step 1 -->
+                                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                    <div class="flex items-start space-x-3">
+                                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">1</span>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold text-gray-800 mb-2">
+                                                ${currentLanguage === 'ko' ? 'CSV 다운로드' : 'Download CSV'}
+                                            </h4>
+                                            <p class="text-sm text-gray-600">
+                                                ${currentLanguage === 'ko' ? 
+                                                    '위의 "CSV 다운로드" 버튼을 클릭하여 생성된 사업자번호를 CSV 파일로 저장' : 
+                                                    'Click "Download CSV" button above to save generated numbers as CSV'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Step 2 -->
+                                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                    <div class="flex items-start space-x-3">
+                                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">2</span>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold text-gray-800 mb-2">
+                                                ${currentLanguage === 'ko' ? 'Collection Runner' : 'Collection Runner'}
+                                            </h4>
+                                            <p class="text-sm text-gray-600">
+                                                ${currentLanguage === 'ko' ? 
+                                                    'Postman → Collection → Run collection → Select File에서 CSV 업로드' : 
+                                                    'Postman → Collection → Run collection → Select File to upload CSV'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Step 3 -->
+                                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                    <div class="flex items-start space-x-3">
+                                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">3</span>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold text-gray-800 mb-2">
+                                                ${currentLanguage === 'ko' ? '변수 사용' : 'Use Variables'}
+                                            </h4>
+                                            <p class="text-sm text-gray-600">
+                                                ${currentLanguage === 'ko' ? 
+                                                    '요청 Body에서 {{사업자등록번호}} 형식으로 변수 참조' : 
+                                                    'Reference variable as {{사업자등록번호}} in request body'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Step 4 -->
+                                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                                    <div class="flex items-start space-x-3">
+                                        <span class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold text-sm">4</span>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold text-gray-800 mb-2">
+                                                ${currentLanguage === 'ko' ? '반복 실행' : 'Iterate'}
+                                            </h4>
+                                            <p class="text-sm text-gray-600">
+                                                ${currentLanguage === 'ko' ? 
+                                                    'Runner가 CSV의 각 행에 대해 자동으로 요청 반복 실행' : 
+                                                    'Runner automatically iterates request for each CSV row'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 코드 예제 섹션 -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                                <!-- Body 예제 -->
+                                <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <h4 class="font-semibold text-gray-800">
+                                            ${currentLanguage === 'ko' ? '📝 Request Body 예제' : '📝 Request Body Example'}
+                                        </h4>
+                                        <button onclick="copyToClipboard(this.parentElement.parentElement.querySelector('pre').textContent)" class="text-blue-500 hover:text-blue-700 text-sm font-medium">
+                                            📋 ${currentLanguage === 'ko' ? '복사' : 'Copy'}
+                                        </button>
+                                    </div>
+                                    <pre class="bg-gray-50 p-3 rounded text-xs font-mono overflow-x-auto">{
+  "businessNumber": "{{사업자등록번호}}",
+  "companyName": "테스트 회사",
+  "representative": "홍길동",
+  "address": "서울시 강남구"
+}</pre>
+                                </div>
+                                
+                                <!-- Pre-request Script 예제 -->
+                                <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <h4 class="font-semibold text-gray-800">
+                                            ${currentLanguage === 'ko' ? '⚙️ Pre-request Script 예제' : '⚙️ Pre-request Script Example'}
+                                        </h4>
+                                        <button onclick="copyToClipboard(this.parentElement.parentElement.querySelector('pre').textContent)" class="text-blue-500 hover:text-blue-700 text-sm font-medium">
+                                            📋 ${currentLanguage === 'ko' ? '복사' : 'Copy'}
+                                        </button>
+                                    </div>
+                                    <pre class="bg-gray-50 p-3 rounded text-xs font-mono overflow-x-auto">// CSV에서 읽은 사업자번호를 환경 변수로 설정
+const businessNumber = pm.iterationData.get("사업자등록번호");
+pm.environment.set("currentBusinessNumber", businessNumber);
+
+// 콘솔에 로그 출력
+console.log("Processing: " + businessNumber);
+
+// 요청 헤더에 추가 (선택사항)
+pm.request.headers.add({
+    key: "X-Business-Number",
+    value: businessNumber
+});</pre>
+                                </div>
+                            </div>
+                            
+                            <!-- 팁 섹션 -->
+                            <div class="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                                <p class="text-sm text-amber-800">
+                                    <strong>${currentLanguage === 'ko' ? '💡 팁:' : '💡 Tips:'}</strong>
+                                    ${currentLanguage === 'ko' ? 
+                                        'CSV 파일의 헤더는 "사업자등록번호"로 되어 있으며, Postman에서 {{사업자등록번호}} 형식으로 참조할 수 있습니다. Collection Runner의 Iterations 설정으로 실행 횟수를 조절할 수 있습니다.' : 
+                                        'The CSV header is "사업자등록번호" and can be referenced as {{사업자등록번호}} in Postman. You can control the number of iterations in Collection Runner settings.'}
+                                </p>
                             </div>
                         </div>
                     </div>
