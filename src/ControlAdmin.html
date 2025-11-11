@@ -826,6 +826,20 @@
                             <span>→</span>
                         </div>
                     </div>
+
+                    <div class="card tool-card p-6" onclick="openDataTool('timer-stopwatch')">
+                        <div class="icon-container">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-neutral-800 mb-2"><span data-ko="타이머/스톱워치" data-en="Timer/Stopwatch">타이머/스톱워치</span></h3>
+                        <p class="text-neutral-600 mb-4"><span data-ko="카운트다운 타이머와 스톱워치 기능을 제공합니다" data-en="Provides countdown timer and stopwatch functionality">카운트다운 타이머와 스톱워치 기능을 제공합니다</span></p>
+                        <div class="flex items-center text-sm text-neutral-500">
+                            <span class="bg-rose-100 text-rose-800 px-2 py-1 rounded text-xs mr-2"><span data-ko="시간 도구" data-en="Time Tool">시간 도구</span></span>
+                            <span>→</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1473,6 +1487,10 @@
                 case 'combination-check':
                     title = currentLanguage === 'ko' ? '조합확인 (Pairwise Testing)' : 'Combination Check (Pairwise Testing)';
                     content = getCombinationCheckHTML();
+                    break;
+                case 'timer-stopwatch':
+                    title = currentLanguage === 'ko' ? '타이머/스톱워치' : 'Timer/Stopwatch';
+                    content = getTimerStopwatchHTML();
                     break;
                 default:
                     title = '도구';
@@ -4019,6 +4037,155 @@ pm.request.headers.add({
         let combinationParameters = [];
         let combinationResults = [];
         
+        // 타이머/스톱워치 관련 변수들
+        let timerInterval = null;
+        let stopwatchInterval = null;
+        let timerSeconds = 0;
+        let stopwatchMilliseconds = 0;
+        let stopwatchLaps = [];
+        let isTimerPaused = false;
+        let isStopwatchPaused = false;
+        let currentTimerMode = 'timer';
+        let audioContext = null;
+        
+        // 타이머/스톱워치 HTML 생성
+        function getTimerStopwatchHTML() {
+            return `
+                <div class="space-y-6">
+                    <!-- 모드 선택 탭 -->
+                    <div class="flex space-x-2 bg-gray-100 rounded-lg p-1">
+                        <button id="timer-tab-btn" onclick="switchTimerMode('timer')" 
+                            class="flex-1 py-2 px-4 rounded-md transition-all duration-200 bg-white shadow-sm text-blue-600 font-medium">
+                            ${currentLanguage === 'ko' ? '타이머' : 'Timer'}
+                        </button>
+                        <button id="stopwatch-tab-btn" onclick="switchTimerMode('stopwatch')" 
+                            class="flex-1 py-2 px-4 rounded-md transition-all duration-200 text-gray-600">
+                            ${currentLanguage === 'ko' ? '스톱워치' : 'Stopwatch'}
+                        </button>
+                    </div>
+
+                    <!-- 타이머 섹션 -->
+                    <div id="timer-section" class="space-y-6">
+                        <!-- 디스플레이 -->
+                        <div class="text-center">
+                            <div id="timer-display" class="text-7xl font-mono font-bold text-gray-800 mb-4">
+                                00:00:00
+                            </div>
+                            <!-- 진행률 표시 바 -->
+                            <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                                <div id="timer-progress" class="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- 시간 입력 -->
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    ${currentLanguage === 'ko' ? '시간' : 'Hours'}
+                                </label>
+                                <input type="number" id="timer-hours" min="0" max="23" value="0" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-center text-2xl font-mono"
+                                    onchange="updateTimerDisplay()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    ${currentLanguage === 'ko' ? '분' : 'Minutes'}
+                                </label>
+                                <input type="number" id="timer-minutes" min="0" max="59" value="0" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-center text-2xl font-mono"
+                                    onchange="updateTimerDisplay()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    ${currentLanguage === 'ko' ? '초' : 'Seconds'}
+                                </label>
+                                <input type="number" id="timer-seconds" min="0" max="59" value="0" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-center text-2xl font-mono"
+                                    onchange="updateTimerDisplay()">
+                            </div>
+                        </div>
+
+                        <!-- 빠른 설정 버튼 -->
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="setQuickTime(60)" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">1${currentLanguage === 'ko' ? '분' : 'm'}</button>
+                            <button onclick="setQuickTime(180)" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">3${currentLanguage === 'ko' ? '분' : 'm'}</button>
+                            <button onclick="setQuickTime(300)" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">5${currentLanguage === 'ko' ? '분' : 'm'}</button>
+                            <button onclick="setQuickTime(600)" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">10${currentLanguage === 'ko' ? '분' : 'm'}</button>
+                            <button onclick="setQuickTime(900)" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">15${currentLanguage === 'ko' ? '분' : 'm'}</button>
+                            <button onclick="setQuickTime(1800)" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">30${currentLanguage === 'ko' ? '분' : 'm'}</button>
+                            <button onclick="setQuickTime(3600)" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">1${currentLanguage === 'ko' ? '시간' : 'h'}</button>
+                        </div>
+
+                        <!-- 제어 버튼 -->
+                        <div class="flex justify-center space-x-4">
+                            <button id="timer-start-btn" onclick="startTimer()" 
+                                class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                                ${currentLanguage === 'ko' ? '시작' : 'Start'}
+                            </button>
+                            <button id="timer-pause-btn" onclick="pauseTimer()" disabled
+                                class="px-8 py-3 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                                ${currentLanguage === 'ko' ? '일시정지' : 'Pause'}
+                            </button>
+                            <button onclick="resetTimer()" 
+                                class="px-8 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+                                ${currentLanguage === 'ko' ? '리셋' : 'Reset'}
+                            </button>
+                        </div>
+
+                        <!-- 알림음 설정 -->
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" id="timer-sound-enabled" checked class="w-5 h-5 text-blue-600 rounded">
+                                <span class="text-sm font-medium text-gray-700">
+                                    ${currentLanguage === 'ko' ? '타이머 종료시 알림음 재생' : 'Play sound when timer ends'}
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 스톱워치 섹션 -->
+                    <div id="stopwatch-section" class="space-y-6 hidden">
+                        <!-- 디스플레이 -->
+                        <div class="text-center">
+                            <div id="stopwatch-display" class="text-7xl font-mono font-bold text-gray-800">
+                                00:00:00.00
+                            </div>
+                        </div>
+
+                        <!-- 제어 버튼 -->
+                        <div class="flex justify-center space-x-4">
+                            <button id="stopwatch-start-btn" onclick="startStopwatch()" 
+                                class="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+                                ${currentLanguage === 'ko' ? '시작' : 'Start'}
+                            </button>
+                            <button id="stopwatch-pause-btn" onclick="pauseStopwatch()" disabled
+                                class="px-8 py-3 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                                ${currentLanguage === 'ko' ? '일시정지' : 'Pause'}
+                            </button>
+                            <button id="stopwatch-lap-btn" onclick="recordLap()" disabled
+                                class="px-8 py-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                                ${currentLanguage === 'ko' ? '랩' : 'Lap'}
+                            </button>
+                            <button onclick="resetStopwatch()" 
+                                class="px-8 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+                                ${currentLanguage === 'ko' ? '리셋' : 'Reset'}
+                            </button>
+                        </div>
+
+                        <!-- 랩타임 목록 -->
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                                ${currentLanguage === 'ko' ? '랩타임' : 'Lap Times'}
+                            </h3>
+                            <div id="lap-times-container" class="space-y-2 max-h-60 overflow-y-auto">
+                                <p class="text-gray-500 text-center">${currentLanguage === 'ko' ? '기록된 랩타임이 없습니다' : 'No lap times recorded'}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
         // 조합확인 HTML 생성
         function getCombinationCheckHTML() {
             return `
@@ -4409,6 +4576,368 @@ pm.request.headers.add({
             
             generateRecursive(0, {});
             return result;
+        }
+        
+        // 타이머 모드 전환
+        function switchTimerMode(mode) {
+            currentTimerMode = mode;
+            const timerSection = document.getElementById('timer-section');
+            const stopwatchSection = document.getElementById('stopwatch-section');
+            const timerTabBtn = document.getElementById('timer-tab-btn');
+            const stopwatchTabBtn = document.getElementById('stopwatch-tab-btn');
+            
+            if (mode === 'timer') {
+                timerSection?.classList.remove('hidden');
+                stopwatchSection?.classList.add('hidden');
+                timerTabBtn?.classList.add('bg-white', 'shadow-sm', 'text-blue-600', 'font-medium');
+                timerTabBtn?.classList.remove('text-gray-600');
+                stopwatchTabBtn?.classList.remove('bg-white', 'shadow-sm', 'text-blue-600', 'font-medium');
+                stopwatchTabBtn?.classList.add('text-gray-600');
+            } else {
+                timerSection?.classList.add('hidden');
+                stopwatchSection?.classList.remove('hidden');
+                stopwatchTabBtn?.classList.add('bg-white', 'shadow-sm', 'text-blue-600', 'font-medium');
+                stopwatchTabBtn?.classList.remove('text-gray-600');
+                timerTabBtn?.classList.remove('bg-white', 'shadow-sm', 'text-blue-600', 'font-medium');
+                timerTabBtn?.classList.add('text-gray-600');
+            }
+        }
+        
+        // 타이머 디스플레이 업데이트
+        function updateTimerDisplay() {
+            const hours = parseInt(document.getElementById('timer-hours')?.value || 0);
+            const minutes = parseInt(document.getElementById('timer-minutes')?.value || 0);
+            const seconds = parseInt(document.getElementById('timer-seconds')?.value || 0);
+            
+            timerSeconds = hours * 3600 + minutes * 60 + seconds;
+            
+            const display = document.getElementById('timer-display');
+            if (display) {
+                display.textContent = formatTime(timerSeconds);
+            }
+        }
+        
+        // 시간 포맷팅 (HH:MM:SS)
+        function formatTime(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+        
+        // 빠른 시간 설정
+        function setQuickTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            const hoursInput = document.getElementById('timer-hours');
+            const minutesInput = document.getElementById('timer-minutes');
+            const secondsInput = document.getElementById('timer-seconds');
+            
+            if (hoursInput) hoursInput.value = hours;
+            if (minutesInput) minutesInput.value = minutes;
+            if (secondsInput) secondsInput.value = secs;
+            
+            updateTimerDisplay();
+        }
+        
+        // 타이머 시작
+        function startTimer() {
+            if (timerInterval) return;
+            
+            const startBtn = document.getElementById('timer-start-btn');
+            const pauseBtn = document.getElementById('timer-pause-btn');
+            const hoursInput = document.getElementById('timer-hours');
+            const minutesInput = document.getElementById('timer-minutes');
+            const secondsInput = document.getElementById('timer-seconds');
+            
+            if (!isTimerPaused) {
+                const hours = parseInt(hoursInput?.value || 0);
+                const minutes = parseInt(minutesInput?.value || 0);
+                const seconds = parseInt(secondsInput?.value || 0);
+                timerSeconds = hours * 3600 + minutes * 60 + seconds;
+            }
+            
+            if (timerSeconds <= 0) {
+                showToast(currentLanguage === 'ko' ? '타이머 시간을 설정해주세요' : 'Please set timer duration', 'warning');
+                return;
+            }
+            
+            const totalSeconds = timerSeconds;
+            isTimerPaused = false;
+            
+            // 입력 필드 비활성화
+            if (hoursInput) hoursInput.disabled = true;
+            if (minutesInput) minutesInput.disabled = true;
+            if (secondsInput) secondsInput.disabled = true;
+            
+            // 버튼 상태 변경
+            if (startBtn) startBtn.disabled = true;
+            if (pauseBtn) pauseBtn.disabled = false;
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                const display = document.getElementById('timer-display');
+                const progress = document.getElementById('timer-progress');
+                
+                if (display) {
+                    display.textContent = formatTime(timerSeconds);
+                }
+                
+                if (progress) {
+                    const percentage = ((totalSeconds - timerSeconds) / totalSeconds) * 100;
+                    progress.style.width = percentage + '%';
+                }
+                
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    
+                    // 알림음 재생
+                    if (document.getElementById('timer-sound-enabled')?.checked) {
+                        playTimerSound();
+                    }
+                    
+                    // 알림 표시
+                    showToast(currentLanguage === 'ko' ? '타이머가 완료되었습니다!' : 'Timer completed!', 'success');
+                    
+                    // 리셋
+                    resetTimer();
+                }
+            }, 1000);
+        }
+        
+        // 타이머 일시정지
+        function pauseTimer() {
+            if (!timerInterval) return;
+            
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isTimerPaused = true;
+            
+            const startBtn = document.getElementById('timer-start-btn');
+            const pauseBtn = document.getElementById('timer-pause-btn');
+            
+            if (startBtn) {
+                startBtn.disabled = false;
+                startBtn.textContent = currentLanguage === 'ko' ? '재개' : 'Resume';
+            }
+            if (pauseBtn) pauseBtn.disabled = true;
+        }
+        
+        // 타이머 리셋
+        function resetTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
+            timerSeconds = 0;
+            isTimerPaused = false;
+            
+            const display = document.getElementById('timer-display');
+            const progress = document.getElementById('timer-progress');
+            const startBtn = document.getElementById('timer-start-btn');
+            const pauseBtn = document.getElementById('timer-pause-btn');
+            const hoursInput = document.getElementById('timer-hours');
+            const minutesInput = document.getElementById('timer-minutes');
+            const secondsInput = document.getElementById('timer-seconds');
+            
+            if (display) display.textContent = '00:00:00';
+            if (progress) progress.style.width = '0%';
+            
+            if (hoursInput) {
+                hoursInput.disabled = false;
+                hoursInput.value = 0;
+            }
+            if (minutesInput) {
+                minutesInput.disabled = false;
+                minutesInput.value = 0;
+            }
+            if (secondsInput) {
+                secondsInput.disabled = false;
+                secondsInput.value = 0;
+            }
+            
+            if (startBtn) {
+                startBtn.disabled = false;
+                startBtn.textContent = currentLanguage === 'ko' ? '시작' : 'Start';
+            }
+            if (pauseBtn) pauseBtn.disabled = true;
+        }
+        
+        // 스톱워치 시간 포맷팅 (HH:MM:SS.MS)
+        function formatStopwatchTime(milliseconds) {
+            const totalSeconds = Math.floor(milliseconds / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            const ms = Math.floor((milliseconds % 1000) / 10);
+            
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
+        }
+        
+        // 스톱워치 시작
+        function startStopwatch() {
+            if (stopwatchInterval) return;
+            
+            const startBtn = document.getElementById('stopwatch-start-btn');
+            const pauseBtn = document.getElementById('stopwatch-pause-btn');
+            const lapBtn = document.getElementById('stopwatch-lap-btn');
+            
+            if (!isStopwatchPaused) {
+                stopwatchMilliseconds = 0;
+            }
+            
+            isStopwatchPaused = false;
+            
+            if (startBtn) startBtn.disabled = true;
+            if (pauseBtn) pauseBtn.disabled = false;
+            if (lapBtn) lapBtn.disabled = false;
+            
+            const startTime = Date.now() - stopwatchMilliseconds;
+            
+            stopwatchInterval = setInterval(() => {
+                stopwatchMilliseconds = Date.now() - startTime;
+                const display = document.getElementById('stopwatch-display');
+                if (display) {
+                    display.textContent = formatStopwatchTime(stopwatchMilliseconds);
+                }
+            }, 10);
+        }
+        
+        // 스톱워치 일시정지
+        function pauseStopwatch() {
+            if (!stopwatchInterval) return;
+            
+            clearInterval(stopwatchInterval);
+            stopwatchInterval = null;
+            isStopwatchPaused = true;
+            
+            const startBtn = document.getElementById('stopwatch-start-btn');
+            const pauseBtn = document.getElementById('stopwatch-pause-btn');
+            const lapBtn = document.getElementById('stopwatch-lap-btn');
+            
+            if (startBtn) {
+                startBtn.disabled = false;
+                startBtn.textContent = currentLanguage === 'ko' ? '재개' : 'Resume';
+            }
+            if (pauseBtn) pauseBtn.disabled = true;
+            if (lapBtn) lapBtn.disabled = true;
+        }
+        
+        // 랩타임 기록
+        function recordLap() {
+            if (!stopwatchInterval) return;
+            
+            stopwatchLaps.push(stopwatchMilliseconds);
+            
+            const container = document.getElementById('lap-times-container');
+            if (container) {
+                if (stopwatchLaps.length === 1) {
+                    container.innerHTML = '';
+                }
+                
+                const lapDiv = document.createElement('div');
+                lapDiv.className = 'flex justify-between items-center bg-white p-2 rounded border border-gray-200';
+                lapDiv.innerHTML = `
+                    <span class="font-medium text-gray-700">
+                        ${currentLanguage === 'ko' ? '랩' : 'Lap'} ${stopwatchLaps.length}
+                    </span>
+                    <span class="font-mono text-gray-900">
+                        ${formatStopwatchTime(stopwatchMilliseconds)}
+                    </span>
+                `;
+                container.insertBefore(lapDiv, container.firstChild);
+            }
+        }
+        
+        // 스톱워치 리셋
+        function resetStopwatch() {
+            if (stopwatchInterval) {
+                clearInterval(stopwatchInterval);
+                stopwatchInterval = null;
+            }
+            
+            stopwatchMilliseconds = 0;
+            stopwatchLaps = [];
+            isStopwatchPaused = false;
+            
+            const display = document.getElementById('stopwatch-display');
+            const startBtn = document.getElementById('stopwatch-start-btn');
+            const pauseBtn = document.getElementById('stopwatch-pause-btn');
+            const lapBtn = document.getElementById('stopwatch-lap-btn');
+            const container = document.getElementById('lap-times-container');
+            
+            if (display) display.textContent = '00:00:00.00';
+            
+            if (startBtn) {
+                startBtn.disabled = false;
+                startBtn.textContent = currentLanguage === 'ko' ? '시작' : 'Start';
+            }
+            if (pauseBtn) pauseBtn.disabled = true;
+            if (lapBtn) lapBtn.disabled = true;
+            
+            if (container) {
+                container.innerHTML = `<p class="text-gray-500 text-center">${currentLanguage === 'ko' ? '기록된 랩타임이 없습니다' : 'No lap times recorded'}</p>`;
+            }
+        }
+        
+        // 타이머 알림음 재생
+        function playTimerSound() {
+            try {
+                // Web Audio API를 사용한 비프음 생성
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 1.5);
+                
+                // 3번 반복
+                setTimeout(() => {
+                    const osc2 = audioContext.createOscillator();
+                    const gain2 = audioContext.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(audioContext.destination);
+                    osc2.type = 'sine';
+                    osc2.frequency.setValueAtTime(800, audioContext.currentTime);
+                    gain2.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+                    osc2.start(audioContext.currentTime);
+                    osc2.stop(audioContext.currentTime + 1.5);
+                }, 500);
+                
+                setTimeout(() => {
+                    const osc3 = audioContext.createOscillator();
+                    const gain3 = audioContext.createGain();
+                    osc3.connect(gain3);
+                    gain3.connect(audioContext.destination);
+                    osc3.type = 'sine';
+                    osc3.frequency.setValueAtTime(800, audioContext.currentTime);
+                    gain3.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gain3.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+                    osc3.start(audioContext.currentTime);
+                    osc3.stop(audioContext.currentTime + 1.5);
+                }, 1000);
+                
+            } catch (error) {
+                console.error('오디오 재생 실패:', error);
+            }
         }
         
         // 조합 생성

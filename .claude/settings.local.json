@@ -12,7 +12,10 @@
       "Bash(open /Users/jk.jeong/Project/Python/work-assistant/src/ControlAdmin.html)",
       "Bash(osascript:*)",
       "Bash(open:*)",
-      "WebFetch(domain:jk-ayaan.github.io)"
+      "WebFetch(domain:jk-ayaan.github.io)",
+      "Read(//Users/jk.jeong/Desktop/**)",
+      "Bash(npx html-validate:*)",
+      "WebFetch(domain:www.google.com)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
